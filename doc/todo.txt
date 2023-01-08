@@ -1,4 +1,12 @@
-CDI
-DataBase
+Shortcuts
 Tests
+DataBase
+Jakarta CDI
 Doc
+
+
+Certification -> Exam Group -> Exam 
+                            (Exam Historical)
+                            
+                            
+Exam Historical (Report Graphs, Report Etc)                                                                  

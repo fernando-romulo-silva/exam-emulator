@@ -28,11 +28,13 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.border.EmptyBorder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.examemulator.domain.Exam;
@@ -49,15 +51,15 @@ class ControllerUtil {
 	void execute();
     }
 
-    static JScrollPane createTextToShow(final String text) {
-	final var valueTxtArea = new JTextArea();
-	valueTxtArea.setText(text);
-	valueTxtArea.setEditable(false);
-	valueTxtArea.setFont(valueTxtArea.getFont().deriveFont(16f));
-	valueTxtArea.setLineWrap(true);
-	valueTxtArea.setWrapStyleWord(true);
+    static JComponent createTextToShow(final String text) {
+	final var textArea = new JTextArea();
+	textArea.setText(text);
+	textArea.setEditable(false);
+	textArea.setFont(textArea.getFont().deriveFont(16f));
+	textArea.setLineWrap(true);
+	textArea.setWrapStyleWord(true);
 
-	final var jScrollPane = new JScrollPane(valueTxtArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+	final var jScrollPane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 //	jScrollPane.scrollRectToVisible(new Rectangle(0, 0, 1, 1));
 
 //	SwingUtilities.invokeLater(new Runnable() {
@@ -69,7 +71,23 @@ class ControllerUtil {
 
 	return jScrollPane;
     }
-
+    
+    static JComponent createTextOpaqueToShow(final String text) {
+	final var textArea = new JTextArea(text);
+	textArea.setBorder(new EmptyBorder(0, 0, 0, 0));
+	textArea.setFont(textArea.getFont().deriveFont(16f));
+	textArea.setOpaque(false);
+	textArea.setEditable(false);
+//	textArea.setLineWrap(true);
+	
+//	final var scrollPane = new JScrollPane(textArea);
+//	scrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
+//	scrollPane.getViewport().setOpaque(false);
+//	scrollPane.setOpaque(false);	
+	
+	return textArea;
+    }
+    
     static ActionListener createTimerAction(final Integer duration, final JLabel jlabel, final Action action) {
 	return new ActionListener() {
 
@@ -115,8 +133,8 @@ class ControllerUtil {
 	    final var id = option.getId();
 	    optionsLabels.add(id + "|" + option.getText());
 	}
-
-	optionPanel.add(new JLabel(StringUtils.substringAfter(optionsLabels.get(0), "|")));
+	
+	optionPanel.add(createTextOpaqueToShow(substringAfter(optionsLabels.get(0), "|")));
 
 	final var buttonYesListener = new ActionListener() {
 
@@ -135,10 +153,13 @@ class ControllerUtil {
 
 		final var currentIndex = optionsLabels.indexOf(current);
 		final var iterator = optionsLabels.listIterator(currentIndex + 1);
+		
 
 		if (iterator.hasNext()) {
 		    current = optionsLabels.get(currentIndex + 1);
-		    optionPanel.add(new JLabel(substringAfter(current, "|")));
+		    
+		    
+		    optionPanel.add(createTextOpaqueToShow(substringAfter(current, "|")));
 		} else {
 		    optionPanel.add(new JLabel("You finalized this question"));
 		    buttonPanel.setVisible(false);
