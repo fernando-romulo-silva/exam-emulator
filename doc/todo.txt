@@ -1,12 +1,20 @@
 Shortcuts
-Tests
-DataBase
+Automated Tests
+DataBase (NoSQL)
 Jakarta CDI
 Doc
+Exam Historical (Report Graphs, Report Etc)
 
+Random questions position
+Random question options position
+
+Create a exam with most dificult question, based on historical
+
+
+---------------------------------------------------------
 
 Certification -> Exam Group -> Exam 
                             (Exam Historical)
                             
                             
-Exam Historical (Report Graphs, Report Etc)                                                                  
+                                                              

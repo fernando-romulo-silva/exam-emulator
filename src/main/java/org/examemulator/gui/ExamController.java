@@ -37,6 +37,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.examemulator.domain.Exam;
@@ -77,6 +79,13 @@ public class ExamController {
 
     public ExamController() {
 	super();
+	
+	try {
+	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+	} catch (final ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+	    // log it
+	}
+	
 	service = new ExamService();
 	view = new ExamView();
 	view.examPanel.setBorder(BorderFactory.createTitledBorder("No Exam"));

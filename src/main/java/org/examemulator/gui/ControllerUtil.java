@@ -13,6 +13,7 @@ import static org.apache.commons.lang3.StringUtils.substringAfter;
 import static org.apache.commons.lang3.StringUtils.substringBefore;
 
 import java.awt.BorderLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
@@ -44,6 +45,9 @@ import org.examemulator.gui.components.WrapLayout;
 class ControllerUtil {
 
     private static final int SIXTY_VALUE = 60;
+
+    public static final Font DEFAULT_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
+
     public static final int MILLISECOND = 1000;
 
     @FunctionalInterface
@@ -58,6 +62,7 @@ class ControllerUtil {
 	textArea.setFont(textArea.getFont().deriveFont(16f));
 	textArea.setLineWrap(true);
 	textArea.setWrapStyleWord(true);
+	textArea.setFont(DEFAULT_FONT);
 
 	final var jScrollPane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 //	jScrollPane.scrollRectToVisible(new Rectangle(0, 0, 1, 1));
@@ -71,23 +76,24 @@ class ControllerUtil {
 
 	return jScrollPane;
     }
-    
+
     static JComponent createTextOpaqueToShow(final String text) {
 	final var textArea = new JTextArea(text);
 	textArea.setBorder(new EmptyBorder(0, 0, 0, 0));
 	textArea.setFont(textArea.getFont().deriveFont(16f));
 	textArea.setOpaque(false);
 	textArea.setEditable(false);
+	textArea.setFont(DEFAULT_FONT);
 //	textArea.setLineWrap(true);
-	
+
 //	final var scrollPane = new JScrollPane(textArea);
 //	scrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
 //	scrollPane.getViewport().setOpaque(false);
 //	scrollPane.setOpaque(false);	
-	
+
 	return textArea;
     }
-    
+
     static ActionListener createTimerAction(final Integer duration, final JLabel jlabel, final Action action) {
 	return new ActionListener() {
 
@@ -133,7 +139,7 @@ class ControllerUtil {
 	    final var id = option.getId();
 	    optionsLabels.add(id + "|" + option.getText());
 	}
-	
+
 	optionPanel.add(createTextOpaqueToShow(substringAfter(optionsLabels.get(0), "|")));
 
 	final var buttonYesListener = new ActionListener() {
@@ -153,15 +159,15 @@ class ControllerUtil {
 
 		final var currentIndex = optionsLabels.indexOf(current);
 		final var iterator = optionsLabels.listIterator(currentIndex + 1);
-		
 
 		if (iterator.hasNext()) {
 		    current = optionsLabels.get(currentIndex + 1);
-		    
-		    
+
 		    optionPanel.add(createTextOpaqueToShow(substringAfter(current, "|")));
 		} else {
-		    optionPanel.add(new JLabel("You finalized this question"));
+		    final var label = new JLabel("You finalized this question");
+		    label.setFont(DEFAULT_FONT);
+		    optionPanel.add(label);
 		    buttonPanel.setVisible(false);
 
 		    if (question.getAnswers().isEmpty()) {
@@ -207,6 +213,7 @@ class ControllerUtil {
 	    for (final var questionOption : question.getOptions()) {
 
 		final var radio = new JRadioButton(treatOptionText(questionOption.getId(), questionOption.getText()));
+		radio.setFont(DEFAULT_FONT);
 
 		if (question.getAnswers().contains(questionOption.getId())) {
 		    radio.setSelected(true);
@@ -240,6 +247,7 @@ class ControllerUtil {
 	    for (final var questionOption : question.getOptions()) {
 
 		final var check = new JCheckBox(treatOptionText(questionOption.getId(), questionOption.getText()));
+		check.setFont(DEFAULT_FONT);
 
 		if (question.getAnswers().contains(questionOption.getId())) {
 		    check.setSelected(true);
