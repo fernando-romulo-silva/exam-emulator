@@ -2,6 +2,7 @@ package org.examemulator.domain;
 
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
+import static org.apache.commons.collections4.CollectionUtils.isEqualCollection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -153,7 +154,7 @@ public class Question implements Comparable<Question> {
 	}
 
 	if (answered) {
-	    return answers.containsAll(correctOptions);
+	    return isEqualCollection(answers, correctOptions);
 	}
 
 	return false;
