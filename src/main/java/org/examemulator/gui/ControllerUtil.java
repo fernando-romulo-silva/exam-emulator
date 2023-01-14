@@ -35,6 +35,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
 import org.apache.commons.lang3.StringUtils;
@@ -118,6 +119,22 @@ class ControllerUtil {
 		}
 	    }
 	};
+    }
+
+    public static void setUIFont(final Font f) {
+	
+	var keys = UIManager.getDefaults().keys();
+	
+	while (keys.hasMoreElements()) {
+	    
+	    Object key = keys.nextElement();
+	    
+	    Object value = UIManager.get(key);
+	    
+	    if (value != null && value instanceof Font) {
+		UIManager.put(key, f);
+	    }
+	}
     }
 
     static JPanel createDiscreteOptions(final Question question) {

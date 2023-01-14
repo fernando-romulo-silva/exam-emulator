@@ -1,7 +1,8 @@
 package org.examemulator.gui;
 
 import static java.awt.BorderLayout.CENTER;
-import static java.awt.BorderLayout.*;
+import static java.awt.BorderLayout.NORTH;
+import static java.awt.BorderLayout.SOUTH;
 import static javax.swing.BoxLayout.Y_AXIS;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static org.apache.commons.lang3.StringUtils.leftPad;
@@ -37,8 +38,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.examemulator.domain.Exam;
@@ -79,12 +78,6 @@ public class ExamController {
 
     public ExamController() {
 	super();
-	
-	try {
-	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-	} catch (final ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-	    // log it
-	}
 	
 	service = new ExamService();
 	view = new ExamView();

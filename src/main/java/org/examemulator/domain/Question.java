@@ -9,9 +9,23 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.collections.impl.utility.ListIterate;
 
 public class Question implements Comparable<Question> {
+
+    private static final List<String> WORDS_ALL = List.of( //
+		    "All of the options", //
+		    "All of the preceding options", //
+		    "All of the above", //
+		    "All of the scenarios are valid", //
+		    "All answers are true", //
+		    "All of the options", //
+		    "All of these" //
+    );
+
+    private static final List<String> WORDS_ABOVE = List.of("Both the above");
 
     private final String id;
 
@@ -153,8 +167,44 @@ public class Question implements Comparable<Question> {
 	    return false;
 	}
 
-	if (answered) {
-	    return isEqualCollection(answers, correctOptions);
+	if (isEqualCollection(answers, correctOptions)) {
+	    return true;
+	}
+
+	final var answersText = options.stream() //
+			.map(Option::getText) //
+			.toList();
+
+	if (CollectionUtils.containsAny(answersText, WORDS_ALL)) {
+
+	    if (options.size() == answers.size()) {
+		return true;
+	    }
+
+	    final var remainderOptions = options.stream() //
+			    .filter(option -> !correctOptions.contains(option.getId())) //
+			    .map(Option::getId) //
+			    .toList();
+
+	    return isEqualCollection(answers, remainderOptions);
+	}
+
+	if (CollectionUtils.containsAny(answersText, WORDS_ABOVE)) {
+
+	    final var index = ListIterate.detectIndex(options, user -> WORDS_ABOVE.contains(user.getText()));
+
+	    final var subListAbove = options.subList(0, index).stream().map(Option::getId).toList();
+
+	    if (isEqualCollection(answers, subListAbove)) {
+		return true;
+	    }
+
+	    final var subListAboveInclusive = options.subList(0, index + 1) //
+			    .stream() //
+			    .map(Option::getId) //
+			    .toList();
+
+	    return isEqualCollection(answers, subListAboveInclusive);
 	}
 
 	return false;
