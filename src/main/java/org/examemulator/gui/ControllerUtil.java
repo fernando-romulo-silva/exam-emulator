@@ -88,6 +88,7 @@ class ControllerUtil {
 //	textArea.setLineWrap(true);
 
 //	final var scrollPane = new JScrollPane(textArea);
+	final var scrollPane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 //	scrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
 //	scrollPane.getViewport().setOpaque(false);
 //	scrollPane.setOpaque(false);	
@@ -157,7 +158,8 @@ class ControllerUtil {
 	    optionsLabels.add(id + "|" + option.getText());
 	}
 
-	optionPanel.add(createTextOpaqueToShow(substringAfter(optionsLabels.get(0), "|")));
+	final var substringAfter = substringAfter(optionsLabels.get(0), "|");
+	optionPanel.add(createTextOpaqueToShow(substringAfter));
 
 	final var buttonYesListener = new ActionListener() {
 
@@ -305,7 +307,7 @@ class ControllerUtil {
 			.divide(BigDecimal.valueOf(qtyTotal), matchContext) //
 			.multiply(BigDecimal.valueOf(100l));
 
-	final var result = BigDecimal.valueOf(qtyCorrect).compareTo(minScoreValue) > 0 ? //
+	final var result = BigDecimal.valueOf(qtyCorrect).compareTo(minScoreValue) >= 0 ? //
 			"<font color='green'>PASSED</font>" : //
 			"<font color='red'>FAILED</font>";
 

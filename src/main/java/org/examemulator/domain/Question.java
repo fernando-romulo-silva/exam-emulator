@@ -25,7 +25,7 @@ public class Question implements Comparable<Question> {
 		    "All of these" //
     );
 
-    private static final List<String> WORDS_ABOVE = List.of("Both the above");
+    private static final List<String> WORDS_ABOVE = List.of("Both the above" , "Both of the above");
 
     private final String id;
 

@@ -12,7 +12,9 @@ import static org.apache.commons.lang3.StringUtils.trim;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Writer;
 import java.math.BigDecimal;
+import java.nio.charset.CharacterCodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -137,11 +139,11 @@ public class ExamService {
     private List<String> readCorrectOptions(final String data) {
 
 	final var explanation = RegExUtils.removeAll(substringBetween(data, "Answer(s)", "\n"), "[,and\\s+]");
-	
+
 	if (Objects.isNull(explanation)) {
 	    throw new IllegalArgumentException("Error on read data: " + data);
 	}
-	
+
 	return explanation //
 			.chars() //
 			.mapToObj(c -> EMPTY + (char) c) //
@@ -194,5 +196,23 @@ public class ExamService {
 	final var explanationTemp = substringAfter(data, "Answer(s)");
 
 	return substringAfter(explanationTemp, "\n");
+    }
+
+    private void checkIfUTF8(final String dir) {
+
+	final var path = Paths.get(dir);
+	
+	try (final var reader = Files.newBufferedReader(path)) {
+	    int c = reader.read();
+	    
+	    if (c == 0xfeff) {
+		System.out.println("File starts with a byte order mark.");
+	    } else if (c >= 0) {
+		reader.transferTo(Writer.nullWriter());
+	    }
+	    
+	} catch (final IOException ex) {
+	    throw new IllegalArgumentException("Not a UTF-8 file", ex);
+	}
     }
 }
