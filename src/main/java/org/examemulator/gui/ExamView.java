@@ -34,7 +34,7 @@ class ExamView extends JFrame {
 
     JButton btnStart, btnFinish, btnPrevious, btnNext, btnCheckAnswer, btnStatistics;
 
-    JLabel lblClock, lblRangeLow, lblUpper;
+    JLabel lblClock, lblRangeLow, lblUpper, lblDuration;
 
     JSpinner textDiscrete, textMinScore, spinnerTimeDuration;
 
@@ -119,7 +119,7 @@ class ExamView extends JFrame {
 	textDiscrete.setEnabled(false);
 	examControlPanel1.add(textDiscrete);
 
-	final var lblDuration = new JLabel("Duration (Min)");
+	lblDuration = new JLabel("Duration (Min)");
 	examControlPanel1.add(lblDuration);
 
 	spinnerTimeDuration = new JSpinner(new SpinnerNumberModel(60, 10, 120, 10));

@@ -114,12 +114,6 @@ public class ExamController {
 
 	    exam = service.createExam(currentFolder, practiceMode, discretPercent, mimScore, range);
 
-	    if (exam.isPracticeMode()) {
-		view.btnCheckAnswer.setVisible(true);
-	    } else {
-		view.btnCheckAnswer.setVisible(false);
-	    }
-
 	    view.btnStart.setEnabled(false);
 	    view.btnStatistics.setEnabled(false);
 	    view.btnPrevious.setEnabled(false);
@@ -142,10 +136,18 @@ public class ExamController {
 	    }
 
 	    timer = null;
-	    timer = new Timer(MILLISECOND, createTimerAction(duration, view.lblClock, () -> view.btnFinish.doClick()));
+	    
+	    if (exam.isPracticeMode()) {
+		view.btnCheckAnswer.setVisible(true);
+		view.lblDuration.setVisible(false);
+		view.spinnerTimeDuration.setVisible(false);
+	    } else {
+		view.btnCheckAnswer.setVisible(false);
+		timer = new Timer(MILLISECOND, createTimerAction(duration, view.lblClock, () -> view.btnFinish.doClick()));
+		timer.start();
+	    }
 
 	    exam.begin();
-	    timer.start();
 
 	    selectedQuestion = exam.getQuestions().get(0);
 
@@ -156,8 +158,11 @@ public class ExamController {
 
 	view.btnFinish.addActionListener(event -> {
 
-	    exam.finish();
-	    timer.stop();
+	    exam.finish(); 
+	    
+	    if (Objects.nonNull(timer)) {
+		timer.stop();
+	    }
 
 	    view.lblClock.setText(StringUtils.EMPTY);
 

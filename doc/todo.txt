@@ -1,17 +1,27 @@
-Shortcuts
-Automated Tests
-DataBase (NoSQL)
-Jakarta CDI
-Doc
-Exam Historical
+---------------------------------------------------------
+* Shortcuts
+
+* Automated Tests
+
+* DataBase (NoSQL)
+
+* Jakarta CDI
+
+* Doc
+
+* Exam Historical
 ---> Reports (Graphs)
 ---> Wrong Answers
 ---> Marked Answers
 
-Create an exam with most dificult questions, based on historical
+* Retake
+---> After finish a exam, a retake with wrong answered questions
 
-Random questions position
-Random question options position
+* Create an exam with most dificult questions, based on historical
+
+* Random questions position
+
+* Random question options position
 
 ---------------------------------------------------------
 
