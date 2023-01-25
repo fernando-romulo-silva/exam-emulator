@@ -3,7 +3,7 @@
 
 * Automated Tests
 
-* DataBase (NoSQL)
+* DataBase (NoSQL?)
 
 * Jakarta CDI
 
@@ -26,8 +26,10 @@
 ---------------------------------------------------------
 
 Certification -> Exam Group -> Exam ------------> Question ----> Options
-                            (Exam Historical)       |
-                                                    |----------> Concepts
+                                |                    |
+                                |                    |----------> Concepts
+                                |
+                                |--- Exam Execution (historical)                              
                                                       
                             
 --------------------------------------------------------

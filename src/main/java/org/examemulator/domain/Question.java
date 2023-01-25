@@ -21,6 +21,7 @@ public class Question implements Comparable<Question> {
 		    "All of the above", //
 		    "All of the scenarios are valid", //
 		    "All answers are true", //
+		    "All answers are valid", //
 		    "All of the options", //
 		    "All of these" //
     );

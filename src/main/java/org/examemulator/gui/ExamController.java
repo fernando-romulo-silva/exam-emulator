@@ -18,6 +18,7 @@ import static org.examemulator.gui.ControllerUtil.extractedOptions;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dialog;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -368,6 +369,7 @@ public class ExamController {
 	panelQuestionPanel.setLayout(new BoxLayout(panelQuestionPanel, Y_AXIS));
 	panelQuestionPanel.setBorder(BorderFactory.createTitledBorder("Question " + leftPad(selectedQuestion.getOrder().toString(), 2, '0')));
 	panelQuestionPanel.add(createTextToShow("\n" + selectedQuestion.getValue() + "\n"));
+//	panelQuestionPanel.sisetPreferredSize(new Dimension(80, 120));
 
 	final var groupOptionsQuestionPanel = new JPanel(new BorderLayout());
 
