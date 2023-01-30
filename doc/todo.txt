@@ -9,25 +9,24 @@
 
 * Doc
 
+* Stop and continue exam for another day
+
 * Exam Historical
 ---> Reports (Graphs)
 ---> Wrong Answers
 ---> Marked Answers
 
 * Retake
----> After finish a exam, a retake with wrong answered questions
+---> After finish a exam, a retake with wrong/marked answered questions (revenge!) (Let me assure!)
 
 * Create an exam with most dificult questions, based on historical
 
-* Random questions position
-
-* Random question options position
 
 ---------------------------------------------------------
 
-Certification -> Exam Group -> Exam ------------> Question ----> Options
-                                |                    |
-                                |                    |----------> Concepts
+Certification -> Exam Group -> Exam(origin) ------------> Question ----> Options
+                                |                            |
+                                |                            |----------> Concepts
                                 |
                                 |--- Exam Execution (historical)                              
                                                       

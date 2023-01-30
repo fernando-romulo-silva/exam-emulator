@@ -370,7 +370,9 @@ public class ExamController {
 	panelQuestionPanel.setBorder(BorderFactory.createTitledBorder("Question " + leftPad(selectedQuestion.getOrder().toString(), 2, '0')));
 	panelQuestionPanel.add(createTextToShow("\n" + selectedQuestion.getValue() + "\n"));
 //	panelQuestionPanel.sisetPreferredSize(new Dimension(80, 120));
-
+	panelQuestionPanel.revalidate();
+	panelQuestionPanel.repaint();
+	
 	final var groupOptionsQuestionPanel = new JPanel(new BorderLayout());
 
 	if (selectedQuestion.isAnswered() && discreteList.contains(selectedQuestion.getType())) {
@@ -391,6 +393,10 @@ public class ExamController {
 
 	view.questionInternPanel.revalidate();
 	view.questionInternPanel.repaint();
+	
+//	view.validate();
+//	view.repaint();
+//	view.pack();
     }
 
     private void loadPanelQuestions() {
