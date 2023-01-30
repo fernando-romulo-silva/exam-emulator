@@ -2,6 +2,9 @@ package org.examemulator.gui;
 
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.SOUTH;
+import static java.awt.Color.GREEN;
+import static java.awt.Color.ORANGE;
+import static java.awt.Color.RED;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.StringUtils.leftPad;
 import static org.examemulator.gui.ControllerUtil.createTextToShow;
@@ -9,7 +12,6 @@ import static org.examemulator.gui.ControllerUtil.extractedOptions;
 import static org.examemulator.gui.ControllerUtil.getStatistic;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.FlowLayout;
 import java.awt.Window;
@@ -185,14 +187,14 @@ class StatiticsController {
 	for (final var question : questionsTemp) {
 
 	    final var label = new JLabel(leftPad(question.getOrder().toString(), 2, '0'));
-	    label.setForeground(Color.GREEN);
+	    label.setForeground(GREEN);
 
 	    if (question.isMarked()) {
-		label.setForeground(Color.YELLOW);
+		label.setForeground(ORANGE);
 	    }
 
 	    if (!question.isCorrect()) {
-		label.setForeground(Color.RED);
+		label.setForeground(RED);
 	    }
 
 	    view.pQuestions.add(label);
