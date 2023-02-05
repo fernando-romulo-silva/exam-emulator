@@ -1,5 +1,6 @@
 package org.examemulator.service;
 
+
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.contains;
@@ -32,6 +33,9 @@ import org.examemulator.domain.Exam;
 import org.examemulator.domain.Option;
 import org.examemulator.domain.Question;
 
+import jakarta.inject.Singleton;
+
+@Singleton
 public class ExamService {
 
     public Exam createExam( //

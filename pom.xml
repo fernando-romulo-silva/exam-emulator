@@ -96,6 +96,28 @@
 			<version>11.1.0</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/jakarta.enterprise/jakarta.enterprise.cdi-api -->
+		<dependency>
+			<groupId>jakarta.enterprise</groupId>
+			<artifactId>jakarta.enterprise.cdi-api</artifactId>
+			<version>4.0.1</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.jboss.weld/weld-core-test -->
+<dependency>
+    <groupId>org.jboss.weld</groupId>
+    <artifactId>weld-core-test</artifactId>
+    <version>5.1.0.Final</version>
+</dependency>
+
+
+		<dependency>
+			<artifactId>jakarta-data-api</artifactId>
+			<groupId>jakarta.data</groupId>
+			<version>1.0.0</version>
+		</dependency>
+
+
 	</dependencies>
 
 </project>
