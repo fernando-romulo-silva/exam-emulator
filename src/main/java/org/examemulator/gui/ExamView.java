@@ -26,7 +26,7 @@ import javax.swing.border.EtchedBorder;
 import org.examemulator.gui.components.RangeSlider;
 import org.examemulator.gui.components.WrapLayout;
 
-class ExamView extends JFrame {
+public class ExamView extends JFrame {
 
     private static final long serialVersionUID = 1L;
 

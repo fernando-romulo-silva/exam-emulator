@@ -32,7 +32,10 @@ import javax.swing.JPanel;
 import org.examemulator.domain.Exam;
 import org.examemulator.domain.Question;
 
-class StatiticsController {
+import jakarta.enterprise.context.RequestScoped;
+
+@RequestScoped
+public class StatiticsController {
 
     private final StatiticsView view;
 

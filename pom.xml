@@ -104,18 +104,43 @@
 		</dependency>
 		
 		<!-- https://mvnrepository.com/artifact/org.jboss.weld/weld-core-test -->
-<dependency>
-    <groupId>org.jboss.weld</groupId>
-    <artifactId>weld-core-test</artifactId>
-    <version>5.1.0.Final</version>
-</dependency>
+		<dependency>
+		    <groupId>org.jboss.weld</groupId>
+		    <artifactId>weld-core-test</artifactId>
+		    <version>5.1.0.Final</version>
+		</dependency>
 
-
+<!--
 		<dependency>
 			<artifactId>jakarta-data-api</artifactId>
 			<groupId>jakarta.data</groupId>
 			<version>1.0.0</version>
 		</dependency>
+-->
+
+<!-- https://mvnrepository.com/artifact/org.jboss.weld.module/weld-jta -->
+<dependency>
+    <groupId>org.jboss.weld.module</groupId>
+    <artifactId>weld-jta</artifactId>
+    <version>5.1.0.Final</version>
+</dependency>
+
+
+<!-- https://mvnrepository.com/artifact/org.jboss.weld.se/weld-se-core -->
+<dependency>
+    <groupId>org.jboss.weld.se</groupId>
+    <artifactId>weld-se-core</artifactId>
+    <version>5.1.0.Final</version>
+</dependency>
+
+
+<!-- https://mvnrepository.com/artifact/org.eclipse.persistence/eclipselink -->
+<dependency>
+    <groupId>org.eclipse.persistence</groupId>
+    <artifactId>eclipselink</artifactId>
+    <version>4.0.0</version>
+</dependency>
+
 
 
 	</dependencies>

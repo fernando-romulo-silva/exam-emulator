@@ -18,7 +18,6 @@ import static org.examemulator.gui.ControllerUtil.extractedOptions;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dialog;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -48,6 +47,10 @@ import org.examemulator.domain.QuestionType;
 import org.examemulator.gui.components.RangeSlider;
 import org.examemulator.service.ExamService;
 
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+
+@RequestScoped
 public class ExamController {
 
     private final List<QuestionType> discreteList = List.of(DOMC, DOSC);
@@ -65,8 +68,10 @@ public class ExamController {
 	}
     };
 
+    @Inject
     private ExamView view;
 
+    @Inject
     private ExamService service;
 
     private Exam exam;
@@ -80,8 +85,6 @@ public class ExamController {
     public ExamController() {
 	super();
 	
-	service = new ExamService();
-	view = new ExamView();
 	view.examPanel.setBorder(BorderFactory.createTitledBorder("No Exam"));
 
 	creatButtonActions();

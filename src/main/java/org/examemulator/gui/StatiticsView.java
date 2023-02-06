@@ -16,7 +16,11 @@ import javax.swing.border.EtchedBorder;
 
 import org.examemulator.gui.components.WrapLayout;
 
-class StatiticsView extends JPanel {
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.RequestScoped;
+
+@RequestScoped
+public class StatiticsView extends JPanel {
 
     private static final long serialVersionUID = 1L;
 
