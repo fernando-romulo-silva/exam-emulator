@@ -1,18 +1,20 @@
-package org.examemulator;
+package org.examemulator.gui.statitics;
 
+import java.lang.annotation.Annotation;
 
-import org.examemulator.gui.exam.ExamController;
-
-import jakarta.enterprise.inject.se.SeContainer;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.inject.se.SeContainerInitializer;
 
-public class Main {
+public class MainTest {
 
     public static void main(final String... args) {
 	
 	try (final var container = SeContainerInitializer.newInstance().initialize()) {
 	    
-	    System.out.println("bla");
+	  final var t =  container.select(StatiticsGui.class).get();
+	  System.out.println(t);
+	  
+    
 	}
 	
 	
@@ -21,4 +23,5 @@ public class Main {
 //	new ExamController();
         
     }
+
 }

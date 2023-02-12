@@ -1,4 +1,4 @@
-package org.examemulator.gui;
+package org.examemulator.gui.exam;
 
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.FlowLayout.LEFT;
@@ -25,6 +25,8 @@ import javax.swing.border.EtchedBorder;
 
 import org.examemulator.gui.components.RangeSlider;
 import org.examemulator.gui.components.WrapLayout;
+
+import jakarta.enterprise.context.RequestScoped;
 
 public class ExamView extends JFrame {
 

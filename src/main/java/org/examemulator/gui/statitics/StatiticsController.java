@@ -1,4 +1,4 @@
-package org.examemulator.gui;
+package org.examemulator.gui.statitics;
 
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.SOUTH;
@@ -35,7 +35,7 @@ import org.examemulator.domain.Question;
 import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
-public class StatiticsController {
+class StatiticsController {
 
     private final StatiticsView view;
 
@@ -63,7 +63,7 @@ public class StatiticsController {
 
     private Question selectedQuestion;
 
-    StatiticsController(final Window owner, final Exam exam) {
+    public StatiticsController(final Window owner, final Exam exam) {
 
 	view = new StatiticsView();
 	this.exam = exam;

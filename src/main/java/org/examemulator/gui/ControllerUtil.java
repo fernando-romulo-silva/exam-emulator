@@ -22,6 +22,7 @@ import java.math.MathContext;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -43,7 +44,7 @@ import org.examemulator.domain.Exam;
 import org.examemulator.domain.Question;
 import org.examemulator.gui.components.WrapLayout;
 
-class ControllerUtil {
+public class ControllerUtil {
 
     private static final int SIXTY_VALUE = 60;
 
@@ -52,11 +53,11 @@ class ControllerUtil {
     public static final int MILLISECOND = 1000;
 
     @FunctionalInterface
-    static interface Action {
+    public static interface Action {
 	void execute();
     }
-
-    static JComponent createTextToShow(final String text) {
+    
+    public static JComponent createTextToShow(final String text) {
 	final var textArea = new JTextArea();
 	textArea.setText(text);
 	textArea.setEditable(false);
@@ -78,7 +79,7 @@ class ControllerUtil {
 	return jScrollPane;
     }
 
-    static JComponent createTextOpaqueToShow(final String text) {
+    public static JComponent createTextOpaqueToShow(final String text) {
 	final var textArea = new JTextArea(text);
 	textArea.setBorder(new EmptyBorder(0, 0, 0, 0));
 	textArea.setFont(textArea.getFont().deriveFont(16f));
@@ -96,7 +97,7 @@ class ControllerUtil {
 	return textArea;
     }
 
-    static ActionListener createTimerAction(final Integer duration, final JLabel jlabel, final Action action) {
+    public static ActionListener createTimerAction(final Integer duration, final JLabel jlabel, final Action action) {
 	return new ActionListener() {
 
 	    private long time = duration * MILLISECOND * SIXTY_VALUE;
@@ -138,7 +139,7 @@ class ControllerUtil {
 	}
     }
 
-    static JPanel createDiscreteOptions(final Question question) {
+    public static JPanel createDiscreteOptions(final Question question) {
 	final var optionsQuestionPanel = new JPanel();
 	optionsQuestionPanel.setLayout(new BorderLayout());
 
@@ -208,7 +209,7 @@ class ControllerUtil {
 	return optionsQuestionPanel;
     }
 
-    static JPanel createIndiscreteOptions(final Question question) {
+    public static JPanel createIndiscreteOptions(final Question question) {
 
 	final var optionsQuestionPanel = new JPanel();
 	optionsQuestionPanel.setBorder(BorderFactory.createTitledBorder("Options"));
@@ -282,7 +283,7 @@ class ControllerUtil {
 	}
     }
 
-    static String getStatistic(final Exam exam) {
+    public static String getStatistic(final Exam exam) {
 
 	final var qtyTotal = exam.getQuestions().stream() //
 			.count();
@@ -336,7 +337,7 @@ class ControllerUtil {
 	);
     }
 
-    static String extractedOptions(final String msg, final List<String> list) {
+    public static String extractedOptions(final String msg, final List<String> list) {
 
 	final String joined;
 	if (list.isEmpty()) {

@@ -1,26 +1,24 @@
-package org.examemulator.gui;
+package org.examemulator.gui.statitics;
 
 import static java.awt.FlowLayout.LEFT;
 import static javax.swing.BoxLayout.Y_AXIS;
 
 import java.awt.BorderLayout;
+import java.awt.Dialog;
 import java.awt.FlowLayout;
+import java.awt.Window;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
 import org.examemulator.gui.components.WrapLayout;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.context.RequestScoped;
-
-@RequestScoped
-public class StatiticsView extends JPanel {
+class StatiticsView extends JDialog {
 
     private static final long serialVersionUID = 1L;
 
@@ -31,10 +29,12 @@ public class StatiticsView extends JPanel {
     JLabel lblStatistic;
     
     JButton btnNext, btnPrevious;
-
-    public StatiticsView() {
+    
+    public StatiticsView(Window owner, String title, Dialog.ModalityType modalityType) {
+	 super(owner, title, modalityType);
+	 
 	this.setBounds(100, 100, 774, 720);
-	this.setBorder(new EmptyBorder(5, 5, 5, 5));
+//	this.setBorder(new EmptyBorder(5, 5, 5, 5));
 	this.setLayout(new BoxLayout(this, Y_AXIS));
 
 	final var pGroup = new JPanel();
