@@ -1,7 +1,6 @@
 package org.examemulator.gui;
 
 import static java.awt.BorderLayout.CENTER;
-import static java.awt.BorderLayout.SOUTH;
 import static java.awt.Color.GREEN;
 import static java.awt.Color.ORANGE;
 import static java.awt.Color.RED;
@@ -11,9 +10,7 @@ import static org.examemulator.gui.ControllerUtil.createTextToShow;
 import static org.examemulator.gui.ControllerUtil.extractedOptions;
 import static org.examemulator.gui.ControllerUtil.getStatistic;
 
-import java.awt.BorderLayout;
 import java.awt.Dialog;
-import java.awt.FlowLayout;
 import java.awt.Window;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
@@ -24,10 +21,7 @@ import java.util.Objects;
 import java.util.TreeSet;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 import org.examemulator.domain.Exam;
 import org.examemulator.domain.Question;
@@ -62,28 +56,11 @@ class StatiticsController {
 
     StatiticsController(final Window owner, final Exam exam) {
 
-	view = new StatiticsView();
 	this.exam = exam;
+	view = new StatiticsView(owner, "Statistic Exam", Dialog.ModalityType.DOCUMENT_MODAL);
 
 	questions.addAll(exam.getQuestions());
 	selectFirstQuestion();
-
-	final var answerDialog = new JDialog(owner, "Statistic Exam", Dialog.ModalityType.DOCUMENT_MODAL);
-	answerDialog.setBounds(132, 132, 300, 200);
-	answerDialog.setSize(600, 500);
-	answerDialog.setLocationRelativeTo(view);
-
-	final var dialogContainer = answerDialog.getContentPane();
-	dialogContainer.setLayout(new BorderLayout());
-	dialogContainer.add(view, CENTER);
-
-	final var okButton = new JButton("Ok");
-	okButton.addActionListener(okEvent -> answerDialog.setVisible(false));
-
-	final var panel = new JPanel(new FlowLayout());
-	panel.add(okButton);
-
-	dialogContainer.add(panel, SOUTH);
 
 	view.lblStatistic.setText(getStatistic(exam));
 
@@ -104,7 +81,7 @@ class StatiticsController {
 	loadPanelQuestion();
 	loadPanelQuestions();
 
-	answerDialog.setVisible(true);
+	view.setVisible(true);
     }
 
     void loadPanelQuestion() {

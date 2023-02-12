@@ -1,42 +1,54 @@
 package org.examemulator.gui;
 
+import static java.awt.BorderLayout.CENTER;
+import static java.awt.BorderLayout.SOUTH;
 import static java.awt.FlowLayout.LEFT;
 import static javax.swing.BoxLayout.Y_AXIS;
 
 import java.awt.BorderLayout;
+import java.awt.Dialog;
 import java.awt.FlowLayout;
+import java.awt.Window;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
 import org.examemulator.gui.components.WrapLayout;
 
-class StatiticsView extends JPanel {
+class StatiticsView extends JDialog {
 
     private static final long serialVersionUID = 1L;
 
-    JPanel pQuestion, pQuestions;
+    JPanel pQuestion, pQuestions, pMain;
 
     JCheckBox chckbxCorrects, chckbxIncorrects, chckbxMarked;
 
     JLabel lblStatistic;
     
     JButton btnNext, btnPrevious;
+    
+   public StatiticsView(final Window owner, final String title, final Dialog.ModalityType modalityType) {
+	super(owner, title, modalityType);
+	setSize(600, 500);
+	setLocationRelativeTo(owner);
+	
+	final var dialogContainer = getContentPane();
+	dialogContainer.setLayout(new BorderLayout());
+	
+	pMain = new JPanel();
+	pMain.setLayout(new BoxLayout(pMain, Y_AXIS));
 
-    public StatiticsView() {
-	this.setBounds(100, 100, 774, 720);
-	this.setBorder(new EmptyBorder(5, 5, 5, 5));
-	this.setLayout(new BoxLayout(this, Y_AXIS));
+	add(pMain, CENTER);
 
 	final var pGroup = new JPanel();
 	pGroup.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 	pGroup.setLayout(new BoxLayout(pGroup, BoxLayout.Y_AXIS));
-	add(pGroup);
+	pMain.add(pGroup);
 
 	final var panelStatistic = new JPanel(new FlowLayout(LEFT, 5, 5));
 	pGroup.add(panelStatistic);
@@ -70,6 +82,14 @@ class StatiticsView extends JPanel {
 
 	pQuestion = new JPanel();
 	pQuestion.setLayout(new BorderLayout(0, 0));
-	add(pQuestion);
+	pMain.add(pQuestion);
+	
+	final var okButton = new JButton("Ok");
+	okButton.addActionListener(okEvent -> setVisible(false));
+
+	final var panelButton = new JPanel(new FlowLayout());
+	panelButton.add(okButton);
+
+	add(panelButton, SOUTH);
     }
 }
