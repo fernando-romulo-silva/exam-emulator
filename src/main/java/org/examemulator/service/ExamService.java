@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.math.BigDecimal;
-import java.nio.charset.CharacterCodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,6 +31,9 @@ import org.examemulator.domain.Exam;
 import org.examemulator.domain.Option;
 import org.examemulator.domain.Question;
 
+import jakarta.enterprise.context.ApplicationScoped;
+
+@ApplicationScoped
 public class ExamService {
 
     public Exam createExam( //

@@ -1,6 +1,6 @@
 package org.examemulator;
 
-import org.examemulator.gui.ExamController;
+import org.examemulator.gui.exam.ExamController;
 
 public class Main {
 

@@ -1,4 +1,4 @@
-package org.examemulator.gui;
+package org.examemulator.gui.exam;
 
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.NORTH;
@@ -45,7 +45,10 @@ import org.examemulator.domain.ExamStatus;
 import org.examemulator.domain.Question;
 import org.examemulator.domain.QuestionType;
 import org.examemulator.gui.components.RangeSlider;
+import org.examemulator.gui.statitics.StatiticsController;
 import org.examemulator.service.ExamService;
+
+import jakarta.inject.Inject;
 
 public class ExamController {
 
@@ -66,6 +69,7 @@ public class ExamController {
 
     private ExamView view;
 
+    @Inject
     private ExamService service;
 
     private Exam exam;
@@ -373,7 +377,6 @@ public class ExamController {
 	panelQuestionPanel.setLayout(new BoxLayout(panelQuestionPanel, Y_AXIS));
 	panelQuestionPanel.setBorder(BorderFactory.createTitledBorder("Question " + leftPad(selectedQuestion.getOrder().toString(), 2, '0')));
 	panelQuestionPanel.add(createTextToShow("\n" + selectedQuestion.getValue() + "\n"));
-//	panelQuestionPanel.sisetPreferredSize(new Dimension(80, 120));
 	panelQuestionPanel.revalidate();
 	panelQuestionPanel.repaint();
 	

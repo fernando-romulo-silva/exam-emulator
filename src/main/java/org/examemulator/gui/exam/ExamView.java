@@ -1,4 +1,4 @@
-package org.examemulator.gui;
+package org.examemulator.gui.exam;
 
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.FlowLayout.LEFT;

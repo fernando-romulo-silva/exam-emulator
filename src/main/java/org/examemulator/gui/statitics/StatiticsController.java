@@ -1,4 +1,4 @@
-package org.examemulator.gui;
+package org.examemulator.gui.statitics;
 
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.Color.GREEN;
@@ -26,7 +26,7 @@ import javax.swing.JLabel;
 import org.examemulator.domain.Exam;
 import org.examemulator.domain.Question;
 
-class StatiticsController {
+public class StatiticsController {
 
     private final StatiticsView view;
 
@@ -54,7 +54,7 @@ class StatiticsController {
 
     private Question selectedQuestion;
 
-    StatiticsController(final Window owner, final Exam exam) {
+    public StatiticsController(final Window owner, final Exam exam) {
 
 	this.exam = exam;
 	view = new StatiticsView(owner, "Statistic Exam", Dialog.ModalityType.DOCUMENT_MODAL);
