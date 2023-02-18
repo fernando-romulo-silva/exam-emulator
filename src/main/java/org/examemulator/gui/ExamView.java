@@ -107,6 +107,7 @@ class ExamView extends JFrame {
 	cbMode.setEnabled(false);
 	cbMode.addItem("Practice");
 	cbMode.addItem("Exam");
+	cbMode.addItem("Study");
 
 	cbMode.setSize(200, cbMode.getPreferredSize().height);
 	examControlPanel1.add(cbMode);
