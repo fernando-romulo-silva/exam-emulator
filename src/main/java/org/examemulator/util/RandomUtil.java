@@ -1,10 +1,10 @@
-package org.examemulator.domain;
+package org.examemulator.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-class DomainUtil {
+public class RandomUtil {
 
     /**
      *

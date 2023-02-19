@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import org.examemulator.util.RandomUtil;
+
 public class Exam {
 
     private final String id; // uuid
@@ -86,7 +88,7 @@ public class Exam {
 
 	    final var perc = discretPercent.divide(BigDecimal.valueOf(100l)).round(matchContext).doubleValue();
 
-	    final var discreteList = DomainUtil.getRandomSubList(discreteAvaliableList, perc);
+	    final var discreteList = RandomUtil.getRandomSubList(discreteAvaliableList, perc);
 
 	    for (final var question : discreteList) {
 		question.defineToDiscrete(true);
