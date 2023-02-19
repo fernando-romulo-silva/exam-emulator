@@ -1,5 +1,6 @@
 package org.examemulator.service;
 
+import static java.io.File.separator;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.contains;
@@ -14,7 +15,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.math.BigDecimal;
-import java.nio.charset.CharacterCodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,7 +32,12 @@ import org.examemulator.domain.Exam;
 import org.examemulator.domain.Option;
 import org.examemulator.domain.Question;
 
+import jakarta.enterprise.context.ApplicationScoped;
+
+@ApplicationScoped
 public class ExamService {
+
+    private static final String ANSWER_MSG = "Answer(s)";
 
     public Exam createExam( //
 		    final String dir, //
@@ -48,7 +53,7 @@ public class ExamService {
 	    questionFiles.addAll(stream.filter(file -> !Files.isDirectory(file)) //
 			    .map(Path::getFileName) //
 			    .map(Path::toString) //
-			    .sorted((s1, s2) -> s1.compareTo(s2)) //
+			    .sorted(Comparable::compareTo) //
 			    .toList());
 
 	} catch (final IOException ex) {
@@ -98,7 +103,7 @@ public class ExamService {
 
     public String extractedExamName(final String dir) {
 
-	final var folders = dir.split(File.separator);
+	final var folders = dir.split(separator);
 
 	if (folders.length >= 2) {
 	    final var last = ArrayUtils.subarray(folders, folders.length - 2, folders.length);
@@ -111,7 +116,7 @@ public class ExamService {
     private Question loadQuestion(final String questionName, final String data) {
 
 	// read question number
-	final var number = questionName.replaceAll("[^0-9]", "");
+	final var number = questionName.replaceAll("\\D", "");
 
 	// read the question
 	final var value = readQuestion(data);
@@ -138,7 +143,7 @@ public class ExamService {
 
     private List<String> readCorrectOptions(final String data) {
 
-	final var explanation = RegExUtils.removeAll(substringBetween(data, "Answer(s)", "\n"), "[,and\\s+]");
+	final var explanation = RegExUtils.removeAll(substringBetween(data, ANSWER_MSG, "\n"), "[,and\\s+]");
 
 	if (Objects.isNull(explanation)) {
 	    throw new IllegalArgumentException("Error on read data: " + data);
@@ -161,7 +166,7 @@ public class ExamService {
 
 	final var dataTemp1 = replace(data, readQuestion(data), StringUtils.EMPTY);
 
-	final var dataTemp2 = substringBefore(dataTemp1, "Answer(s)");
+	final var dataTemp2 = substringBefore(dataTemp1, ANSWER_MSG);
 
 	final var answers = new HashMap<String, String>();
 
@@ -193,7 +198,7 @@ public class ExamService {
 
     private String readExplanation(final String data) {
 
-	final var explanationTemp = substringAfter(data, "Answer(s)");
+	final var explanationTemp = substringAfter(data, ANSWER_MSG);
 
 	return substringAfter(explanationTemp, "\n");
     }

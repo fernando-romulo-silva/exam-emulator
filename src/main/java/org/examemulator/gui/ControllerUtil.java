@@ -43,7 +43,7 @@ import org.examemulator.domain.Exam;
 import org.examemulator.domain.Question;
 import org.examemulator.gui.components.WrapLayout;
 
-class ControllerUtil {
+public class ControllerUtil {
 
     private static final int SIXTY_VALUE = 60;
 
@@ -52,20 +52,18 @@ class ControllerUtil {
     public static final int MILLISECOND = 1000;
 
     @FunctionalInterface
-    static interface Action {
+    public static interface Action {
 	void execute();
     }
 
-    static JComponent createTextToShow(final String text) {
+    public static JComponent createTextToShow(final String text) {
 	final var textArea = new JTextArea();
 	textArea.setText(text);
 	textArea.setEditable(false);
-	textArea.setFont(textArea.getFont().deriveFont(16f));
 	textArea.setLineWrap(true);
 	textArea.setWrapStyleWord(true);
 	textArea.setFont(DEFAULT_FONT);
 
-	final var jScrollPane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 //	jScrollPane.scrollRectToVisible(new Rectangle(0, 0, 1, 1));
 
 //	SwingUtilities.invokeLater(new Runnable() {
@@ -75,31 +73,29 @@ class ControllerUtil {
 //	    }
 //	});
 
-	return jScrollPane;
+	return new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     }
 
-    static JComponent createTextOpaqueToShow(final String text) {
+    public static JComponent createTextOpaqueToShow(final String text) {
 	final var textArea = new JTextArea(text);
 	textArea.setBorder(new EmptyBorder(0, 0, 0, 0));
-	textArea.setFont(textArea.getFont().deriveFont(16f));
 	textArea.setOpaque(false);
 	textArea.setEditable(false);
 	textArea.setFont(DEFAULT_FONT);
 //	textArea.setLineWrap(true);
 
 //	final var scrollPane = new JScrollPane(textArea);
-	final var scrollPane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 //	scrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
 //	scrollPane.getViewport().setOpaque(false);
 //	scrollPane.setOpaque(false);	
 
-	return textArea;
+	return new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     }
 
-    static ActionListener createTimerAction(final Integer duration, final JLabel jlabel, final Action action) {
+    public static ActionListener createTimerAction(final Integer duration, final JLabel jlabel, final Action action) {
 	return new ActionListener() {
 
-	    private long time = duration * MILLISECOND * SIXTY_VALUE;
+	    private long time = (long) duration * MILLISECOND * SIXTY_VALUE;
 
 	    public void actionPerformed(final ActionEvent e) {
 
@@ -132,13 +128,13 @@ class ControllerUtil {
 	    
 	    Object value = UIManager.get(key);
 	    
-	    if (value != null && value instanceof Font) {
+	    if (value instanceof Font) {
 		UIManager.put(key, f);
 	    }
 	}
     }
 
-    static JPanel createDiscreteOptions(final Question question) {
+    public static JPanel createDiscreteOptions(final Question question) {
 	final var optionsQuestionPanel = new JPanel();
 	optionsQuestionPanel.setLayout(new BorderLayout());
 
@@ -208,7 +204,7 @@ class ControllerUtil {
 	return optionsQuestionPanel;
     }
 
-    static JPanel createIndiscreteOptions(final Question question) {
+    public static JPanel createIndiscreteOptions(final Question question) {
 
 	final var optionsQuestionPanel = new JPanel();
 	optionsQuestionPanel.setBorder(BorderFactory.createTitledBorder("Options"));
@@ -282,7 +278,7 @@ class ControllerUtil {
 	}
     }
 
-    static String getStatistic(final Exam exam) {
+    public static String getStatistic(final Exam exam) {
 
 	final var qtyTotal = exam.getQuestions().stream() //
 			.count();
@@ -336,7 +332,7 @@ class ControllerUtil {
 	);
     }
 
-    static String extractedOptions(final String msg, final List<String> list) {
+    public static String extractedOptions(final String msg, final List<String> list) {
 
 	final String joined;
 	if (list.isEmpty()) {
