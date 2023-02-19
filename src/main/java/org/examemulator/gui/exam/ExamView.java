@@ -2,6 +2,7 @@ package org.examemulator.gui.exam;
 
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.FlowLayout.LEFT;
+import static javax.swing.BorderFactory.createTitledBorder;
 import static javax.swing.BoxLayout.Y_AXIS;
 import static javax.swing.border.EtchedBorder.LOWERED;
 
@@ -47,7 +48,7 @@ class ExamView extends JFrame {
     RangeSlider rangeQuestions;
 
     public ExamView() {
-	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	setDefaultCloseOperation(EXIT_ON_CLOSE);
 	setBounds(100, 100, 774, 720);
 
 	// -------------------------------------------------------------------------------------------
@@ -79,6 +80,7 @@ class ExamView extends JFrame {
 	examPanel = new JPanel();
 	examPanel.setBorder(new EtchedBorder(LOWERED, null, null));
 	examPanel.setLayout(new BoxLayout(examPanel, Y_AXIS));
+	examPanel.setBorder(createTitledBorder("No Exam"));
 	contentPane.add(examPanel);
 
 	final var examControlPanel1 = new JPanel();
@@ -103,10 +105,11 @@ class ExamView extends JFrame {
 	lblMode.setBorder(new EtchedBorder(LOWERED, null, null));
 	examControlPanel1.add(lblMode);
 
-	cbMode = new JComboBox<String>();
+	cbMode = new JComboBox<>();
 	cbMode.setEnabled(false);
 	cbMode.addItem("Practice");
 	cbMode.addItem("Exam");
+	cbMode.addItem("Study");
 
 	cbMode.setSize(200, cbMode.getPreferredSize().height);
 	examControlPanel1.add(cbMode);

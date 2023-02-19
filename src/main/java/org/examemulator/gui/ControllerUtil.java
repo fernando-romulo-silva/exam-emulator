@@ -95,7 +95,7 @@ public class ControllerUtil {
     public static ActionListener createTimerAction(final Integer duration, final JLabel jlabel, final Action action) {
 	return new ActionListener() {
 
-	    private long time = duration * MILLISECOND * SIXTY_VALUE;
+	    private long time = (long) duration * MILLISECOND * SIXTY_VALUE;
 
 	    public void actionPerformed(final ActionEvent e) {
 
@@ -128,7 +128,7 @@ public class ControllerUtil {
 	    
 	    Object value = UIManager.get(key);
 	    
-	    if (value != null && value instanceof Font) {
+	    if (value instanceof Font) {
 		UIManager.put(key, f);
 	    }
 	}

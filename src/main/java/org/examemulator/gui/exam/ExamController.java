@@ -37,25 +37,32 @@ import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import org.apache.commons.lang3.StringUtils;
 import org.examemulator.domain.Exam;
 import org.examemulator.domain.ExamStatus;
+import org.examemulator.domain.Option;
 import org.examemulator.domain.Question;
 import org.examemulator.domain.QuestionType;
 import org.examemulator.gui.components.RangeSlider;
 import org.examemulator.gui.statitics.StatiticsController;
 import org.examemulator.service.ExamService;
+import org.slf4j.Logger;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+@ApplicationScoped
 public class ExamController {
 
     private final List<QuestionType> discreteList = List.of(DOMC, DOSC);
 
     private final MouseAdapter questionLabelListener = new MouseAdapter() {
 
+	@Override
 	public void mouseClicked(final MouseEvent event) {
 	    final var labelEvent = (JLabel) event.getSource();
 	    final var text = labelEvent.getText();
@@ -67,10 +74,13 @@ public class ExamController {
 	}
     };
 
-    private ExamView view;
+    private final ExamView view;
 
-    @Inject
-    private ExamService service;
+    private final ExamService service;
+
+    private final Logger logger;
+    
+    private final StatiticsController statiticsController;
 
     private Exam exam;
 
@@ -80,20 +90,42 @@ public class ExamController {
 
     private Timer timer;
 
-    public ExamController() {
+    @Inject
+    ExamController(
+		    final ExamGui gui, 
+		    final ExamService service, 
+		    final StatiticsController statiticsController,
+		    final Logger logger) {
 	super();
-	
-	service = new ExamService();
-	view = new ExamView();
-	view.examPanel.setBorder(BorderFactory.createTitledBorder("No Exam"));
+	this.view = gui.getView();
+	this.service = service;
+	this.statiticsController = statiticsController;
+	this.logger = logger;
+    }
 
+    @PostConstruct
+    void init() {
 	creatButtonActions();
 
 	view.btnStart.setEnabled(false);
-	view.revalidate();
-	view.repaint();
-	view.setVisible(true);
+
     }
+
+    public void show() {
+	final var name = "ExamController";
+	SwingUtilities.invokeLater(() -> {
+	    
+	    logger.info("starting swing-event: {}", name);
+	    
+	    view.revalidate();
+	    view.repaint();
+	    view.setVisible(true);
+	    
+	    logger.info("finished swing-event: {}", name);
+	});
+    }
+
+    // =================================================================================================================
 
     private void creatButtonActions() {
 
@@ -140,7 +172,7 @@ public class ExamController {
 	    }
 
 	    timer = null;
-	    
+
 	    if (exam.isPracticeMode()) {
 		view.btnCheckAnswer.setVisible(true);
 		view.lblDuration.setVisible(false);
@@ -162,8 +194,8 @@ public class ExamController {
 
 	view.btnFinish.addActionListener(event -> {
 
-	    exam.finish(); 
-	    
+	    exam.finish();
+
 	    if (Objects.nonNull(timer)) {
 		timer.stop();
 	    }
@@ -184,9 +216,7 @@ public class ExamController {
 	    view.questionInternPanel.repaint();
 	});
 
-	view.btnStatistics.addActionListener(event -> {
-	    new StatiticsController(view, exam);
-	});
+	view.btnStatistics.addActionListener(event -> statiticsController.show(exam, view));
 
 	view.btnNext.addActionListener(event -> {
 	    nextQuestion();
@@ -263,7 +293,7 @@ public class ExamController {
 	    if (discreteList.contains(selectedQuestion.getType())) {
 		vs = "\n\n" + selectedQuestion.getOptions().stream() //
 				.filter(option -> selectedQuestion.getCorrectOptions().contains(option.getId())) //
-				.map(option -> option.getText()) //
+				.map(Option::getText) //
 				.collect(Collectors.joining("\n"));
 	    } else {
 		vs = "";
@@ -308,7 +338,7 @@ public class ExamController {
 	view.btnNext.setEnabled(hasNextQuestion());
     }
 
-    public void nextQuestion() {
+    private void nextQuestion() {
 
 	final var questions = exam.getQuestions();
 
@@ -322,7 +352,7 @@ public class ExamController {
 	}
     }
 
-    public boolean hasNextQuestion() {
+    private boolean hasNextQuestion() {
 	final var questions = exam.getQuestions();
 
 	final var currentIndex = questions.indexOf(selectedQuestion);
@@ -330,7 +360,7 @@ public class ExamController {
 	return iterator.hasNext();
     }
 
-    public Question previousQuestion() {
+    private Question previousQuestion() {
 
 	final var questions = exam.getQuestions();
 
@@ -347,7 +377,7 @@ public class ExamController {
 	return selectedQuestion;
     }
 
-    public boolean hasPreviousQuestion() {
+    private boolean hasPreviousQuestion() {
 	final var questions = exam.getQuestions();
 
 	final var currentIndex = questions.indexOf(selectedQuestion);
@@ -361,7 +391,7 @@ public class ExamController {
 			.findFirst();
 
 	if (selectedQuestion.isAnswered() && component.isPresent() && component.get() instanceof JLabel label) {
-	    
+
 	    if (selectedQuestion.isMarked()) {
 		label.setForeground(Color.ORANGE);
 	    } else {
@@ -379,7 +409,7 @@ public class ExamController {
 	panelQuestionPanel.add(createTextToShow("\n" + selectedQuestion.getValue() + "\n"));
 	panelQuestionPanel.revalidate();
 	panelQuestionPanel.repaint();
-	
+
 	final var groupOptionsQuestionPanel = new JPanel(new BorderLayout());
 
 	if (selectedQuestion.isAnswered() && discreteList.contains(selectedQuestion.getType())) {
@@ -400,10 +430,6 @@ public class ExamController {
 
 	view.questionInternPanel.revalidate();
 	view.questionInternPanel.repaint();
-	
-//	view.validate();
-//	view.repaint();
-//	view.pack();
     }
 
     private void loadPanelQuestions() {

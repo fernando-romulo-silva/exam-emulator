@@ -10,8 +10,7 @@ import static org.examemulator.gui.ControllerUtil.createTextToShow;
 import static org.examemulator.gui.ControllerUtil.extractedOptions;
 import static org.examemulator.gui.ControllerUtil.getStatistic;
 
-import java.awt.Dialog;
-import java.awt.Window;
+import java.awt.Component;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -26,16 +25,20 @@ import javax.swing.JLabel;
 import org.examemulator.domain.Exam;
 import org.examemulator.domain.Question;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
+@ApplicationScoped
 public class StatiticsController {
 
     private final StatiticsView view;
-
-    private final Exam exam;
 
     private final List<Question> questions = new ArrayList<>();
 
     private final MouseAdapter questionLabelListener = new MouseAdapter() {
 
+	@Override
 	public void mouseClicked(final MouseEvent event) {
 	    final var labelEvent = (JLabel) event.getSource();
 	    final var text = labelEvent.getText();
@@ -52,18 +55,17 @@ public class StatiticsController {
 	loadPanelQuestion();
     };
 
+    private Exam exam;
+
     private Question selectedQuestion;
 
-    public StatiticsController(final Window owner, final Exam exam) {
+    @Inject
+    StatiticsController(final StatiticsGui gui) {
+	this.view = gui.getView();
+    }
 
-	this.exam = exam;
-	view = new StatiticsView(owner, "Statistic Exam", Dialog.ModalityType.DOCUMENT_MODAL);
-
-	questions.addAll(exam.getQuestions());
-	selectFirstQuestion();
-
-	view.lblStatistic.setText(getStatistic(exam));
-
+    @PostConstruct
+    void init() {
 	view.btnNext.addActionListener(event -> {
 	    nextQuestion();
 	    loadPanelQuestion();
@@ -77,14 +79,30 @@ public class StatiticsController {
 	view.chckbxCorrects.addItemListener(itemListener);
 	view.chckbxIncorrects.addItemListener(itemListener);
 	view.chckbxMarked.addItemListener(itemListener);
+    }
 
+    public void show(final Exam exam, final Component owner) {
+	this.exam = exam;
+	view.lblStatistic.setText(getStatistic(exam));
+
+	questions.clear();
+	questions.addAll(exam.getQuestions());
+
+	selectFirstQuestion();
 	loadPanelQuestion();
 	loadPanelQuestions();
-
+	
+	view.chckbxMarked.setSelected(false);
+	view.chckbxIncorrects.setSelected(true);
+	view.chckbxCorrects.setSelected(true);
+	
+	view.setLocationRelativeTo(owner);
 	view.setVisible(true);
     }
 
-    void loadPanelQuestion() {
+    // =======================================================================================================================================
+
+    private void loadPanelQuestion() {
 
 	final var correctOptions = extractedOptions("Correct Answer(s): ", selectedQuestion.getCorrectOptions());
 
@@ -129,7 +147,7 @@ public class StatiticsController {
 	if (showCorrect) {
 	    final var questionsCorrects = exam.getQuestions() //
 			    .stream() //
-			    .filter(question -> question.isCorrect()) //
+			    .filter(Question::isCorrect) //
 			    .toList();
 
 	    questionsTemp.addAll(questionsCorrects);
@@ -149,7 +167,7 @@ public class StatiticsController {
 	if (showMarked) {
 	    final var questionsMarked = questionsTemp //
 			    .stream() //
-			    .filter(question -> question.isMarked()) //
+			    .filter(Question::isMarked) //
 			    .toList();
 
 	    questionsTemp.clear();

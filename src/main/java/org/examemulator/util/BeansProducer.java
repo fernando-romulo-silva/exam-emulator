@@ -8,7 +8,7 @@ import jakarta.enterprise.inject.Produces;
 import jakarta.enterprise.inject.spi.InjectionPoint;
 
 @ApplicationScoped
-public class LoggerProducer {
+public class BeansProducer {
 
     @Produces
     public Logger producer(final InjectionPoint ip) {

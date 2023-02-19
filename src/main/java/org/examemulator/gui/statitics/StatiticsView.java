@@ -8,7 +8,6 @@ import static javax.swing.BoxLayout.Y_AXIS;
 import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.FlowLayout;
-import java.awt.Window;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -29,17 +28,19 @@ class StatiticsView extends JDialog {
     JCheckBox chckbxCorrects, chckbxIncorrects, chckbxMarked;
 
     JLabel lblStatistic;
-    
+
     JButton btnNext, btnPrevious;
-    
-   public StatiticsView(final Window owner, final String title, final Dialog.ModalityType modalityType) {
-	super(owner, title, modalityType);
-	setSize(600, 500);
-	setLocationRelativeTo(owner);
+
+    StatiticsView() {
+	super();
 	
+	setSize(600, 500);
+	setTitle("Statistic Exam");
+	setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
+
 	final var dialogContainer = getContentPane();
 	dialogContainer.setLayout(new BorderLayout());
-	
+
 	pMain = new JPanel();
 	pMain.setLayout(new BoxLayout(pMain, Y_AXIS));
 
@@ -58,11 +59,11 @@ class StatiticsView extends JDialog {
 
 	final var panelControl = new JPanel(new FlowLayout(LEFT, 5, 5));
 	pGroup.add(panelControl);
-	
+
 	btnPrevious = new JButton("Previous");
 	btnPrevious.setEnabled(false);
 	panelControl.add(btnPrevious);
-	
+
 	btnNext = new JButton("Next");
 	panelControl.add(btnNext);
 
@@ -83,7 +84,7 @@ class StatiticsView extends JDialog {
 	pQuestion = new JPanel();
 	pQuestion.setLayout(new BorderLayout(0, 0));
 	pMain.add(pQuestion);
-	
+
 	final var okButton = new JButton("Ok");
 	okButton.addActionListener(okEvent -> setVisible(false));
 
