@@ -13,6 +13,11 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.collections.impl.utility.ListIterate;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
 public class Question implements Comparable<Question> {
 
     private static final List<String> WORDS_ALL = List.of( //
@@ -28,6 +33,9 @@ public class Question implements Comparable<Question> {
 
     private static final List<String> WORDS_ABOVE = List.of("Both the above" , "Both of the above");
 
+    @Id
+    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private final String id;
 
     private final String value;
