@@ -6,7 +6,7 @@ import static java.awt.Color.ORANGE;
 import static java.awt.Color.RED;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.StringUtils.leftPad;
-import static org.examemulator.gui.ControllerUtil.createTextToShow;
+import static org.examemulator.gui.ControllerUtil.createScrollTextToShow;
 import static org.examemulator.gui.ControllerUtil.extractedOptions;
 import static org.examemulator.gui.ControllerUtil.getStatistic;
 
@@ -127,7 +127,7 @@ public class StatiticsController {
 	view.btnNext.setEnabled(hasNextQuestion());
 
 	view.pQuestion.removeAll();
-	view.pQuestion.add(createTextToShow(txt), CENTER);
+	view.pQuestion.add(createScrollTextToShow(txt), CENTER);
 	view.pQuestion.setBorder(BorderFactory.createTitledBorder(pQuestionLabel));
 	view.pQuestion.revalidate();
 	view.pQuestion.repaint();
