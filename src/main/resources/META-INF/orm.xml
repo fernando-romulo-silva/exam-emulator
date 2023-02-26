@@ -15,7 +15,7 @@
     <package>examples.model</package>
 
     <named-query name="Employee.findAll">
-        <query>SELECT e FROM Employee e</query>
+        <query>SELECT q FROM Question q</query>
     </named-query>
 
 </entity-mappings>

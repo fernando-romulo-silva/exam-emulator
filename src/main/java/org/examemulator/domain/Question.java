@@ -14,10 +14,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.collections.impl.utility.ListIterate;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+@Entity
 public class Question implements Comparable<Question> {
 
     private static final List<String> WORDS_ALL = List.of( //
@@ -35,9 +37,11 @@ public class Question implements Comparable<Question> {
 
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private final String id;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id;
 
+    private final String name;
+    
     private final String value;
 
     private final String explanation;
@@ -58,7 +62,7 @@ public class Question implements Comparable<Question> {
 
     // ------------------------------------------------------------------------------
     private Question(final Builder builder) {
-	this.id = builder.id;
+	this.name = builder.name;
 	this.value = builder.value;
 	this.explanation = builder.explanation;
 	this.order = builder.order;
@@ -265,8 +269,8 @@ public class Question implements Comparable<Question> {
 
     public static final class Builder {
 
-	public String id;
-
+	public String name;
+	
 	public String value;
 
 	public String explanation;
@@ -294,7 +298,7 @@ public class Question implements Comparable<Question> {
 	}
 
 	private boolean checkParams() {
-	    return nonNull(id) //
+	    return nonNull(name) //
 			    && nonNull(value) //
 			    && nonNull(explanation) //
 			    && nonNull(order);
