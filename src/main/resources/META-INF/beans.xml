@@ -3,4 +3,11 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee https://jakarta.ee/xml/ns/jakartaee/beans_3_0.xsd"
         bean-discovery-mode="annotated">
+        
+    <!-- @session don't work on bean-discovery-mode annoted  -->   
+        
+	<interceptors>
+        <class>org.examemulator.util.interceptor.InterceptorTransactional</class>
+    </interceptors>
+    
 </beans>
