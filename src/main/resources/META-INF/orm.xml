@@ -4,18 +4,8 @@
              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/orm/orm_3_1.xsd"
              version="3.1">
 
-    <persistence-unit-metadata>
-        <xml-mapping-metadata-complete/>
-        <persistence-unit-defaults>
-            <access>FIELD</access>
-            <cascade-persist/>
-        </persistence-unit-defaults>
-    </persistence-unit-metadata>
-    
-    <package>examples.model</package>
-
-    <named-query name="Employee.findAll">
-        <query>SELECT q FROM Question q</query>
-    </named-query>
+		<named-query name="ExamGroup.findAll">
+			<query>SELECT e FROM ExamGroup e</query>
+		</named-query>
 
 </entity-mappings>

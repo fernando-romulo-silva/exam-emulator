@@ -1,6 +1,8 @@
 package org.examemulator;
 
+import org.examemulator.domain.ExamGroup;
 import org.examemulator.gui.exam.ExamController;
+import org.examemulator.service.ExamGroupService;
 
 import jakarta.enterprise.inject.se.SeContainerInitializer;
 
@@ -8,6 +10,10 @@ public class Main {
     
     public static void main(final String... args) {
 
+	execute01();
+    }
+
+    static void executeApplication() {
 	final var container = SeContainerInitializer.newInstance().initialize();
 
 //	   final var beanManager = container.getBeanManager();
@@ -25,5 +31,15 @@ public class Main {
 	    }
 	    
 	}));
+    }
+    
+    static void execute01() {
+	final var container = SeContainerInitializer.newInstance().initialize();
+	
+	final var examGroup = new ExamGroup("group1", 1);
+	
+	final var examGroupService = container.select(ExamGroupService.class).get();
+	
+	examGroupService.save(examGroup);
     }
 }

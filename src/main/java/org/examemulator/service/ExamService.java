@@ -34,6 +34,7 @@ import org.examemulator.domain.Question;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
+import jakarta.transaction.Transactional.TxType;
 
 @ApplicationScoped
 public class ExamService {
@@ -132,7 +133,7 @@ public class ExamService {
 	final var explanation = readExplanation(data);
 
 	return new Question.Builder().with($ -> {
-//	    $.id = questionName;
+	    $.name = questionName;
 	    $.order = Integer.valueOf(number);
 	    $.value = value;
 	    $.options = options;
@@ -220,11 +221,5 @@ public class ExamService {
 	} catch (final IOException ex) {
 	    throw new IllegalArgumentException("Not a UTF-8 file", ex);
 	}
-    }
-    
-    @Transactional(Transactional.TxType.REQUIRED)
-    public Exam save() {
-	
-	return null;
     }
 }

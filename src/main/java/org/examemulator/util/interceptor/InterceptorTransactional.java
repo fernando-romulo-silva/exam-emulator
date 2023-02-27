@@ -28,7 +28,5 @@ public class InterceptorTransactional {
         transaction.commit();
 
         return object;
-
     }
-
 }
