@@ -14,19 +14,19 @@ import jakarta.transaction.Transactional;
 public class InterceptorTransactional {
 
     @Inject
-    private EntityManager entity;
+    private EntityManager entityManager;
 
     @AroundInvoke
     public Object contextInterceptor(final InvocationContext context) throws Exception {
 
-        final var transaction = entity.getTransaction();
+        final var transaction = entityManager.getTransaction();
 	
         transaction.begin();
         
         final var object = context.proceed();
         
         transaction.commit();
-
+        
         return object;
     }
 }
