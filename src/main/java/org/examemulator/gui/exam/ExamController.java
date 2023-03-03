@@ -11,7 +11,7 @@ import static org.examemulator.domain.QuestionType.DOSC;
 import static org.examemulator.gui.ControllerUtil.MILLISECOND;
 import static org.examemulator.gui.ControllerUtil.createDiscreteOptions;
 import static org.examemulator.gui.ControllerUtil.createIndiscreteOptions;
-import static org.examemulator.gui.ControllerUtil.createTextToShow;
+import static org.examemulator.gui.ControllerUtil.createScrollTextToShow;
 import static org.examemulator.gui.ControllerUtil.createTimerAction;
 import static org.examemulator.gui.ControllerUtil.extractedOptions;
 
@@ -303,7 +303,7 @@ public class ExamController {
 
 	    final var text = correctOptions + vs + explanation;
 
-	    dialogContainer.add(createTextToShow(text), CENTER);
+	    dialogContainer.add(createScrollTextToShow(text), CENTER);
 
 	    final var okButton = new JButton("Ok");
 	    okButton.addActionListener(okEvent -> answerDialog.setVisible(false));
@@ -406,7 +406,7 @@ public class ExamController {
 	final var panelQuestionPanel = new JPanel();
 	panelQuestionPanel.setLayout(new BoxLayout(panelQuestionPanel, Y_AXIS));
 	panelQuestionPanel.setBorder(BorderFactory.createTitledBorder("Question " + leftPad(selectedQuestion.getOrder().toString(), 2, '0')));
-	panelQuestionPanel.add(createTextToShow("\n" + selectedQuestion.getValue() + "\n"));
+	panelQuestionPanel.add(createScrollTextToShow("\n" + selectedQuestion.getValue() + "\n"));
 	panelQuestionPanel.revalidate();
 	panelQuestionPanel.repaint();
 

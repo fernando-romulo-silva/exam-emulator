@@ -1,13 +1,15 @@
 ---------------------------------------------------------
+* DataBase
+
+* Shuffle Answers
+
+* Shuffle Questions
+
 * Learning mode (question and correct answer)
 
 * Shortcuts
 
 * Automated Tests
-
-* DataBase (NoSQL?)
-
-* Jakarta CDI
 
 * Doc
 
@@ -31,7 +33,7 @@ Certification -> Exam Group -> Exam(origin) ------------> Question ----> Options
                                 |                            |
                                 |                            |----------> Concepts
                                 |
-                                |--- Exam Execution (historical)                              
+                                |---> Exam Historical                              
                                                       
                             
 --------------------------------------------------------

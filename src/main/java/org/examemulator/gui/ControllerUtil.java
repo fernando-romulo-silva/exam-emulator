@@ -56,7 +56,7 @@ public class ControllerUtil {
 	void execute();
     }
 
-    public static JComponent createTextToShow(final String text) {
+    public static JComponent createScrollTextToShow(final String text) {
 	final var textArea = new JTextArea();
 	textArea.setText(text);
 	textArea.setEditable(false);
@@ -64,32 +64,16 @@ public class ControllerUtil {
 	textArea.setWrapStyleWord(true);
 	textArea.setFont(DEFAULT_FONT);
 
-//	jScrollPane.scrollRectToVisible(new Rectangle(0, 0, 1, 1));
-
-//	SwingUtilities.invokeLater(new Runnable() {
-//	    @Override
-//	    public void run() {
-//		jScrollPane.getViewport().setViewPosition(new Point(0, 0));
-//	    }
-//	});
-
 	return new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     }
 
-    public static JComponent createTextOpaqueToShow(final String text) {
+    public static JComponent createTextToShow(final String text) {
 	final var textArea = new JTextArea(text);
 	textArea.setBorder(new EmptyBorder(0, 0, 0, 0));
 	textArea.setOpaque(false);
 	textArea.setEditable(false);
 	textArea.setFont(DEFAULT_FONT);
-//	textArea.setLineWrap(true);
-
-//	final var scrollPane = new JScrollPane(textArea);
-//	scrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
-//	scrollPane.getViewport().setOpaque(false);
-//	scrollPane.setOpaque(false);	
-
-	return new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+	return textArea;
     }
 
     public static ActionListener createTimerAction(final Integer duration, final JLabel jlabel, final Action action) {
@@ -155,7 +139,7 @@ public class ControllerUtil {
 	}
 
 	final var substringAfter = substringAfter(optionsLabels.get(0), "|");
-	optionPanel.add(createTextOpaqueToShow(substringAfter));
+	optionPanel.add(createTextToShow(substringAfter));
 
 	final var buttonYesListener = new ActionListener() {
 
@@ -178,7 +162,7 @@ public class ControllerUtil {
 		if (iterator.hasNext()) {
 		    current = optionsLabels.get(currentIndex + 1);
 
-		    optionPanel.add(createTextOpaqueToShow(substringAfter(current, "|")));
+		    optionPanel.add(createTextToShow(substringAfter(current, "|")));
 		} else {
 		    final var label = new JLabel("You finalized this question");
 		    label.setFont(DEFAULT_FONT);
