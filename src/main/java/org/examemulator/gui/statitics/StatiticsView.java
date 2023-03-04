@@ -36,7 +36,8 @@ class StatiticsView extends JDialog {
 	
 	setSize(600, 500);
 	setTitle("Statistic Exam");
-	setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
+	setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
+	setModal(true);
 
 	final var dialogContainer = getContentPane();
 	dialogContainer.setLayout(new BorderLayout());
