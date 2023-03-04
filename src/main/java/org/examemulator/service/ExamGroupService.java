@@ -14,7 +14,7 @@ public class ExamGroupService {
 
     @Inject
     private EntityManager entityManager;
-
+    
     @Transactional
     public void save(final ExamGroup examGroup) {
 
@@ -22,9 +22,6 @@ public class ExamGroupService {
     }
 
     public List<ExamGroup> getAll() {
-
 	return entityManager.createQuery("select p from ExamGroup p", ExamGroup.class).getResultList();
-
     }
-
 }
