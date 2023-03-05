@@ -5,6 +5,8 @@ import static java.awt.BorderLayout.NORTH;
 import static java.awt.FlowLayout.LEFT;
 import static java.math.RoundingMode.HALF_UP;
 import static javax.swing.BoxLayout.Y_AXIS;
+import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER;
+import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS;
 import static org.apache.commons.lang3.RegExUtils.replaceAll;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static org.apache.commons.lang3.StringUtils.leftPad;
@@ -64,7 +66,7 @@ public class ControllerUtil {
 	textArea.setWrapStyleWord(true);
 	textArea.setFont(DEFAULT_FONT);
 
-	return new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+	return new JScrollPane(textArea, VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_NEVER);
     }
 
     public static JComponent createTextToShow(final String text) {
@@ -134,8 +136,8 @@ public class ControllerUtil {
 	final var optionPanel = new JPanel(new WrapLayout(LEFT, 5, 5));
 
 	for (final var option : question.getOptions()) {
-	    final var id = option.getId();
-	    optionsLabels.add(id + "|" + option.getText());
+	    final var letter = option.getLetter();
+	    optionsLabels.add(letter + "|" + option.getText());
 	}
 
 	final var substringAfter = substringAfter(optionsLabels.get(0), "|");
@@ -211,10 +213,10 @@ public class ControllerUtil {
 
 	    for (final var questionOption : question.getOptions()) {
 
-		final var radio = new JRadioButton(treatOptionText(questionOption.getId(), questionOption.getText()));
+		final var radio = new JRadioButton(treatOptionText(questionOption.getLetter(), questionOption.getText()));
 		radio.setFont(DEFAULT_FONT);
 
-		if (question.getAnswers().contains(questionOption.getId())) {
+		if (question.getAnswers().contains(questionOption.getLetter())) {
 		    radio.setSelected(true);
 		}
 
@@ -245,10 +247,10 @@ public class ControllerUtil {
 
 	    for (final var questionOption : question.getOptions()) {
 
-		final var check = new JCheckBox(treatOptionText(questionOption.getId(), questionOption.getText()));
+		final var check = new JCheckBox(treatOptionText(questionOption.getLetter(), questionOption.getText()));
 		check.setFont(DEFAULT_FONT);
 
-		if (question.getAnswers().contains(questionOption.getId())) {
+		if (question.getAnswers().contains(questionOption.getLetter())) {
 		    check.setSelected(true);
 		}
 

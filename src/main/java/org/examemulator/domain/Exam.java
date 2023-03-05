@@ -40,16 +40,6 @@ public class Exam {
 
     // -------------------------------
 
-    public Exam(final String name) {
-	super();
-	this.id = UUID.randomUUID().toString();
-	this.name = name;
-	this.randomOrder = false;
-	this.practiceMode = true;
-	this.minScorePercent = BigDecimal.valueOf(70);
-	this.discretPercent = BigDecimal.ZERO;
-    }
-
     private Exam(final Builder builder) {
 	super();
 	this.id = UUID.randomUUID().toString();

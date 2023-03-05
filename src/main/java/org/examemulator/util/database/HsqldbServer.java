@@ -8,40 +8,38 @@ import java.net.ServerSocket;
 
 import org.hsqldb.Server;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-
-@ApplicationScoped
-public class HsqldbServer {
+public final class HsqldbServer {
 
     public static final String DATABASE_NAME = "examEmulator";
 
     public static final int HSQLDB_PORT = 9137;
 
     public static final String HSQLDB_URL = "jdbc:hsqldb:hsql://localhost:" + HSQLDB_PORT + "/" + DATABASE_NAME;
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(HsqldbServer.class);
 
-    private final Server hsqlServer;
-
-    private final Logger logger;
-
-    @Inject
-    HsqldbServer(final Logger logger) {
-	super();
-	this.logger = logger;
-	this.hsqlServer = new Server();
+    private static final Server SERVER = new Server();
+    
+    private HsqldbServer() {
+	throw new UnsupportedOperationException("You can't instantiate this class!");
     }
 
-    public void stop() {
+    public static void stop() {
+	
+	if (SERVER.isNotRunning()) {
+	   return;
+	}
 
-	hsqlServer.shutdownCatalogs(CLOSEMODE_IMMEDIATELY);
-	hsqlServer.stop();
-	hsqlServer.shutdown();
+	SERVER.shutdownCatalogs(CLOSEMODE_IMMEDIATELY);
+	SERVER.stop();
+	SERVER.shutdown();
 
-	logger.info("HSqlDB Server stopped");
+	LOGGER.info("HSqlDB Server stopped");
     }
 
-    public void start() {
+    public static void start() {
 
 	try (final var serverSocket = new ServerSocket(HSQLDB_PORT)) {
 	    serverSocket.setReuseAddress(true);
@@ -49,18 +47,18 @@ public class HsqldbServer {
 	    throw new IllegalArgumentException("Server port isn't open!");
 	}
 
-	hsqlServer.setSilent(true);
-	hsqlServer.setTrace(false);
+	SERVER.setSilent(true);
+	SERVER.setTrace(false);
 
 	final var dataBasesFolder = "database";
 
-	hsqlServer.setPort(HSQLDB_PORT);
-	hsqlServer.setDatabaseName(0, DATABASE_NAME);
-	hsqlServer.setDatabasePath(0, "file:" + dataBasesFolder + separator + DATABASE_NAME);
+	SERVER.setPort(HSQLDB_PORT);
+	SERVER.setDatabaseName(0, DATABASE_NAME);
+	SERVER.setDatabasePath(0, "file:" + dataBasesFolder + separator + DATABASE_NAME);
 
-	hsqlServer.start();
+	SERVER.start();
 
-	logger.info("HSqlDB Server Started");
+	LOGGER.info("HSqlDB Server Started");
     }
 
 }

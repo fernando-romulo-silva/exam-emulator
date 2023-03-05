@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -33,13 +34,15 @@ import org.examemulator.domain.Option;
 import org.examemulator.domain.Question;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.transaction.Transactional;
-import jakarta.transaction.Transactional.TxType;
 
 @ApplicationScoped
 public class ExamService {
 
     private static final String ANSWER_MSG = "Answer(s)";
+    
+    private static AtomicLong idOptions = new AtomicLong(1);
+    
+    private static AtomicLong idQuestion = new AtomicLong(1);
 
     public Exam createExam( //
 		    final String dir, //
@@ -79,6 +82,7 @@ public class ExamService {
 	    try (final var lines = Files.lines(questionPath)) {
 
 		exam.addQuestion(loadQuestion(questionFile, lines.collect(joining("\n"))));
+		
 	    } catch (final IOException ex) {
 		throw new IllegalStateException(ex);
 	    }
@@ -123,21 +127,21 @@ public class ExamService {
 	// read the question
 	final var value = readQuestion(data);
 
-	// read the options
-	final var options = readOptions(data);
-
 	// read the correct answers
 	final var correctOptions = readCorrectOptions(data);
+	
+	// read the options
+	final var options = readOptions(data, correctOptions);
 
 	// read the explanation
 	final var explanation = readExplanation(data);
 
 	return new Question.Builder().with($ -> {
+	    $.id = idQuestion.getAndIncrement();
 	    $.name = questionName;
 	    $.order = Integer.valueOf(number);
 	    $.value = value;
 	    $.options = options;
-	    $.correctOptions = correctOptions;
 	    $.explanation = explanation;
 	    $.discrete = false;
 	}).build();
@@ -164,7 +168,7 @@ public class ExamService {
 	return trim(substringBefore(dataTemp, "A)"));
     }
 
-    private List<Option> readOptions(final String data) {
+    private List<Option> readOptions(final String data, final List<String> correctOptions) {
 
 	final var dataTemp1 = replace(data, readQuestion(data), StringUtils.EMPTY);
 
@@ -194,10 +198,10 @@ public class ExamService {
 
 	return answers.entrySet()//
 			.stream() //
-			.map(e -> new Option(e.getKey(), e.getValue())) //
+			.map(e -> new Option(idOptions.getAndIncrement(), e.getKey(), e.getValue(), correctOptions.contains(e.getKey()))) //
 			.toList();
     }
-
+    
     private String readExplanation(final String data) {
 
 	final var explanationTemp = substringAfter(data, ANSWER_MSG);

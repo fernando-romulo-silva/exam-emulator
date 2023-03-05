@@ -6,8 +6,8 @@ import static java.awt.BorderLayout.SOUTH;
 import static javax.swing.BoxLayout.Y_AXIS;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static org.apache.commons.lang3.StringUtils.leftPad;
-import static org.examemulator.domain.QuestionType.DOMC;
-import static org.examemulator.domain.QuestionType.DOSC;
+import static org.examemulator.domain.QuestionType.DISCRETE_MULTIPLE_CHOICE;
+import static org.examemulator.domain.QuestionType.DISCRETE_SINGLE_CHOICE;
 import static org.examemulator.gui.ControllerUtil.MILLISECOND;
 import static org.examemulator.gui.ControllerUtil.createDiscreteOptions;
 import static org.examemulator.gui.ControllerUtil.createIndiscreteOptions;
@@ -58,7 +58,7 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class ExamController {
 
-    private final List<QuestionType> discreteList = List.of(DOMC, DOSC);
+    private final List<QuestionType> discreteList = List.of(DISCRETE_MULTIPLE_CHOICE, DISCRETE_SINGLE_CHOICE);
 
     private final MouseAdapter questionLabelListener = new MouseAdapter() {
 
@@ -292,7 +292,7 @@ public class ExamController {
 	    final String vs;
 	    if (discreteList.contains(selectedQuestion.getType())) {
 		vs = "\n\n" + selectedQuestion.getOptions().stream() //
-				.filter(option -> selectedQuestion.getCorrectOptions().contains(option.getId())) //
+				.filter(Option::isCorrect) //
 				.map(Option::getText) //
 				.collect(Collectors.joining("\n"));
 	    } else {

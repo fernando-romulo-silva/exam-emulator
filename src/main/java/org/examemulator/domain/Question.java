@@ -3,6 +3,8 @@ package org.examemulator.domain;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.collections4.CollectionUtils.isEqualCollection;
+import static org.examemulator.util.FileUtil.WORDS_ABOVE;
+import static org.examemulator.util.FileUtil.WORDS_ALL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,51 +15,65 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.collections.impl.utility.ListIterate;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "QUESTION")
 public class Question implements Comparable<Question> {
 
-    private static final List<String> WORDS_ALL = List.of( //
-		    "All of the options", //
-		    "All of the preceding options", //
-		    "All of the above", //
-		    "All of the scenarios are valid", //
-		    "All answers are true", //
-		    "All answers are valid", //
-		    "All of the options", //
-		    "All of these" //
-    );
-
-    private static final List<String> WORDS_ABOVE = List.of("Both the above" , "Both of the above");
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID", nullable = false)
     private Long id;
 
-    private final String name;
-    
-    private final String value;
+    @Column(name = "NAME")
+    private String name;
 
-    private final String explanation;
+    @Column(name = "VALUE")
+    private String value;
 
+    @Column(name = "EXPLANATION")
+    private String explanation;
+
+    @JoinColumn(name = "QUESTION_ID")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Option> options = new ArrayList<>();
 
-    private final List<String> correctOptions = new ArrayList<>();
-
+    @Column(name = "ANSWERS", nullable = false)
+    @ElementCollection(targetClass = String.class)
+    @CollectionTable(name = "QUESTION_ANSWER", joinColumns = @JoinColumn(name = "QUESTION_ID"))
     private final List<String> answers = new ArrayList<>();
+
+    @Column(name = "TYPE")
+    @Enumerated(EnumType.STRING)
+    private QuestionType type = QuestionType.UNDEFINED;
 
     private final Integer order;
 
-    private QuestionType type = QuestionType.UNDEFINED;
-
     private boolean marked;
 
-    private boolean answered;
-
     // ------------------------------------------------------------------------------
+
     private Question(final Builder builder) {
+	this.id = builder.id;
 	this.name = builder.name;
 	this.value = builder.value;
 	this.explanation = builder.explanation;
 	this.order = builder.order;
 	this.options.addAll(builder.options);
-	this.correctOptions.addAll(builder.correctOptions);
     }
 
     // ------------------------------------------------------------------------------
@@ -73,21 +89,19 @@ public class Question implements Comparable<Question> {
 	}
 
 	final var isValidOption = options.stream() //
-			.map(o -> o.getId()) //
+			.map(Option::getLetter) //
 			.noneMatch(os -> Objects.equals(os, answer));
 
 	if (isValidOption && !Objects.equals(answer, "N/A")) {
 	    final var validValues = options //
 			    .stream() //
-			    .map(o -> o.getId()) //
+			    .map(Option::getLetter) //
 			    .collect(joining(", "));
 
 	    throw new IllegalArgumentException("Invalid answer. It can be [" + validValues + "]");
 	}
 
 	answers.add(answer);
-
-	answered = !answers.isEmpty();
     }
 
     public void deselectAnswer(final String answer) {
@@ -101,8 +115,6 @@ public class Question implements Comparable<Question> {
 	}
 
 	answers.remove(answer);
-
-	answered = !answers.isEmpty();
     }
 
     public void mark(final boolean value) {
@@ -110,18 +122,21 @@ public class Question implements Comparable<Question> {
     }
 
     void defineToDiscrete(final boolean discrete) {
+
+	final var correctOptions = getCorrectOptions();
+
 	if (discrete) {
 	    if (correctOptions.size() == 1) {
-		this.type = QuestionType.DOSC;
+		this.type = QuestionType.DISCRETE_SINGLE_CHOICE;
 	    } else {
-		this.type = QuestionType.DOMC;
+		this.type = QuestionType.DISCRETE_MULTIPLE_CHOICE;
 	    }
 
 	} else {
 	    if (correctOptions.size() == 1) {
-		this.type = QuestionType.SC;
+		this.type = QuestionType.SINGLE_CHOICE;
 	    } else {
-		this.type = QuestionType.MC;
+		this.type = QuestionType.MULTIPLE_CHOICE;
 	    }
 	}
     }
@@ -149,7 +164,9 @@ public class Question implements Comparable<Question> {
     }
 
     public List<String> getCorrectOptions() {
-	return correctOptions;
+	return options.stream().filter(Option::isCorrect) //
+			.map(Option::getLetter) //
+			.toList();
     }
 
     public List<String> getAnswers() {
@@ -161,14 +178,16 @@ public class Question implements Comparable<Question> {
     }
 
     public boolean isAnswered() {
-	return answered;
+	return !answers.isEmpty();
     }
 
     public boolean isCorrect() {
 
-	if (!answered) {
+	if (!isAnswered()) {
 	    return false;
 	}
+
+	final var correctOptions = getCorrectOptions();
 
 	if (isEqualCollection(answers, correctOptions)) {
 	    return true;
@@ -185,8 +204,8 @@ public class Question implements Comparable<Question> {
 	    }
 
 	    final var remainderOptions = options.stream() //
-			    .filter(option -> !correctOptions.contains(option.getId())) //
-			    .map(Option::getId) //
+			    .filter(option -> !correctOptions.contains(option.getLetter())) //
+			    .map(Option::getLetter) //
 			    .toList();
 
 	    return isEqualCollection(answers, remainderOptions);
@@ -196,7 +215,7 @@ public class Question implements Comparable<Question> {
 
 	    final var index = ListIterate.detectIndex(options, user -> WORDS_ABOVE.contains(user.getText()));
 
-	    final var subListAbove = options.subList(0, index).stream().map(Option::getId).toList();
+	    final var subListAbove = options.subList(0, index).stream().map(Option::getLetter).toList();
 
 	    if (isEqualCollection(answers, subListAbove)) {
 		return true;
@@ -204,7 +223,7 @@ public class Question implements Comparable<Question> {
 
 	    final var subListAboveInclusive = options.subList(0, index + 1) //
 			    .stream() //
-			    .map(Option::getId) //
+			    .map(Option::getLetter) //
 			    .toList();
 
 	    return isEqualCollection(answers, subListAboveInclusive);
@@ -260,8 +279,10 @@ public class Question implements Comparable<Question> {
 
     public static final class Builder {
 
+	public Long id;
+
 	public String name;
-	
+
 	public String value;
 
 	public String explanation;
@@ -271,8 +292,6 @@ public class Question implements Comparable<Question> {
 	public Integer order;
 
 	public List<Option> options;
-
-	public List<String> correctOptions;
 
 	public Builder with(final Consumer<Builder> function) {
 	    function.accept(this);

@@ -11,8 +11,8 @@ import jakarta.persistence.EntityManagerFactory;
 @ApplicationScoped
 public class EntityManagerProducer {
 
-    @ApplicationScoped
     @Produces
+    @ApplicationScoped
     public EntityManager createEntityManager(final EntityManagerFactory entityManagerFactory) {
 	return entityManagerFactory.createEntityManager();
     }

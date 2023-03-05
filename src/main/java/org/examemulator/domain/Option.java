@@ -2,24 +2,57 @@ package org.examemulator.domain;
 
 import java.util.Objects;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "EXAM_GROUP")
 public class Option {
 
-    private String id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID", nullable = false)
+    private Long id;
+    
+    @Column(name = "LETTER")
+    private String letter;
 
+    @Column(name = "TEXT")
     private String text;
 
-    public Option(final String id, final String text) {
+    @Column(name = "CORRECT")
+    private Boolean correct = Boolean.FALSE;
+
+    Option() {
 	super();
+    }
+    
+    public Option(final Long id, final String letter, final String text, final boolean correct) {
+	this(letter, text, correct);
 	this.id = id;
-	this.text = text;
     }
 
-    public String getId() {
-	return id;
+    public Option(final String letter, final String text, final boolean correct) {
+	super();
+	this.text = text;
+	this.letter = letter;
+	this.correct = correct; 
     }
 
     public String getText() {
 	return text;
+    }
+
+    public Boolean isCorrect() {
+	return correct;
+    }
+    
+    public String getLetter() {
+        return letter;
     }
 
     @Override
@@ -50,7 +83,9 @@ public class Option {
 	final var sbToString = new StringBuilder(76);
 
 	sbToString.append("Option [id=").append(id) //
-			.append(", text=").append(text).append(']');
+			.append(", correct=").append(correct) //
+			.append(", text=").append(text) //
+			.append(']');
 
 	return sbToString.toString();
     }

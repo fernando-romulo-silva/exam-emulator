@@ -11,7 +11,7 @@ public class Main {
     
     public static void main(final String... args) {
 
-	execute01();
+	executeApplication();
     }
 
     static void executeApplication() {
@@ -19,6 +19,8 @@ public class Main {
 
 //	   final var beanManager = container.getBeanManager();
 //	   beanManager.getEvent().fire(new ExamGui.BootEvent() {});
+	
+	HsqldbServer.start();
 
 	final var examController = container.select(ExamController.class).get();
 	examController.show();
@@ -31,17 +33,17 @@ public class Main {
 		container.close();
 	    }
 	    
+	    HsqldbServer.stop();
 	}));
     }
     
     static void execute01() {
+	
+	HsqldbServer.start();
+	
 	final var container = SeContainerInitializer.newInstance().initialize();
 	
 	final var examGroup = new ExamGroup("group1", 1);
-	
-	final var hsqldbServer = container.select(HsqldbServer.class).get(); 
-	
-	hsqldbServer.start();
 	
 	final var examGroupService = container.select(ExamGroupService.class).get();
 	
@@ -49,7 +51,8 @@ public class Main {
 	
 	System.out.println(examGroupService.getAll());
 	
-	hsqldbServer.stop();
+	 HsqldbServer.stop();
+	
     }
     
     

@@ -4,13 +4,13 @@ public enum QuestionType {
     
     UNDEFINED,
 
-    SC, // Single Choice
+    SINGLE_CHOICE, // Single Choice
 
-    MC, // Multiple Choice
+    MULTIPLE_CHOICE, // Multiple Choice
 
     // ------------------------------------------------
     
-    DOSC, // Discrete Option Single Choice
+    DISCRETE_SINGLE_CHOICE, // Discrete Option Single Choice
 
-    DOMC // Discrete Option Multiple Choice
+    DISCRETE_MULTIPLE_CHOICE // Discrete Option Multiple Choice
 }

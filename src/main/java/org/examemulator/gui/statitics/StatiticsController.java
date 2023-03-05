@@ -110,7 +110,7 @@ public class StatiticsController {
 
 	final var options = selectedQuestion.getOptions() //
 			.stream() //
-			.map(option -> option.getId() + ") \n" + option.getText()) //
+			.map(option -> option.getLetter() + ") \n" + option.getText()) //
 			.collect(joining("\n\n"));
 
 	final var txt = "\n" + selectedQuestion.getValue() + "\n\n" //
