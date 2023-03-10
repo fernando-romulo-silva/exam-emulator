@@ -1,6 +1,4 @@
 ---------------------------------------------------------
-* DataBase
-
 * Shuffle Answers
 
 * Shuffle Questions
