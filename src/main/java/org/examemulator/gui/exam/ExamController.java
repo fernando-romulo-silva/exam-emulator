@@ -143,10 +143,7 @@ public class ExamController {
 
 	    final var range = new AbstractMap.SimpleEntry<Integer, Integer>(view.rangeQuestions.getValue(), view.rangeQuestions.getUpperValue());
 
-	    var practiceMode = false;
-	    if (equalsIgnoreCase("Practice", (String) view.cbMode.getSelectedItem())) {
-		practiceMode = true;
-	    }
+	    final var practiceMode = equalsIgnoreCase("Practice", (String) view.cbMode.getSelectedItem());
 
 	    exam = service.createExam(currentFolder, practiceMode, discretPercent, mimScore, range);
 
