@@ -8,7 +8,9 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -27,6 +29,10 @@ public class Exam {
     private final boolean randomOrder;
 
     private final boolean practiceMode;
+    
+    private final boolean shuffleOptions;
+    
+    private final boolean shuffleQuestions;
 
     private final List<Question> questions = new ArrayList<>();
 
@@ -48,6 +54,8 @@ public class Exam {
 	this.practiceMode = builder.practiceMode;
 	this.minScorePercent = builder.minScorePercent;
 	this.discretPercent = builder.discretPercent;
+	this.shuffleOptions = builder.shuffleOptions;
+	this.shuffleQuestions = builder.shuffleQuestions;
     }
 
     public void addQuestion(final Question question) {
@@ -60,6 +68,21 @@ public class Exam {
     }
 
     public void begin() {
+	
+	if (shuffleOptions) {
+	    questions.forEach(Question::shuffleOptions);
+	}
+	
+	if (shuffleQuestions) {
+	    Collections.shuffle(questions, new Random(questions.size()));
+
+	    int number = 1;
+
+	    for (final var question : questions) {
+		question.setOrder(number);
+		number++;
+	    }
+	}
 
 	if (status != ExamStatus.INITIAL) {
 	    throw new IllegalStateException("You can begin a exam only on Initial status!");
@@ -159,6 +182,10 @@ public class Exam {
 	public boolean randomOrder;
 
 	public boolean practiceMode;
+	
+	public boolean shuffleOptions = true;
+	    
+	public boolean shuffleQuestions = true;
 
 	public Builder with(final Consumer<Builder> function) {
 	    function.accept(this);

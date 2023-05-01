@@ -49,6 +49,8 @@ public class ExamService {
 		    final boolean practiceMode, //
 		    final BigDecimal discretPercent, //
 		    final BigDecimal minScorePercent, //
+		    final boolean shuffleQuestions,
+		    final boolean shuffleOptions,
 		    final Map.Entry<Integer, Integer> range) {
 
 	final var questionFiles = new ArrayList<String>();
@@ -71,6 +73,8 @@ public class ExamService {
 	    $.discretPercent = discretPercent;
 	    $.minScorePercent = minScorePercent;
 	    $.randomOrder = false;
+	    $.shuffleQuestions = shuffleQuestions;
+	    $.shuffleOptions = shuffleOptions;
 	}).build();
 
 	final var questionFilesRanged = questionFiles.subList(range.getKey() - 1, range.getValue());
@@ -81,7 +85,7 @@ public class ExamService {
 
 	    try (final var lines = Files.lines(questionPath)) {
 
-		exam.addQuestion(loadQuestion(questionFile, lines.collect(joining("\n"))));
+		exam.addQuestion(loadQuestion(questionFile, lines.collect(joining("\n")), true));
 		
 	    } catch (final IOException ex) {
 		throw new IllegalStateException(ex);
@@ -119,7 +123,7 @@ public class ExamService {
 	return folders[folders.length - 1];
     }
 
-    private Question loadQuestion(final String questionName, final String data) {
+    private Question loadQuestion(final String questionName, final String data, final boolean shuffleAnswers) {
 
 	// read question number
 	final var number = questionName.replaceAll("\\D", "");
@@ -132,7 +136,7 @@ public class ExamService {
 	
 	// read the options
 	final var options = readOptions(data, correctOptions);
-
+	
 	// read the explanation
 	final var explanation = readExplanation(data);
 

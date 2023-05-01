@@ -4,6 +4,7 @@ import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.NORTH;
 import static java.awt.BorderLayout.SOUTH;
 import static javax.swing.BoxLayout.Y_AXIS;
+import static javax.swing.JFileChooser.DIRECTORIES_ONLY;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static org.apache.commons.lang3.StringUtils.leftPad;
 import static org.examemulator.domain.QuestionType.DISCRETE_MULTIPLE_CHOICE;
@@ -60,20 +61,6 @@ public class ExamController {
 
     private final List<QuestionType> discreteList = List.of(DISCRETE_MULTIPLE_CHOICE, DISCRETE_SINGLE_CHOICE);
 
-    private final MouseAdapter questionLabelListener = new MouseAdapter() {
-
-	@Override
-	public void mouseClicked(final MouseEvent event) {
-	    final var labelEvent = (JLabel) event.getSource();
-	    final var text = labelEvent.getText();
-
-	    if (Objects.nonNull(exam) && exam.getStatus() == ExamStatus.RUNNING) {
-		selectQuestion(Integer.valueOf(text));
-		loadPanelQuestion();
-	    }
-	}
-    };
-
     private final ExamView view;
 
     private final ExamService service;
@@ -108,7 +95,6 @@ public class ExamController {
 	creatButtonActions();
 
 	view.btnStart.setEnabled(false);
-
     }
 
     public void show() {
@@ -144,8 +130,11 @@ public class ExamController {
 	    final var range = new AbstractMap.SimpleEntry<Integer, Integer>(view.rangeQuestions.getValue(), view.rangeQuestions.getUpperValue());
 
 	    final var practiceMode = equalsIgnoreCase("Practice", (String) view.cbMode.getSelectedItem());
-
-	    exam = service.createExam(currentFolder, practiceMode, discretPercent, mimScore, range);
+	    
+	    final var shuffleQuestions = view.chckbxShuffleQuestions.isSelected();
+	    final var shuffleOptions = view.chckbxShuffleOptions.isSelected();
+	    
+	    exam = service.createExam(currentFolder, practiceMode, discretPercent, mimScore, shuffleQuestions, shuffleOptions, range);
 
 	    view.btnStart.setEnabled(false);
 	    view.btnStatistics.setEnabled(false);
@@ -156,6 +145,9 @@ public class ExamController {
 	    view.cbMode.setEnabled(false);
 	    view.rangeQuestions.setEnabled(false);
 	    view.spinnerTimeDuration.setEnabled(false);
+	    view.chckbxShuffleQuestions.setEnabled(false);
+	    view.chckbxShuffleOptions.setEnabled(false);
+
 
 	    view.chckbxMark.setEnabled(true);
 	    view.btnFinish.setEnabled(true);
@@ -205,6 +197,8 @@ public class ExamController {
 	    view.btnPrevious.setEnabled(false);
 	    view.btnNext.setEnabled(false);
 	    view.chckbxMark.setEnabled(false);
+	    view.chckbxShuffleQuestions.setEnabled(false);
+	    view.chckbxShuffleOptions.setEnabled(false);
 
 	    view.btnStatistics.setEnabled(true);
 
@@ -230,7 +224,7 @@ public class ExamController {
 	    final var chooser = new JFileChooser();
 	    chooser.setCurrentDirectory(new File("."));
 	    chooser.setDialogTitle("select an exam folder");
-	    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+	    chooser.setFileSelectionMode(DIRECTORIES_ONLY);
 	    chooser.setAcceptAllFileFilterUsed(false);
 	    chooser.showOpenDialog(view);
 
@@ -254,6 +248,8 @@ public class ExamController {
 		view.cbMode.setEnabled(true);
 		view.spinnerTimeDuration.setEnabled(true);
 		view.rangeQuestions.setEnabled(true);
+		view.chckbxShuffleQuestions.setEnabled(true);
+		view.chckbxShuffleOptions.setEnabled(true);
 
 		view.rangeQuestions.setMinimum(1);
 		view.rangeQuestions.setMaximum(service.getQtyFiles(currentFolder));
@@ -433,6 +429,20 @@ public class ExamController {
 	view.pQuestions.removeAll();
 	view.pQuestions.revalidate();
 	view.pQuestions.repaint();
+
+	final var questionLabelListener = new MouseAdapter() {
+
+	    @Override
+	    public void mouseClicked(final MouseEvent event) {
+		final var labelEvent = (JLabel) event.getSource();
+		final var text = labelEvent.getText();
+
+		if (Objects.nonNull(exam) && exam.getStatus() == ExamStatus.RUNNING) {
+		    selectQuestion(Integer.valueOf(text));
+		    loadPanelQuestion();
+		}
+	    }
+	};
 
 	for (final var question : exam.getQuestions()) {
 

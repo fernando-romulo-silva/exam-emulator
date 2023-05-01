@@ -7,8 +7,10 @@ import static org.examemulator.util.FileUtil.WORDS_ABOVE;
 import static org.examemulator.util.FileUtil.WORDS_ALL;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 import java.util.function.Consumer;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -61,7 +63,7 @@ public class Question implements Comparable<Question> {
     @Enumerated(EnumType.STRING)
     private QuestionType type = QuestionType.UNDEFINED;
 
-    private final Integer order;
+    private Integer order;
 
     private boolean marked;
 
@@ -77,6 +79,18 @@ public class Question implements Comparable<Question> {
     }
 
     // ------------------------------------------------------------------------------
+    
+    void shuffleOptions() {
+	
+	Collections.shuffle(options, new Random(options.size()));
+
+	int number = 'A';
+	
+	for (final var option : options) {
+	    option.setLetter(Character.toString((char) number));
+	    number++;
+	}
+    }
 
     public void selectAnswer(final String answer) {
 
@@ -158,13 +172,18 @@ public class Question implements Comparable<Question> {
     public Integer getOrder() {
 	return order;
     }
+    
+    void setOrder(final Integer order) {
+	this.order = order;
+    }
 
     public List<Option> getOptions() {
 	return options;
     }
 
     public List<String> getCorrectOptions() {
-	return options.stream().filter(Option::isCorrect) //
+	return options.stream() //
+			.filter(Option::isCorrect) //
 			.map(Option::getLetter) //
 			.toList();
     }
