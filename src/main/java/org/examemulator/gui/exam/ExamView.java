@@ -49,7 +49,7 @@ class ExamView extends JFrame {
 
     public ExamView() {
 	setDefaultCloseOperation(EXIT_ON_CLOSE);
-	setBounds(100, 100, 1283, 723);
+	setBounds(100, 100, 871, 723);
 
 	// -------------------------------------------------------------------------------------------
 	// Main Panel
@@ -107,6 +107,7 @@ class ExamView extends JFrame {
 	
 	chckbxShuffleQuestions = new JCheckBox("Shuffle Questions");
 	chckbxShuffleQuestions.setEnabled(false);
+	chckbxShuffleQuestions.setSelected(true);
 	examControlPanel2.add(chckbxShuffleQuestions);
 	
 	chckbxShuffleOptions = new JCheckBox("Shuffle Options");
