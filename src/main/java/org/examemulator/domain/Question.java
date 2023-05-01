@@ -3,8 +3,8 @@ package org.examemulator.domain;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.collections4.CollectionUtils.isEqualCollection;
-import static org.examemulator.util.FileUtil.WORDS_ABOVE;
 import static org.examemulator.util.FileUtil.WORDS_ALL;
+import static org.examemulator.util.FileUtil.WORDS_NONE;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,8 +14,8 @@ import java.util.Random;
 import java.util.function.Consumer;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.collections.impl.utility.ListIterate;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
@@ -82,7 +82,29 @@ public class Question implements Comparable<Question> {
     
     void shuffleOptions() {
 	
+	final var words = ListUtils.union(WORDS_ALL, WORDS_NONE);
+	
+	final var answersOptional = options.stream() //
+			.map(Option::getText) //
+			.filter(answer -> CollectionUtils.containsAny(List.of(answer), words))
+			.findAny();
+	
+	final var lastOptions = new ArrayList<Option>();
+	
+	if (answersOptional.isPresent()) {
+	    
+	    lastOptions.addAll(options.stream()
+			    		.filter(option -> CollectionUtils.containsAny(List.of(option.getText()), words))
+			    		.toList());
+
+	    options.removeIf(option -> CollectionUtils.containsAny(List.of(option.getText()), words));
+	}
+	
 	Collections.shuffle(options, new Random(options.size()));
+	
+	if (answersOptional.isPresent()) {
+	    options.addAll(lastOptions);
+	}
 
 	int number = 'A';
 	
@@ -230,23 +252,23 @@ public class Question implements Comparable<Question> {
 	    return isEqualCollection(answers, remainderOptions);
 	}
 
-	if (CollectionUtils.containsAny(answersText, WORDS_ABOVE)) {
-
-	    final var index = ListIterate.detectIndex(options, user -> WORDS_ABOVE.contains(user.getText()));
-
-	    final var subListAbove = options.subList(0, index).stream().map(Option::getLetter).toList();
-
-	    if (isEqualCollection(answers, subListAbove)) {
-		return true;
-	    }
-
-	    final var subListAboveInclusive = options.subList(0, index + 1) //
-			    .stream() //
-			    .map(Option::getLetter) //
-			    .toList();
-
-	    return isEqualCollection(answers, subListAboveInclusive);
-	}
+//	if (CollectionUtils.containsAny(answersText, WORDS_ABOVE)) {
+//
+//	    final var index = ListIterate.detectIndex(options, user -> WORDS_ABOVE.contains(user.getText()));
+//
+//	    final var subListAbove = options.subList(0, index).stream().map(Option::getLetter).toList();
+//
+//	    if (isEqualCollection(answers, subListAbove)) {
+//		return true;
+//	    }
+//
+//	    final var subListAboveInclusive = options.subList(0, index + 1) //
+//			    .stream() //
+//			    .map(Option::getLetter) //
+//			    .toList();
+//
+//	    return isEqualCollection(answers, subListAboveInclusive);
+//	}
 
 	return false;
     }
