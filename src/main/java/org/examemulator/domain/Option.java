@@ -51,7 +51,7 @@ public class Option {
 	return correct;
     }
     
-    void setLetter(String letter) {
+    void setLetter(final String letter) {
         this.letter = letter;
     }
     

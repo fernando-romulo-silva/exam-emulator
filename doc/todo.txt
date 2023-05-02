@@ -1,8 +1,4 @@
 ---------------------------------------------------------
-* Shuffle Answers
-
-* Shuffle Questions
-
 * Learning mode (question and correct answer)
 
 * Shortcuts

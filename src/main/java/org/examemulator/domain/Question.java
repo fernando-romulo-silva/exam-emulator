@@ -63,8 +63,10 @@ public class Question implements Comparable<Question> {
     @Enumerated(EnumType.STRING)
     private QuestionType type = QuestionType.UNDEFINED;
 
+    @Column(name = "ORDER")
     private Integer order;
 
+    @Column(name = "MARKED")
     private boolean marked;
 
     // ------------------------------------------------------------------------------
@@ -100,7 +102,7 @@ public class Question implements Comparable<Question> {
 	    options.removeIf(option -> CollectionUtils.containsAny(List.of(option.getText()), words));
 	}
 	
-	Collections.shuffle(options, new Random(options.size()));
+	Collections.shuffle(options, new Random(System.nanoTime()));
 	
 	if (answersOptional.isPresent()) {
 	    options.addAll(lastOptions);
