@@ -107,7 +107,7 @@ class ExamView extends JFrame {
 	
 	chckbxShuffleQuestions = new JCheckBox("Shuffle Questions");
 	chckbxShuffleQuestions.setEnabled(false);
-	chckbxShuffleQuestions.setSelected(true);
+	chckbxShuffleQuestions.setSelected(false);
 	examControlPanel2.add(chckbxShuffleQuestions);
 	
 	chckbxShuffleOptions = new JCheckBox("Shuffle Options");
@@ -119,7 +119,7 @@ class ExamView extends JFrame {
 	examControlPanel2.add(lblDiscretePercent);
 	lblDiscretePercent.setBorder(new EtchedBorder(LOWERED, null, null));
 
-	textDiscrete = new JSpinner(new SpinnerNumberModel(0, 0, 100, 10));
+	textDiscrete = new JSpinner(new SpinnerNumberModel(100, 0, 100, 10));
 	examControlPanel2.add(textDiscrete);
 	textDiscrete.setEnabled(false);
 
@@ -150,7 +150,7 @@ class ExamView extends JFrame {
 	final var lblMinScore = new JLabel("Min Score (%)");
 	examControlPane3.add(lblMinScore);
 
-	textMinScore = new JSpinner(new SpinnerNumberModel(70, 50, 100, 10));
+	textMinScore = new JSpinner(new SpinnerNumberModel(90, 50, 100, 10));
 	textMinScore.setEnabled(false);
 	examControlPane3.add(textMinScore);
 
