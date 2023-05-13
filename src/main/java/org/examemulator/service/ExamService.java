@@ -29,9 +29,9 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.examemulator.domain.Exam;
-import org.examemulator.domain.Option;
-import org.examemulator.domain.Question;
+import org.examemulator.domain.exam.Exam;
+import org.examemulator.domain.exam.Option;
+import org.examemulator.domain.exam.Question;
 
 import jakarta.enterprise.context.ApplicationScoped;
 

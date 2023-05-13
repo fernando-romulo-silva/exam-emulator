@@ -41,8 +41,8 @@ import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
 import org.apache.commons.lang3.StringUtils;
-import org.examemulator.domain.Exam;
-import org.examemulator.domain.Question;
+import org.examemulator.domain.exam.Exam;
+import org.examemulator.domain.exam.Question;
 import org.examemulator.gui.components.WrapLayout;
 
 public class ControllerUtil {

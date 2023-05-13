@@ -17,7 +17,8 @@ public class FileUtil {
 		    "All of the preceding options are true", //
 		    "All of the preceding sentences are true", // 
 		    "All of the preceding steps are required", //
-		    "All of the preceding answers are correct",
+		    "All of the preceding answers are correct", //
+		    "All of the preceding sentences are correct", //
 		    "All of the preceding sentences are wrong",
 		    "All of the options" //
     );
@@ -28,9 +29,11 @@ public class FileUtil {
 		    "None of the options are valid", //
 		    "None of the above", //
 		    "None of the answers", //
+		    "None of the preceding options", //
 		    "None of the preceding answers are true",
 		    "None of the preceding answers are correct", //
-		    "None of the preceding sentences are right"
+		    "None of the preceding sentences are right", //
+		    "None of the preceding options are true"
     );
 
 //    public static final List<String> WORDS_ABOVE = List.of("Both the above" , "Both of the above");

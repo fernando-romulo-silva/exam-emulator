@@ -1,4 +1,4 @@
-package org.examemulator.domain;
+package org.examemulator.domain.pretest;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -8,22 +8,22 @@ import jakarta.data.repository.Repository;
 
 // https://vladmihalcea.com/best-spring-data-jparepository/
 @Repository
-public class ExamGroupRepository implements CrudRepository<ExamGroup, Long> {
+public class PretestGroupRepository implements CrudRepository<PretestGroup, Long> {
 
     @Override
-    public <S extends ExamGroup> S save(S entity) {
+    public <S extends PretestGroup> S save(S entity) {
 	// TODO Auto-generated method stub
 	return null;
     }
 
     @Override
-    public <S extends ExamGroup> Iterable<S> saveAll(Iterable<S> entities) {
+    public <S extends PretestGroup> Iterable<S> saveAll(Iterable<S> entities) {
 	// TODO Auto-generated method stub
 	return null;
     }
 
     @Override
-    public Optional<ExamGroup> findById(Long id) {
+    public Optional<PretestGroup> findById(Long id) {
 	// TODO Auto-generated method stub
 	return Optional.empty();
     }
@@ -35,13 +35,13 @@ public class ExamGroupRepository implements CrudRepository<ExamGroup, Long> {
     }
 
     @Override
-    public Stream<ExamGroup> findAll() {
+    public Stream<PretestGroup> findAll() {
 	// TODO Auto-generated method stub
 	return null;
     }
 
     @Override
-    public Stream<ExamGroup> findAllById(Iterable<Long> ids) {
+    public Stream<PretestGroup> findAllById(Iterable<Long> ids) {
 	// TODO Auto-generated method stub
 	return null;
     }
@@ -59,7 +59,7 @@ public class ExamGroupRepository implements CrudRepository<ExamGroup, Long> {
     }
 
     @Override
-    public void delete(ExamGroup entity) {
+    public void delete(PretestGroup entity) {
 	// TODO Auto-generated method stub
 	
     }
@@ -71,7 +71,7 @@ public class ExamGroupRepository implements CrudRepository<ExamGroup, Long> {
     }
 
     @Override
-    public void deleteAll(Iterable<? extends ExamGroup> entities) {
+    public void deleteAll(Iterable<? extends PretestGroup> entities) {
 	// TODO Auto-generated method stub
 	
     }

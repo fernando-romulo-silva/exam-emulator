@@ -1,6 +1,6 @@
 package org.examemulator;
 
-import org.examemulator.domain.ExamGroup;
+import org.examemulator.domain.pretest.PretestGroup;
 import org.examemulator.gui.exam.ExamController;
 import org.examemulator.service.ExamGroupService;
 import org.examemulator.util.database.HsqldbServer;
@@ -43,7 +43,7 @@ public class Main {
 	
 	final var container = SeContainerInitializer.newInstance().initialize();
 	
-	final var examGroup = new ExamGroup("group1", 1);
+	final var examGroup = new PretestGroup("group1");
 	
 	final var examGroupService = container.select(ExamGroupService.class).get();
 	

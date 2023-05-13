@@ -1,4 +1,4 @@
-package org.examemulator.domain;
+package org.examemulator.domain.exam;
 
 import java.util.Objects;
 
@@ -10,7 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "EXAM_GROUP")
+@Table(name = "EXAM_OPTION")
 public class Option {
 
     @Id
@@ -26,6 +26,9 @@ public class Option {
 
     @Column(name = "CORRECT")
     private Boolean correct = Boolean.FALSE;
+    
+    @Column(name = "SELECTED")
+    private Boolean selected = Boolean.FALSE;
 
     Option() {
 	super();
@@ -42,6 +45,14 @@ public class Option {
 	this.letter = letter;
 	this.correct = correct; 
     }
+    
+    public void select() {
+	selected = true;
+    }
+    
+    public void unselect() {
+	selected = false;
+    }
 
     public String getText() {
 	return text;
@@ -49,6 +60,10 @@ public class Option {
 
     public Boolean isCorrect() {
 	return correct;
+    }
+    
+    public Boolean isSelected() {
+	return selected;
     }
     
     void setLetter(final String letter) {
@@ -59,6 +74,8 @@ public class Option {
         return letter;
     }
 
+    // ----------------------------------------------------------
+    
     @Override
     public int hashCode() {
 	return Objects.hash(id);

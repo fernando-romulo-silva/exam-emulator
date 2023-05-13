@@ -1,4 +1,4 @@
-package org.examemulator.domain;
+package org.examemulator.domain.exam;
 
 import static java.math.RoundingMode.HALF_UP;
 import static java.time.temporal.ChronoUnit.MINUTES;
@@ -10,30 +10,56 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 import java.util.function.Consumer;
 
 import org.examemulator.util.RandomUtil;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "EXAM")
 public class Exam {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "ID", nullable = false)
     private final String id; // uuid
 
+    @Column(name = "NAME")
     private final String name;
 
+    @Column(name= "MIN_SCORE_PERCENT", precision = 19, scale = 2)
     private final BigDecimal minScorePercent;
 
+    @Column(name= "DISCRETE_PERCENT", precision = 19, scale = 2)
     private final BigDecimal discretPercent;
 
+    @Column(name = "RANDOM_ORDER")
     private final boolean randomOrder;
 
+    @Column(name = "MODE")
     private final boolean practiceMode;
     
+    @Column(name = "SHUFFLE_OPTIONS")
     private final boolean shuffleOptions;
     
+    @Column(name = "SHUFFLE_QUESTIONS")
     private final boolean shuffleQuestions;
-
+    
+    @JoinColumn(name = "QUESTION_ID")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Question> questions = new ArrayList<>();
 
     // -------------------------------
@@ -145,7 +171,7 @@ public class Exam {
     }
 
     public List<Question> getQuestions() {
-	return questions;
+	return Collections.unmodifiableList(questions);
     }
 
     public long getDuration() {
@@ -168,6 +194,42 @@ public class Exam {
     public ExamStatus getStatus() {
 	return status;
     }
+    
+    // -----------------------------------------------------------------------
+    @Override
+    public int hashCode() {
+	return Objects.hash(id);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+
+	final boolean result;
+
+	if (this == obj) {
+	    result = true;
+
+	} else if (obj instanceof Exam other) {
+	    result = Objects.equals(id, other.id);
+
+	} else {
+	    result = false;
+	}
+
+	return result;
+    }
+
+    @Override
+    public String toString() {
+	final var sbToString = new StringBuilder(76);
+
+	sbToString.append("Option [id=").append(id) //
+			.append(", name=").append(name) //
+			.append(']');
+
+	return sbToString.toString();
+    }    
+    
 
     // -----------------------------------------------------------------------------------------------------------------
 

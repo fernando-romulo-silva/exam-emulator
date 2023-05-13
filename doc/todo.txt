@@ -1,4 +1,6 @@
 ---------------------------------------------------------
+** select specific questions
+
 * Learning mode (question and correct answer)
 
 * Shortcuts

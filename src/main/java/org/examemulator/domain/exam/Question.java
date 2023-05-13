@@ -1,4 +1,4 @@
-package org.examemulator.domain;
+package org.examemulator.domain.exam;
 
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
@@ -18,9 +18,7 @@ import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -33,7 +31,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "QUESTION")
+@Table(name = "EXAM_QUESTION")
 public class Question implements Comparable<Question> {
 
     @Id
@@ -53,11 +51,6 @@ public class Question implements Comparable<Question> {
     @JoinColumn(name = "QUESTION_ID")
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Option> options = new ArrayList<>();
-
-    @Column(name = "ANSWERS", nullable = false)
-    @ElementCollection(targetClass = String.class)
-    @CollectionTable(name = "QUESTION_ANSWER", joinColumns = @JoinColumn(name = "QUESTION_ID"))
-    private final List<String> answers = new ArrayList<>();
 
     @Column(name = "TYPE")
     @Enumerated(EnumType.STRING)
@@ -121,6 +114,8 @@ public class Question implements Comparable<Question> {
 	if (StringUtils.isEmpty(answer)) {
 	    throw new IllegalArgumentException("Empty answer is not allowed!");
 	}
+	
+	final var answers = getAnswers();
 
 	if (answers.contains(answer)) {
 	    return;
@@ -138,8 +133,14 @@ public class Question implements Comparable<Question> {
 
 	    throw new IllegalArgumentException("Invalid answer. It can be [" + validValues + "]");
 	}
-
-	answers.add(answer);
+	
+	final var optionSelected = options.stream()
+			.filter(option -> Objects.equals(option.getLetter(), answer))
+			.findFirst();
+	
+	if (optionSelected.isPresent()) {
+	    optionSelected.get().select();
+	}
     }
 
     public void deselectAnswer(final String answer) {
@@ -148,11 +149,17 @@ public class Question implements Comparable<Question> {
 	    throw new IllegalArgumentException("Empty answer is not allowed!");
 	}
 
-	if (!answers.contains(answer)) {
+	if (!getAnswers().contains(answer)) {
 	    return;
 	}
-
-	answers.remove(answer);
+	
+	final var optionSelected = options.stream()
+			.filter(option -> Objects.equals(option.getLetter(), answer))
+			.findFirst();
+	
+	if (optionSelected.isPresent()) {
+	    optionSelected.get().unselect();
+	}
     }
 
     public void mark(final boolean value) {
@@ -213,7 +220,10 @@ public class Question implements Comparable<Question> {
     }
 
     public List<String> getAnswers() {
-	return answers;
+	return options.stream()
+			.filter(Option::isSelected)
+			.map(Option::getLetter)
+			.toList();
     }
 
     public boolean isMarked() {
@@ -221,7 +231,7 @@ public class Question implements Comparable<Question> {
     }
 
     public boolean isAnswered() {
-	return !answers.isEmpty();
+	return !getAnswers().isEmpty();
     }
 
     public boolean isCorrect() {
@@ -229,6 +239,8 @@ public class Question implements Comparable<Question> {
 	if (!isAnswered()) {
 	    return false;
 	}
+	
+	final var answers = getAnswers(); 
 
 	final var correctOptions = getCorrectOptions();
 
@@ -253,24 +265,6 @@ public class Question implements Comparable<Question> {
 
 	    return isEqualCollection(answers, remainderOptions);
 	}
-
-//	if (CollectionUtils.containsAny(answersText, WORDS_ABOVE)) {
-//
-//	    final var index = ListIterate.detectIndex(options, user -> WORDS_ABOVE.contains(user.getText()));
-//
-//	    final var subListAbove = options.subList(0, index).stream().map(Option::getLetter).toList();
-//
-//	    if (isEqualCollection(answers, subListAbove)) {
-//		return true;
-//	    }
-//
-//	    final var subListAboveInclusive = options.subList(0, index + 1) //
-//			    .stream() //
-//			    .map(Option::getLetter) //
-//			    .toList();
-//
-//	    return isEqualCollection(answers, subListAboveInclusive);
-//	}
 
 	return false;
     }

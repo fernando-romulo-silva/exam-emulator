@@ -22,8 +22,8 @@ import java.util.TreeSet;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
-import org.examemulator.domain.Exam;
-import org.examemulator.domain.Question;
+import org.examemulator.domain.exam.Exam;
+import org.examemulator.domain.exam.Question;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;

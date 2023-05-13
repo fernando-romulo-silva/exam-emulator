@@ -1,4 +1,4 @@
-package org.examemulator.domain;
+package org.examemulator.domain.exam;
 
 public enum ExamStatus {
     
