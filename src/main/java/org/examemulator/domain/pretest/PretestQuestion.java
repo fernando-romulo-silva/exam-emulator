@@ -1,9 +1,12 @@
 package org.examemulator.domain.pretest;
 
+import static java.util.Objects.nonNull;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -46,12 +49,12 @@ public class PretestQuestion implements Comparable<PretestQuestion>  {
 	super();
     }
 
-    public PretestQuestion(final String name, final String value, final String explanation, final Integer order) {
-	super();
-	this.name = name;
-	this.value = value;
-	this.explanation = explanation;
-	this.order = order;
+    private PretestQuestion(final Builder builder) {
+	this.name = builder.name;
+	this.value = builder.value;
+	this.explanation = builder.explanation;
+	this.order = builder.order;
+	this.options.addAll(builder.options);
     }
     
     // ------------------------------------------------------------------------------
@@ -116,4 +119,41 @@ public class PretestQuestion implements Comparable<PretestQuestion>  {
     public int compareTo(final PretestQuestion another) {
 	return this.order.compareTo(another.order);
     }
+    
+    // ------------------------------------------------------------------------------
+    public static final class Builder {
+
+
+	public String name;
+
+	public String value;
+
+	public String explanation;
+
+	public Integer order;
+
+	public List<PretestOption> options;
+
+	public Builder with(final Consumer<Builder> function) {
+	    function.accept(this);
+	    return this;
+	}
+
+	public PretestQuestion build() {
+
+	    if (!checkParams()) {
+		throw new IllegalStateException("");
+	    }
+
+	    return new PretestQuestion(this);
+	}
+
+	private boolean checkParams() {
+	    return nonNull(name) //
+			    && nonNull(value) //
+			    && nonNull(explanation) //
+			    && nonNull(order);
+	}
+    }
+
 }

@@ -1,8 +1,7 @@
-package org.examemulator.gui.exam;
+package org.examemulator.gui.pretest;
 
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.FlowLayout.LEFT;
-import static javax.swing.BorderFactory.createTitledBorder;
 import static javax.swing.BoxLayout.Y_AXIS;
 import static javax.swing.border.EtchedBorder.LOWERED;
 
@@ -11,40 +10,38 @@ import java.awt.Dimension;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
+import org.examemulator.gui.components.RangeSlider;
 import org.examemulator.gui.components.WrapLayout;
 
-class ExamView extends JFrame {
-
+class PretestView extends JFrame {
+    
     private static final long serialVersionUID = 1L;
-
+    
     JPanel questionInternPanel, examPanel, pQuestions;
 
-    JButton btnPause, btnStart, btnFinish, btnPrevious, btnNext, btnCheckAnswer, btnStatistics;
+    JButton btnNewExam, btnNew, btnImport, btnPrevious, btnNext, btnSave;
 
-    JLabel lblClock, lblDuration;
+    JLabel lblClock, lblRangeLow, lblUpper, lblQuantidy;
 
-    JSpinner textDiscrete, textMinScore, spinnerTimeDuration;
+    JSpinner textDiscrete;
 
-    JCheckBox chckbxMark, chckbxShuffleQuestions, chckbxShuffleOptions;
+    JComboBox<String> cbGroup;
 
-    JMenuItem mntmNew;
-
-    JComboBox<String> cbMode;
-
-    public ExamView() {
+    RangeSlider rangeQuestions;
+    
+    JTextField textFieldName;
+ 
+    public PretestView() {
 	setDefaultCloseOperation(EXIT_ON_CLOSE);
 	setBounds(100, 100, 871, 723);
 
@@ -52,18 +49,6 @@ class ExamView extends JFrame {
 	// Main Panel
 	// -------------------------------------------------------------------------------------------
 	setTitle("ExamEmulator!");
-
-	final var menuBar = new JMenuBar();
-	setJMenuBar(menuBar);
-
-	final var mnNewMenu = new JMenu("Exam");
-	menuBar.add(mnNewMenu);
-
-	mntmNew = new JMenuItem("New");
-	mnNewMenu.add(mntmNew);
-
-	final var mntmStop = new JMenuItem("Stop");
-	mnNewMenu.add(mntmStop);
 
 	final var contentPane = new JPanel();
 	contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -75,9 +60,8 @@ class ExamView extends JFrame {
 	// -------------------------------------------------------------------------------------------
 
 	examPanel = new JPanel();
-	examPanel.setBorder(new EtchedBorder(LOWERED, null, null));
+//	examPanel.setBorder(new EtchedBorder(LOWERED, null, null));
 	examPanel.setLayout(new BoxLayout(examPanel, Y_AXIS));
-	examPanel.setBorder(createTitledBorder("No Exam"));
 	contentPane.add(examPanel);
 
 	final var examControlPanel1 = new JPanel();
@@ -86,73 +70,72 @@ class ExamView extends JFrame {
 	examControlPanel1.setBorder(null);
 	examControlPanel1.setLayout(new WrapLayout(LEFT, 5, 5));
 
-	btnStart = new JButton("Start");
-	btnStart.setEnabled(false);
-	examControlPanel1.add(btnStart);
+	btnNew = new JButton("New");
+	btnNew.setEnabled(false);
+	examControlPanel1.add(btnNew);
+
+	btnImport = new JButton("Import");
+	btnImport.setEnabled(false);
+	examControlPanel1.add(btnImport);
+
+	btnSave = new JButton("Save");
+	btnSave.setEnabled(false);
+	examControlPanel1.add(btnSave);
 	
-	btnPause = new JButton("Pause");
-	examControlPanel1.add(btnPause);
-
-	btnFinish = new JButton("Finish");
-	btnFinish.setEnabled(false);
-	examControlPanel1.add(btnFinish);
-
-	btnStatistics = new JButton("Statistics");
-	btnStatistics.setEnabled(false);
-	examControlPanel1.add(btnStatistics);
+	btnNewExam = new JButton("New Exam");
+	examControlPanel1.add(btnNewExam);
 
 	final var examControlPanel2 = new JPanel();
 	examControlPanel2.setLayout(new WrapLayout(LEFT, 5, 5));
 	examPanel.add(examControlPanel2);
-	
-	chckbxShuffleQuestions = new JCheckBox("Shuffle Questions");
-	chckbxShuffleQuestions.setEnabled(false);
-	chckbxShuffleQuestions.setSelected(false);
-	examControlPanel2.add(chckbxShuffleQuestions);
-	
-	chckbxShuffleOptions = new JCheckBox("Shuffle Options");
-	chckbxShuffleOptions.setEnabled(false);
-	chckbxShuffleOptions.setSelected(true);
-	examControlPanel2.add(chckbxShuffleOptions);
 
-	final var lblDiscretePercent = new JLabel("Discrete (%)");
-	examControlPanel2.add(lblDiscretePercent);
-	lblDiscretePercent.setBorder(new EtchedBorder(LOWERED, null, null));
+	final var lblName = new JLabel("Name");
+	examControlPanel2.add(lblName);
+	lblName.setBorder(new EtchedBorder(LOWERED, null, null));
+	
+	textFieldName = new JTextField();
+	examControlPanel2.add(textFieldName);
+	textFieldName.setColumns(10);
+	
+	lblQuantidy = new JLabel("Quantidy");
+	examControlPanel2.add(lblQuantidy);
 
-	textDiscrete = new JSpinner(new SpinnerNumberModel(100, 0, 100, 10));
+	textDiscrete = new JSpinner(new SpinnerNumberModel(Integer.valueOf(100), Integer.valueOf(10), null, Integer.valueOf(10)));
 	examControlPanel2.add(textDiscrete);
 	textDiscrete.setEnabled(false);
 
-	final var lblMode = new JLabel("Mode");
-	examControlPanel2.add(lblMode);
-	lblMode.setBorder(new EtchedBorder(LOWERED, null, null));
+	final var lblGroup = new JLabel("Group");
+	examControlPanel2.add(lblGroup);
+	lblGroup.setBorder(new EtchedBorder(LOWERED, null, null));
 
-	cbMode = new JComboBox<>();
-	examControlPanel2.add(cbMode);
-	cbMode.setEnabled(false);
-	cbMode.addItem("Practice");
-	cbMode.addItem("Exam");
-	cbMode.addItem("Study");
+	cbGroup = new JComboBox<>();
+	examControlPanel2.add(cbGroup);
+	cbGroup.setEnabled(false);
+	cbGroup.addItem("Practice");
+	cbGroup.addItem("Exam");
+	cbGroup.addItem("Study");
 
-	cbMode.setSize(200, cbMode.getPreferredSize().height);
+	cbGroup.setSize(200, cbGroup.getPreferredSize().height);
 
 	final var examControlPane3 = new JPanel();
 	examControlPane3.setLayout(new WrapLayout(LEFT, 5, 5));
 	examPanel.add(examControlPane3);
 
-	final var lblMinScore = new JLabel("Min Score (%)");
-	examControlPane3.add(lblMinScore);
+	final var lblRange = new JLabel("Range");
+	examControlPane3.add(lblRange);
 
-	textMinScore = new JSpinner(new SpinnerNumberModel(90, 50, 100, 10));
-	textMinScore.setEnabled(false);
-	examControlPane3.add(textMinScore);
-	
-		lblDuration = new JLabel("Duration (Min)");
-		examControlPane3.add(lblDuration);
-	
-		spinnerTimeDuration = new JSpinner(new SpinnerNumberModel(60, 10, 120, 10));
-		examControlPane3.add(spinnerTimeDuration);
-		spinnerTimeDuration.setEnabled(false);
+	lblRangeLow = new JLabel("1");
+	examControlPane3.add(lblRangeLow);
+
+	rangeQuestions = new RangeSlider();
+	rangeQuestions.setEnabled(false);
+	examControlPane3.add(rangeQuestions);
+	rangeQuestions.setPreferredSize(new Dimension(340, rangeQuestions.getPreferredSize().height));
+	rangeQuestions.setMinimum(0);
+	rangeQuestions.setMaximum(10);
+
+	lblUpper = new JLabel("10");
+	examControlPane3.add(lblUpper);
 
 	lblClock = new JLabel("");
 	examControlPane3.add(lblClock);
@@ -161,6 +144,9 @@ class ExamView extends JFrame {
 	// -------------------------------------------------------------------------------------------
 	// Control Panel
 	// -------------------------------------------------------------------------------------------
+	
+	pQuestions = new JPanel(new WrapLayout(LEFT, 5, 5));
+	examPanel.add(pQuestions);
 
 	final var quesitonControlPanel = new JPanel();
 	examPanel.add(quesitonControlPanel);
@@ -176,18 +162,6 @@ class ExamView extends JFrame {
 	btnNext.setEnabled(false);
 	quesitonControlPanel.add(btnNext);
 
-	chckbxMark = new JCheckBox("Mark");
-	chckbxMark.setEnabled(false);
-	quesitonControlPanel.add(chckbxMark);
-
-	btnCheckAnswer = new JButton("Check Answer");
-	btnCheckAnswer.setEnabled(false);
-	btnCheckAnswer.setVisible(false);
-	quesitonControlPanel.add(btnCheckAnswer);
-
-	pQuestions = new JPanel(new WrapLayout(LEFT, 5, 5));
-	examPanel.add(pQuestions);
-
 	// -------------------------------------------------------------------------------------------
 	// Question Panel
 	// -------------------------------------------------------------------------------------------
@@ -201,4 +175,5 @@ class ExamView extends JFrame {
 
 	contentPane.add(questionPanel);
     }
+    
 }

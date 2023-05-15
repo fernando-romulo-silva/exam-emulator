@@ -20,6 +20,8 @@ import org.examemulator.util.RandomUtil;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -61,6 +63,10 @@ public class Exam {
     @JoinColumn(name = "QUESTION_ID")
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Question> questions = new ArrayList<>();
+    
+    @Column(name = "ORIGIN")
+    @Enumerated(EnumType.STRING)
+    private final ExamOrigin origin;
 
     // -------------------------------
 
@@ -82,6 +88,7 @@ public class Exam {
 	this.discretPercent = builder.discretPercent;
 	this.shuffleOptions = builder.shuffleOptions;
 	this.shuffleQuestions = builder.shuffleQuestions;
+	this.origin = builder.origin;
     }
 
     public void addQuestion(final Question question) {
@@ -248,6 +255,8 @@ public class Exam {
 	public boolean shuffleOptions = true;
 	    
 	public boolean shuffleQuestions = true;
+	
+	public ExamOrigin origin = ExamOrigin.FROM_PRETEST;
 
 	public Builder with(final Consumer<Builder> function) {
 	    function.accept(this);

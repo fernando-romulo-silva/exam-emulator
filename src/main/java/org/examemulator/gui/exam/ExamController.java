@@ -47,7 +47,6 @@ import org.examemulator.domain.exam.ExamStatus;
 import org.examemulator.domain.exam.Option;
 import org.examemulator.domain.exam.Question;
 import org.examemulator.domain.exam.QuestionType;
-import org.examemulator.gui.components.RangeSlider;
 import org.examemulator.gui.statitics.StatiticsController;
 import org.examemulator.service.ExamService;
 import org.slf4j.Logger;
@@ -115,11 +114,11 @@ public class ExamController {
 
     private void creatButtonActions() {
 
-	view.rangeQuestions.addChangeListener(event -> {
-	    final var slider = (RangeSlider) event.getSource();
-	    view.lblRangeLow.setText(String.valueOf(slider.getValue()));
-	    view.lblUpper.setText(String.valueOf(slider.getUpperValue()));
-	});
+//	view.rangeQuestions.addChangeListener(event -> {
+//	    final var slider = (RangeSlider) event.getSource();
+//	    view.lblRangeLow.setText(String.valueOf(slider.getValue()));
+//	    view.lblUpper.setText(String.valueOf(slider.getUpperValue()));
+//	});
 
 	view.btnStart.addActionListener(event -> {
 
@@ -127,14 +126,14 @@ public class ExamController {
 
 	    final var mimScore = BigDecimal.valueOf((Integer) view.textMinScore.getValue());
 
-	    final var range = new AbstractMap.SimpleEntry<Integer, Integer>(view.rangeQuestions.getValue(), view.rangeQuestions.getUpperValue());
+//	    final var range = new AbstractMap.SimpleEntry<Integer, Integer>(view.rangeQuestions.getValue(), view.rangeQuestions.getUpperValue());
 
 	    final var practiceMode = equalsIgnoreCase("Practice", (String) view.cbMode.getSelectedItem());
 	    
 	    final var shuffleQuestions = view.chckbxShuffleQuestions.isSelected();
 	    final var shuffleOptions = view.chckbxShuffleOptions.isSelected();
 	    
-	    exam = service.createExam(currentFolder, practiceMode, discretPercent, mimScore, shuffleQuestions, shuffleOptions, range);
+	    exam = service.createExam(currentFolder, practiceMode, discretPercent, mimScore, shuffleQuestions, shuffleOptions, new AbstractMap.SimpleEntry<>(1, 55));
 
 	    view.btnStart.setEnabled(false);
 	    view.btnStatistics.setEnabled(false);
@@ -143,11 +142,10 @@ public class ExamController {
 	    view.textMinScore.setEnabled(false);
 	    view.textDiscrete.setEnabled(false);
 	    view.cbMode.setEnabled(false);
-	    view.rangeQuestions.setEnabled(false);
+//	    view.rangeQuestions.setEnabled(false);
 	    view.spinnerTimeDuration.setEnabled(false);
 	    view.chckbxShuffleQuestions.setEnabled(false);
 	    view.chckbxShuffleOptions.setEnabled(false);
-
 
 	    view.chckbxMark.setEnabled(true);
 	    view.btnFinish.setEnabled(true);
@@ -247,15 +245,14 @@ public class ExamController {
 		view.textDiscrete.setEnabled(true);
 		view.cbMode.setEnabled(true);
 		view.spinnerTimeDuration.setEnabled(true);
-		view.rangeQuestions.setEnabled(true);
 		view.chckbxShuffleQuestions.setEnabled(true);
 		view.chckbxShuffleOptions.setEnabled(true);
 
-		view.rangeQuestions.setMinimum(1);
-		view.rangeQuestions.setMaximum(service.getQtyFiles(currentFolder));
-
-		view.rangeQuestions.setValue(1);
-		view.rangeQuestions.setUpperValue(service.getQtyFiles(currentFolder));
+//		view.rangeQuestions.setEnabled(true);
+//		view.rangeQuestions.setMinimum(1);
+//		view.rangeQuestions.setMaximum(service.getQtyFiles(currentFolder));
+//		view.rangeQuestions.setValue(1);
+//		view.rangeQuestions.setUpperValue(service.getQtyFiles(currentFolder));
 
 		view.btnCheckAnswer.setEnabled(false);
 		view.btnFinish.setEnabled(false);

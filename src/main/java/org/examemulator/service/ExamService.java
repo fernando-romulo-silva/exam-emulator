@@ -30,6 +30,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.examemulator.domain.exam.Exam;
+import org.examemulator.domain.exam.ExamOrigin;
 import org.examemulator.domain.exam.Option;
 import org.examemulator.domain.exam.Question;
 
@@ -75,6 +76,7 @@ public class ExamService {
 	    $.randomOrder = false;
 	    $.shuffleQuestions = shuffleQuestions;
 	    $.shuffleOptions = shuffleOptions;
+	    $.origin = ExamOrigin.FROM_PRETEST;
 	}).build();
 
 	final var questionFilesRanged = questionFiles.subList(range.getKey() - 1, range.getValue());

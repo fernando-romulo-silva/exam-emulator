@@ -32,6 +32,9 @@ public class Pretest {
     @OneToOne
     @JoinColumn(name = "PRETEST_GROUP_ID", referencedColumnName = "ID")
     private PretestGroup group;
+    
+    @Column(name = "QUESTION_QTY")
+    private Short questionQty;
 
     @JoinColumn(name = "PRETEST_QUESTION_ID")
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -41,7 +44,7 @@ public class Pretest {
 	super();
     }
     
-    Pretest(final String name, final PretestGroup group) {
+    public Pretest(final String name, final PretestGroup group) {
 	super();
 	this.name = name;
 	this.group = group;

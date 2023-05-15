@@ -27,12 +27,11 @@ public class PretestOption {
     @Column(name = "CORRECT")
     private Boolean correct = Boolean.FALSE;
     
-    
     PretestOption(){
 	super();
     }
     
-    PretestOption(final String letter, final String text, final Boolean correct) {
+    public PretestOption(final String letter, final String text, final Boolean correct) {
 	super();
 	this.letter = letter;
 	this.text = text;
