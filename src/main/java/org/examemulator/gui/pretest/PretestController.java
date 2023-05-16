@@ -1,5 +1,12 @@
 package org.examemulator.gui.pretest;
 
+import static javax.swing.JFileChooser.DIRECTORIES_ONLY;
+
+import java.io.File;
+import java.util.Objects;
+
+import javax.swing.BorderFactory;
+import javax.swing.JFileChooser;
 import javax.swing.SwingUtilities;
 
 import org.examemulator.domain.pretest.Pretest;
@@ -66,5 +73,57 @@ public class PretestController {
 	    view.lblRangeLow.setText(String.valueOf(slider.getValue()));
 	    view.lblUpper.setText(String.valueOf(slider.getUpperValue()));
 	});
+	
+	view.btnNew.addActionListener(event -> {
+	    
+	    final var chooser = new JFileChooser();
+	    chooser.setCurrentDirectory(new File("."));
+	    chooser.setDialogTitle("select an exam folder");
+	    chooser.setFileSelectionMode(DIRECTORIES_ONLY);
+	    chooser.setAcceptAllFileFilterUsed(false);
+	    chooser.showOpenDialog(view);
+
+	    view.questionInternPanel.removeAll();
+	    view.questionInternPanel.revalidate();
+	    view.questionInternPanel.repaint();
+
+	    view.pQuestions.removeAll();
+	    view.pQuestions.revalidate();
+	    view.pQuestions.repaint();
+
+	    currentFolder = chooser.getSelectedFile().getAbsolutePath();
+
+	    if (Objects.nonNull(currentFolder)) {
+
+		view.examPanel.setBorder(BorderFactory.createTitledBorder(service.extractedExamName(currentFolder)));
+
+		view.btnNewExam.setEnabled(true);
+		view.textMinScore.setEnabled(true);
+		view.textDiscrete.setEnabled(true);
+		view.cbMode.setEnabled(true);
+		view.spinnerTimeDuration.setEnabled(true);
+		view.chckbxShuffleQuestions.setEnabled(true);
+		view.chckbxShuffleOptions.setEnabled(true);
+
+		view.rangeQuestions.setEnabled(true);
+		view.rangeQuestions.setMinimum(1);
+		view.rangeQuestions.setMaximum(service.getQtyFiles(currentFolder));
+		view.rangeQuestions.setValue(1);
+		view.rangeQuestions.setUpperValue(service.getQtyFiles(currentFolder));
+
+		view.btn.setEnabled(false);
+		view.btnNext.setEnabled(false);
+		view.btnPrevious.setEnabled(false);
+		view.btnStatistics.setEnabled(false);
+
+		view.revalidate();
+		view.repaint();
+		view.setVisible(true);
+	    }
+	    
+	});
+	
+	
+	
     }
 }

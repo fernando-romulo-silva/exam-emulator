@@ -29,11 +29,11 @@ class PretestView extends JFrame {
     
     JPanel questionInternPanel, examPanel, pQuestions;
 
-    JButton btnNewExam, btnNew, btnImport, btnPrevious, btnNext, btnSave;
+    JButton btnNewExam, btnNew, btnPrevious, btnNext, btnSave;
 
-    JLabel lblClock, lblRangeLow, lblUpper, lblQuantidy;
+    JLabel lblClock, lblRangeLow, lblUpper, lblQuantity;
 
-    JSpinner textDiscrete;
+    JSpinner textQuantity;
 
     JComboBox<String> cbGroup;
 
@@ -74,10 +74,6 @@ class PretestView extends JFrame {
 	btnNew.setEnabled(false);
 	examControlPanel1.add(btnNew);
 
-	btnImport = new JButton("Import");
-	btnImport.setEnabled(false);
-	examControlPanel1.add(btnImport);
-
 	btnSave = new JButton("Save");
 	btnSave.setEnabled(false);
 	examControlPanel1.add(btnSave);
@@ -97,12 +93,12 @@ class PretestView extends JFrame {
 	examControlPanel2.add(textFieldName);
 	textFieldName.setColumns(10);
 	
-	lblQuantidy = new JLabel("Quantidy");
-	examControlPanel2.add(lblQuantidy);
+	lblQuantity = new JLabel("Quantity");
+	examControlPanel2.add(lblQuantity);
 
-	textDiscrete = new JSpinner(new SpinnerNumberModel(Integer.valueOf(100), Integer.valueOf(10), null, Integer.valueOf(10)));
-	examControlPanel2.add(textDiscrete);
-	textDiscrete.setEnabled(false);
+	textQuantity = new JSpinner(new SpinnerNumberModel(Integer.valueOf(100), Integer.valueOf(10), null, Integer.valueOf(10)));
+	examControlPanel2.add(textQuantity);
+	textQuantity.setEnabled(false);
 
 	final var lblGroup = new JLabel("Group");
 	examControlPanel2.add(lblGroup);
