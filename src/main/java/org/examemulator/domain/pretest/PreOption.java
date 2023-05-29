@@ -1,4 +1,4 @@
-package org.examemulator.domain.exam;
+package org.examemulator.domain.pretest;
 
 import java.util.Objects;
 
@@ -10,8 +10,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "QUESTION_OPTION")
-public class Option {
+@Table(name = "PRE_QUESTION_OPTION")
+public class PreOption {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,56 +22,32 @@ public class Option {
     private String letter;
 
     @Column(name = "TEXT")
-    private String text;
+    private String value;
 
     @Column(name = "CORRECT")
     private Boolean correct = Boolean.FALSE;
     
-    @Column(name = "SELECTED")
-    private Boolean selected = Boolean.FALSE;
-
-    Option() {
+    PreOption(){
 	super();
     }
     
-    public Option(final Long id, final String letter, final String text, final boolean correct) {
-	this(letter, text, correct);
-	this.id = id;
-    }
-
-    public Option(final String letter, final String text, final boolean correct) {
+    public PreOption(final String letter, final String text, final Boolean correct) {
 	super();
-	this.text = text;
 	this.letter = letter;
-	this.correct = correct; 
-    }
-    
-    public void select() {
-	selected = true;
-    }
-    
-    public void unselect() {
-	selected = false;
-    }
-
-    public String getText() {
-	return text;
+	this.value = text;
+	this.correct = correct;
     }
 
     public Boolean isCorrect() {
 	return correct;
     }
     
-    public Boolean isSelected() {
-	return selected;
-    }
-    
-    void setLetter(final String letter) {
-        this.letter = letter;
-    }
-    
     public String getLetter() {
         return letter;
+    }
+    
+    public String getValue() {
+        return value;
     }
 
     // ----------------------------------------------------------
@@ -89,7 +65,7 @@ public class Option {
 	if (this == obj) {
 	    result = true;
 
-	} else if (obj instanceof Option other) {
+	} else if (obj instanceof PreOption other) {
 	    result = Objects.equals(id, other.id);
 
 	} else {
@@ -105,7 +81,7 @@ public class Option {
 
 	sbToString.append("Option [id=").append(id) //
 			.append(", correct=").append(correct) //
-			.append(", text=").append(text) //
+			.append(", value=").append(value) //
 			.append(']');
 
 	return sbToString.toString();

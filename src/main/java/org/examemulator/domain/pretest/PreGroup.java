@@ -10,8 +10,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "PRETEST_GROUP")
-public class PretestGroup {
+@Table(name = "GROUP")
+public class PreGroup {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,11 +21,11 @@ public class PretestGroup {
     @Column(name = "NAME")
     private String name;
 
-    PretestGroup() {
+    PreGroup() {
 	super();
     }
 
-    public PretestGroup(final String name) {
+    public PreGroup(final String name) {
 	super();
 	this.name = name;
     }
@@ -45,7 +45,7 @@ public class PretestGroup {
 	if (this == obj) {
 	    result = true;
 
-	} else if (obj instanceof PretestGroup other) {
+	} else if (obj instanceof PreGroup other) {
 	    result = Objects.equals(id, other.id);
 
 	} else {

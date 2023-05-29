@@ -1,4 +1,4 @@
-package org.examemulator.gui.pretest;
+package org.examemulator.gui.preexame;
 
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.FlowLayout.LEFT;
@@ -23,13 +23,13 @@ import javax.swing.border.EtchedBorder;
 import org.examemulator.gui.components.RangeSlider;
 import org.examemulator.gui.components.WrapLayout;
 
-class PretestView extends JFrame {
+class PreExameView extends JFrame {
     
     private static final long serialVersionUID = 1L;
     
     JPanel questionInternPanel, examPanel, pQuestions;
 
-    JButton btnNewExam, btnNew, btnPrevious, btnNext, btnSave;
+    JButton btnNewExam, btnDelete, btnNew, btnPrevious, btnNext, btnSave;
 
     JLabel lblClock, lblRangeLow, lblUpper, lblQuantity;
 
@@ -41,7 +41,7 @@ class PretestView extends JFrame {
     
     JTextField textFieldName;
  
-    public PretestView() {
+    public PreExameView() {
 	setDefaultCloseOperation(EXIT_ON_CLOSE);
 	setBounds(100, 100, 871, 723);
 
@@ -60,7 +60,7 @@ class PretestView extends JFrame {
 	// -------------------------------------------------------------------------------------------
 
 	examPanel = new JPanel();
-//	examPanel.setBorder(new EtchedBorder(LOWERED, null, null));
+	examPanel.setBorder(new EtchedBorder(LOWERED, null, null));
 	examPanel.setLayout(new BoxLayout(examPanel, Y_AXIS));
 	contentPane.add(examPanel);
 
@@ -71,14 +71,18 @@ class PretestView extends JFrame {
 	examControlPanel1.setLayout(new WrapLayout(LEFT, 5, 5));
 
 	btnNew = new JButton("New");
-	btnNew.setEnabled(false);
 	examControlPanel1.add(btnNew);
 
 	btnSave = new JButton("Save");
 	btnSave.setEnabled(false);
 	examControlPanel1.add(btnSave);
 	
-	btnNewExam = new JButton("New Exam");
+	btnDelete = new JButton("Delete");
+	btnDelete.setEnabled(false);
+	examControlPanel1.add(btnDelete);
+	
+	btnNewExam = new JButton("Exam");
+	btnNewExam.setEnabled(false);
 	examControlPanel1.add(btnNewExam);
 
 	final var examControlPanel2 = new JPanel();
@@ -90,6 +94,7 @@ class PretestView extends JFrame {
 	lblName.setBorder(new EtchedBorder(LOWERED, null, null));
 	
 	textFieldName = new JTextField();
+	textFieldName.setEnabled(false);
 	examControlPanel2.add(textFieldName);
 	textFieldName.setColumns(10);
 	

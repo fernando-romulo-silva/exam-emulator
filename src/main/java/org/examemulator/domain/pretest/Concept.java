@@ -1,6 +1,6 @@
 package org.examemulator.domain.pretest;
 
-public class PretestQuestionConcept {
+public class Concept {
     
     private String id;
     

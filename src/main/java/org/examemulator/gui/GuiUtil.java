@@ -3,7 +3,7 @@ package org.examemulator.gui;
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.NORTH;
 import static java.awt.FlowLayout.LEFT;
-import static java.math.RoundingMode.HALF_UP;
+import static java.util.Objects.nonNull;
 import static javax.swing.BoxLayout.Y_AXIS;
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER;
 import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS;
@@ -11,17 +11,16 @@ import static org.apache.commons.lang3.RegExUtils.replaceAll;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static org.apache.commons.lang3.StringUtils.leftPad;
 import static org.apache.commons.lang3.StringUtils.remove;
+import static org.apache.commons.lang3.StringUtils.replace;
 import static org.apache.commons.lang3.StringUtils.substringAfter;
 import static org.apache.commons.lang3.StringUtils.substringBefore;
+import static org.apache.commons.text.StringEscapeUtils.unescapeHtml4;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,30 +31,94 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
 import org.apache.commons.lang3.StringUtils;
-import org.examemulator.domain.exam.Exam;
 import org.examemulator.domain.exam.Question;
 import org.examemulator.gui.components.WrapLayout;
 
-public class ControllerUtil {
+public class GuiUtil {
 
     private static final int SIXTY_VALUE = 60;
 
     public static final Font DEFAULT_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
 
     public static final int MILLISECOND = 1000;
+    
+    public static final String TAG_BR = "<br />";
+    
+    public static final String TAG_BR_BR = "<br /> <br />";
+    
+    public static final String TAG_OPEN_B = "<b>";
+    
+    public static final String TAG_CLOSE_B = "</b>";
 
     @FunctionalInterface
     public static interface Action {
 	void execute();
+    }
+
+    public static String convertToPreTag(final String text) {
+	var internText = replace(text, "```", "<pre>");
+	internText = replace(internText, "´´´", "</pre>");
+	return internText;
+    }
+    
+    private static String treatOptionText(final String id, final String text) {
+
+	if (StringUtils.containsAny(text, "\n")) { // large text option
+	    return "<html>" + id + ")"+ TAG_BR + replaceAll(text, "[\\n]", TAG_BR) + "</html>";
+	}
+
+	// short text option
+	return "<html>" + id + ")" + TAG_BR + text + "</html>";
+    }
+    
+    
+    public static JComponent createScrollHtmlTextToShow(final String text) {
+	final var textArea = new JEditorPane("text/html", "<html>"+ text + "</html>");
+	textArea.setEditable(false);
+	textArea.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
+	textArea.setFont(DEFAULT_FONT);
+
+	return new JScrollPane(textArea, VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_NEVER);
+    }
+    
+    public static String convertTextToHtml(final String text) {
+	var originalQuestion = unescapeHtml4(text.trim());
+	
+	final var formatteds = StringUtils.substringsBetween(originalQuestion, "```", "´´´");
+	
+	if (nonNull(formatteds)) {
+	    int i = 1;
+	    for (final var formatted : formatteds) {
+		originalQuestion = replace(originalQuestion, formatted, "$"+i);
+		i++;
+	    }
+	}
+	
+	originalQuestion = replace(originalQuestion, "```", "");
+	originalQuestion = replace(originalQuestion, "´´´", "");
+	originalQuestion = replace(originalQuestion, "<", "&lt;");
+	originalQuestion = replace(originalQuestion, ">", "&gt;");
+	originalQuestion = replace(originalQuestion, "&", "&amp;");
+	originalQuestion = replace(originalQuestion, "\n", " <br />");
+	
+	if (nonNull(formatteds)) {
+	    int i = 1;
+	    for (final var formatted : formatteds) {
+		originalQuestion = replace(originalQuestion, "$"+i, "<pre>"+formatted+"</pre>");
+		i++;
+	    }
+	}
+	
+	return originalQuestion;
     }
 
     public static JComponent createScrollTextToShow(final String text) {
@@ -69,16 +132,8 @@ public class ControllerUtil {
 	return new JScrollPane(textArea, VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_NEVER);
     }
 
-    public static JComponent createTextToShow(final String text) {
-	final var textArea = new JTextArea(text);
-	textArea.setBorder(new EmptyBorder(0, 0, 0, 0));
-	textArea.setOpaque(false);
-	textArea.setEditable(false);
-	textArea.setFont(DEFAULT_FONT);
-	return textArea;
-    }
-
     public static ActionListener createTimerAction(final Integer duration, final JLabel jlabel, final Action action) {
+	
 	return new ActionListener() {
 
 	    private long time = (long) duration * MILLISECOND * SIXTY_VALUE;
@@ -102,22 +157,6 @@ public class ControllerUtil {
 		}
 	    }
 	};
-    }
-
-    public static void setUIFont(final Font f) {
-	
-	var keys = UIManager.getDefaults().keys();
-	
-	while (keys.hasMoreElements()) {
-	    
-	    Object key = keys.nextElement();
-	    
-	    Object value = UIManager.get(key);
-	    
-	    if (value instanceof Font) {
-		UIManager.put(key, f);
-	    }
-	}
     }
 
     public static JPanel createDiscreteOptions(final Question question) {
@@ -264,61 +303,7 @@ public class ControllerUtil {
 	}
     }
 
-    public static String getStatistic(final Exam exam) {
-
-	final var qtyTotal = exam.getQuestions().stream() //
-			.count();
-
-	final var qtyCorrect = exam.getQuestions().stream() //
-			.filter(q -> q.isCorrect()) //
-			.count();
-
-	final var qtyIncorrect = qtyTotal - qtyCorrect;
-
-	final var matchContext = new MathContext(2, HALF_UP); // 2 precision
-
-	final var minScoreValue = new BigDecimal(qtyTotal) //
-			.multiply(exam.getMinScorePercent()) //
-			.divide(BigDecimal.valueOf(100l), matchContext);
-
-	final var percCorrect = new BigDecimal(qtyCorrect) //
-			.divide(BigDecimal.valueOf(qtyTotal), matchContext) //
-			.multiply(BigDecimal.valueOf(100l));
-
-	final var percIncorrect = new BigDecimal(qtyIncorrect) //
-			.divide(BigDecimal.valueOf(qtyTotal), matchContext) //
-			.multiply(BigDecimal.valueOf(100l));
-
-	final var result = BigDecimal.valueOf(qtyCorrect).compareTo(minScoreValue) >= 0 ? //
-			"<font color='green'>PASSED</font>" : //
-			"<font color='red'>FAILED</font>";
-
-	final var duration = exam.getDuration();
-
-	final var msg = """
-			<html>
-			You {0} on this exam! <br />
-			You had {1} questions with min score {2} ({3}%). <br />
-			You answered {4} ({5}%) correct(s) and {6} ({7}%) incorrect(s). <br />
-			The test duration was {8} minutes.
-			</html>
-			""";
-
-	return MessageFormat.format( //
-			msg, //
-			result, // 0
-			qtyTotal, // 1
-			minScoreValue, // 2
-			exam.getMinScorePercent(), // 3
-			qtyCorrect, // 4
-			percCorrect, // 5
-			qtyIncorrect, // 6
-			percIncorrect, // 7
-			duration // 8
-	);
-    }
-
-    public static String extractedOptions(final String msg, final List<String> list) {
+    public static String extractedOptions(final List<String> list) {
 
 	final String joined;
 	if (list.isEmpty()) {
@@ -330,16 +315,15 @@ public class ControllerUtil {
 	    joined = list.get(0);
 	}
 
-	return msg + joined;
+	return joined;
     }
-
-    private static String treatOptionText(final String id, final String text) {
-
-	if (StringUtils.containsAny(text, "\n")) { // large text option
-	    return "<html>" + id + ")<br>" + replaceAll(text, "[\\n]", "<br>") + "</html>";
-	}
-
-	// short text option
-	return "<html>" + id + ")<br>" + text + "</html>";
+    
+    private static JTextArea createTextToShow(final String text) {
+	final var textArea = new JTextArea(text);
+	textArea.setBorder(new EmptyBorder(0, 0, 0, 0));
+	textArea.setOpaque(false);
+	textArea.setEditable(false);
+	textArea.setFont(DEFAULT_FONT);
+	return textArea;
     }
 }

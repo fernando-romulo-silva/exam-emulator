@@ -154,6 +154,26 @@ public class Exam {
 	finish = LocalDateTime.now();
 	status = ExamStatus.FINISHED;
     }
+    
+    public void pause() {
+	
+	if (status != ExamStatus.RUNNING) {
+	    throw new IllegalStateException("You can pause a exam only on Running status!");
+	}
+	
+	
+	status = ExamStatus.PAUSED;
+    }
+    
+    public void proceed() {
+	
+	if (status != ExamStatus.PAUSED) {
+	    throw new IllegalStateException("You can proceed a exam only on Paused status!");
+	}
+
+	
+	status = ExamStatus.RUNNING;
+    }
 
     // -----------------------------------------------------------------------------------------------------------------
 

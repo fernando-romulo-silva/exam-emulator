@@ -2,7 +2,7 @@ package org.examemulator.service;
 
 import java.util.List;
 
-import org.examemulator.domain.pretest.PretestGroup;
+import org.examemulator.domain.pretest.PreGroup;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -16,12 +16,12 @@ public class ExamGroupService {
     private EntityManager entityManager;
     
     @Transactional
-    public void save(final PretestGroup examGroup) {
+    public void save(final PreGroup examGroup) {
 
 	entityManager.persist(examGroup);
     }
 
-    public List<PretestGroup> getAll() {
-	return entityManager.createQuery("select p from ExamGroup p", PretestGroup.class).getResultList();
+    public List<PreGroup> getAll() {
+	return entityManager.createQuery("select p from ExamGroup p", PreGroup.class).getResultList();
     }
 }

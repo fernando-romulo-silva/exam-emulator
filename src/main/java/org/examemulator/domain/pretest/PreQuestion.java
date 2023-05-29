@@ -6,27 +6,25 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "PRETEST_QUESTION")
-public class PretestQuestion implements Comparable<PretestQuestion>  {
+@Table(name = "PRE_EXAM_QUESTION")
+public class PreQuestion implements Comparable<PreQuestion>  {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
-    private Long id;
+    private String id;
 
     @Column(name = "NAME")
     private String name;
@@ -42,14 +40,14 @@ public class PretestQuestion implements Comparable<PretestQuestion>  {
 
     @JoinColumn(name = "QUESTION_ID")
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<PretestOption> options = new ArrayList<>();
+    private final List<PreOption> options = new ArrayList<>();
     
-    
-    PretestQuestion() {
+    PreQuestion() {
 	super();
     }
 
-    private PretestQuestion(final Builder builder) {
+    private PreQuestion(final Builder builder) {
+	this.id = UUID.randomUUID().toString();
 	this.name = builder.name;
 	this.value = builder.value;
 	this.explanation = builder.explanation;
@@ -62,19 +60,23 @@ public class PretestQuestion implements Comparable<PretestQuestion>  {
     public String getValue() {
 	return value;
     }
+    
+    public Integer getOrder() {
+	return order;
+    }
 
     public String getExplanation() {
 	return explanation;
     }
 
-    public List<PretestOption> getOptions() {
+    public List<PreOption> getOptions() {
 	return Collections.unmodifiableList(options);
     }
 
     public List<String> getCorrectOptions() {
 	return options.stream() //
-			.filter(PretestOption::isCorrect) //
-			.map(PretestOption::getLetter) //
+			.filter(PreOption::isCorrect) //
+			.map(PreOption::getLetter) //
 			.toList();
     }
     
@@ -93,7 +95,7 @@ public class PretestQuestion implements Comparable<PretestQuestion>  {
 	if (this == obj) {
 	    result = true;
 
-	} else if (obj instanceof PretestQuestion other) {
+	} else if (obj instanceof PreQuestion other) {
 	    result = Objects.equals(id, other.id);
 
 	} else {
@@ -116,7 +118,7 @@ public class PretestQuestion implements Comparable<PretestQuestion>  {
     }
     
     @Override
-    public int compareTo(final PretestQuestion another) {
+    public int compareTo(final PreQuestion another) {
 	return this.order.compareTo(another.order);
     }
     
@@ -132,20 +134,20 @@ public class PretestQuestion implements Comparable<PretestQuestion>  {
 
 	public Integer order;
 
-	public List<PretestOption> options;
+	public List<PreOption> options;
 
 	public Builder with(final Consumer<Builder> function) {
 	    function.accept(this);
 	    return this;
 	}
 
-	public PretestQuestion build() {
+	public PreQuestion build() {
 
 	    if (!checkParams()) {
 		throw new IllegalStateException("");
 	    }
 
-	    return new PretestQuestion(this);
+	    return new PreQuestion(this);
 	}
 
 	private boolean checkParams() {

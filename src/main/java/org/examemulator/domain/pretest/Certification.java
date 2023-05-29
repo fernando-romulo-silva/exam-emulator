@@ -10,43 +10,19 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "PRETEST_QUESTION")
-public class PretestOption {
+@Table(name = "GROUP")
+public class Certification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Long id;
-    
-    @Column(name = "LETTER")
-    private String letter;
 
-    @Column(name = "TEXT")
-    private String text;
-
-    @Column(name = "CORRECT")
-    private Boolean correct = Boolean.FALSE;
+    @Column(name = "NAME")
+    private String name;
     
-    PretestOption(){
-	super();
-    }
     
-    public PretestOption(final String letter, final String text, final Boolean correct) {
-	super();
-	this.letter = letter;
-	this.text = text;
-	this.correct = correct;
-    }
-
-    public Boolean isCorrect() {
-	return correct;
-    }
-    
-    public String getLetter() {
-        return letter;
-    }
-
-    // ----------------------------------------------------------
+    // ------------------------------------------
     
     @Override
     public int hashCode() {
@@ -61,7 +37,7 @@ public class PretestOption {
 	if (this == obj) {
 	    result = true;
 
-	} else if (obj instanceof PretestOption other) {
+	} else if (obj instanceof Certification other) {
 	    result = Objects.equals(id, other.id);
 
 	} else {
@@ -75,9 +51,8 @@ public class PretestOption {
     public String toString() {
 	final var sbToString = new StringBuilder(76);
 
-	sbToString.append("Option [id=").append(id) //
-			.append(", correct=").append(correct) //
-			.append(", text=").append(text) //
+	sbToString.append("Certification [id=").append(id) //
+			.append(", name=").append(name) //
 			.append(']');
 
 	return sbToString.toString();

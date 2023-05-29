@@ -18,33 +18,33 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "PRETEST")
-public class Pretest {
+@Table(name = "PRE_EXAM")
+public class PreExam {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Long id;
 
-    @Column(name = "NAME")
+    @Column(name = "NAME", unique = true)
     private String name;
 
+    @Column(name = "DESCRIPTION")
+    private String description;
+    
     @OneToOne
-    @JoinColumn(name = "PRETEST_GROUP_ID", referencedColumnName = "ID")
-    private PretestGroup group;
-    
-    @Column(name = "QUESTION_QTY")
-    private Short questionQty;
+    @JoinColumn(name = "GROUP_ID", referencedColumnName = "ID")
+    private PreGroup group;
 
-    @JoinColumn(name = "PRETEST_QUESTION_ID")
+    @JoinColumn(name = "PRE_QUESTION_ID")
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<PretestQuestion> questions = new ArrayList<>();
-    
-    Pretest() {
+    private final List<PreQuestion> questions = new ArrayList<>();
+
+    PreExam() {
 	super();
     }
-    
-    public Pretest(final String name, final PretestGroup group) {
+
+    public PreExam(final String name, final PreGroup group) {
 	super();
 	this.name = name;
 	this.group = group;
@@ -58,11 +58,11 @@ public class Pretest {
 	return name;
     }
 
-    public List<PretestQuestion> getQuestions() {
+    public List<PreQuestion> getQuestions() {
 	return Collections.unmodifiableList(questions);
     }
-    
-    public void addQuestion(final PretestQuestion question) {
+
+    public void addQuestion(final PreQuestion question) {
 	questions.add(question);
     }
 
@@ -80,7 +80,7 @@ public class Pretest {
 	if (this == obj) {
 	    result = true;
 
-	} else if (obj instanceof Pretest other) {
+	} else if (obj instanceof PreExam other) {
 	    result = Objects.equals(id, other.id);
 
 	} else {

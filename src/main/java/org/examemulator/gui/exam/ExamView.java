@@ -32,7 +32,7 @@ class ExamView extends JFrame {
 
     JPanel questionInternPanel, examPanel, pQuestions;
 
-    JButton btnPause, btnStart, btnFinish, btnPrevious, btnNext, btnCheckAnswer, btnStatistics;
+    JButton btnPauseProceed, btnStart, btnFinish, btnPrevious, btnNext, btnCheckAnswer, btnStatistics;
 
     JLabel lblClock, lblDuration;
 
@@ -90,8 +90,9 @@ class ExamView extends JFrame {
 	btnStart.setEnabled(false);
 	examControlPanel1.add(btnStart);
 	
-	btnPause = new JButton("Pause");
-	examControlPanel1.add(btnPause);
+	btnPauseProceed = new JButton("Pause");
+	btnPauseProceed.setEnabled(false);
+	examControlPanel1.add(btnPauseProceed);
 
 	btnFinish = new JButton("Finish");
 	btnFinish.setEnabled(false);
@@ -147,12 +148,12 @@ class ExamView extends JFrame {
 	textMinScore.setEnabled(false);
 	examControlPane3.add(textMinScore);
 	
-		lblDuration = new JLabel("Duration (Min)");
-		examControlPane3.add(lblDuration);
-	
-		spinnerTimeDuration = new JSpinner(new SpinnerNumberModel(60, 10, 120, 10));
-		examControlPane3.add(spinnerTimeDuration);
-		spinnerTimeDuration.setEnabled(false);
+	lblDuration = new JLabel("Duration (Min)");
+	examControlPane3.add(lblDuration);
+
+	spinnerTimeDuration = new JSpinner(new SpinnerNumberModel(60, 10, 120, 10));
+	examControlPane3.add(spinnerTimeDuration);
+	spinnerTimeDuration.setEnabled(false);
 
 	lblClock = new JLabel("");
 	examControlPane3.add(lblClock);

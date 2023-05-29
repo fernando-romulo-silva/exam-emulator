@@ -8,22 +8,22 @@ import jakarta.data.repository.Repository;
 
 // https://vladmihalcea.com/best-spring-data-jparepository/
 @Repository
-public class PretestGroupRepository implements CrudRepository<PretestGroup, Long> {
+public class GroupRepository implements CrudRepository<PreGroup, Long> {
 
     @Override
-    public <S extends PretestGroup> S save(S entity) {
+    public <S extends PreGroup> S save(S entity) {
 	// TODO Auto-generated method stub
 	return null;
     }
 
     @Override
-    public <S extends PretestGroup> Iterable<S> saveAll(Iterable<S> entities) {
+    public <S extends PreGroup> Iterable<S> saveAll(Iterable<S> entities) {
 	// TODO Auto-generated method stub
 	return null;
     }
 
     @Override
-    public Optional<PretestGroup> findById(Long id) {
+    public Optional<PreGroup> findById(Long id) {
 	// TODO Auto-generated method stub
 	return Optional.empty();
     }
@@ -35,13 +35,13 @@ public class PretestGroupRepository implements CrudRepository<PretestGroup, Long
     }
 
     @Override
-    public Stream<PretestGroup> findAll() {
+    public Stream<PreGroup> findAll() {
 	// TODO Auto-generated method stub
 	return null;
     }
 
     @Override
-    public Stream<PretestGroup> findAllById(Iterable<Long> ids) {
+    public Stream<PreGroup> findAllById(Iterable<Long> ids) {
 	// TODO Auto-generated method stub
 	return null;
     }
@@ -59,7 +59,7 @@ public class PretestGroupRepository implements CrudRepository<PretestGroup, Long
     }
 
     @Override
-    public void delete(PretestGroup entity) {
+    public void delete(PreGroup entity) {
 	// TODO Auto-generated method stub
 	
     }
@@ -71,7 +71,7 @@ public class PretestGroupRepository implements CrudRepository<PretestGroup, Long
     }
 
     @Override
-    public void deleteAll(Iterable<? extends PretestGroup> entities) {
+    public void deleteAll(Iterable<? extends PreGroup> entities) {
 	// TODO Auto-generated method stub
 	
     }
