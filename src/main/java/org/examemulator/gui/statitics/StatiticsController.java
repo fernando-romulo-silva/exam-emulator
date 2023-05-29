@@ -80,7 +80,7 @@ public class StatiticsController {
     };
 
     private final ItemListener itemListener = event -> {
-	loadPanelQuestions();
+	loadNumbersPanel();
 	loadPanelQuestion();
     };
 
@@ -130,7 +130,7 @@ public class StatiticsController {
 	selectedQuestion = questions.get(0);
 	
 	loadPanelQuestion();
-	loadPanelQuestions();
+	loadNumbersPanel();
 
 	view.chckbxMarked.setSelected(false);
 	view.chckbxIncorrects.setSelected(true);
@@ -177,7 +177,7 @@ public class StatiticsController {
 	view.pQuestion.repaint();
     }
 
-    private void loadPanelQuestions() {
+    private void loadNumbersPanel() {
 
 	final var showCorrect = view.chckbxCorrects.isSelected();
 

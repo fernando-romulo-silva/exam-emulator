@@ -2,6 +2,7 @@ package org.examemulator.domain.exam;
 
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
+import static org.apache.commons.collections4.CollectionUtils.containsAny;
 import static org.apache.commons.collections4.CollectionUtils.isEqualCollection;
 import static org.examemulator.util.FileUtil.WORDS_ALL;
 import static org.examemulator.util.FileUtil.WORDS_NONE;
@@ -81,7 +82,7 @@ public class Question implements Comparable<Question> {
 	
 	final var answersOptional = options.stream() //
 			.map(Option::getText) //
-			.filter(answer -> CollectionUtils.containsAny(List.of(answer), words))
+			.filter(answer -> containsAny(List.of(answer), words))
 			.findAny();
 	
 	final var lastOptions = new ArrayList<Option>();
@@ -89,10 +90,10 @@ public class Question implements Comparable<Question> {
 	if (answersOptional.isPresent()) {
 	    
 	    lastOptions.addAll(options.stream()
-			    		.filter(option -> CollectionUtils.containsAny(List.of(option.getText()), words))
+			    		.filter(option -> containsAny(List.of(option.getText()), words))
 			    		.toList());
 
-	    options.removeIf(option -> CollectionUtils.containsAny(List.of(option.getText()), words));
+	    options.removeIf(option -> containsAny(List.of(option.getText()), words));
 	}
 	
 	Collections.shuffle(options, new Random(System.nanoTime()));

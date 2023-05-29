@@ -17,6 +17,7 @@ import static org.apache.commons.lang3.StringUtils.substringBefore;
 import static org.apache.commons.text.StringEscapeUtils.unescapeHtml4;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -64,12 +65,6 @@ public class GuiUtil {
 	void execute();
     }
 
-    public static String convertToPreTag(final String text) {
-	var internText = replace(text, "```", "<pre>");
-	internText = replace(internText, "´´´", "</pre>");
-	return internText;
-    }
-    
     private static String treatOptionText(final String id, final String text) {
 
 	if (StringUtils.containsAny(text, "\n")) { // large text option
@@ -80,15 +75,6 @@ public class GuiUtil {
 	return "<html>" + id + ")" + TAG_BR + text + "</html>";
     }
     
-    
-    public static JComponent createScrollHtmlTextToShow(final String text) {
-	final var textArea = new JEditorPane("text/html", "<html>"+ text + "</html>");
-	textArea.setEditable(false);
-	textArea.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
-	textArea.setFont(DEFAULT_FONT);
-
-	return new JScrollPane(textArea, VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_NEVER);
-    }
     
     public static String convertTextToHtml(final String text) {
 	var originalQuestion = unescapeHtml4(text.trim());
@@ -119,6 +105,16 @@ public class GuiUtil {
 	}
 	
 	return originalQuestion;
+    }
+    
+    public static JComponent createScrollHtmlTextToShow(final String text) {
+	final var textArea = new JEditorPane("text/html", "<html>"+ text + "</html>");
+	textArea.setEditable(false);
+	textArea.setMinimumSize(new Dimension(100, 100));
+	textArea.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
+	textArea.setFont(DEFAULT_FONT);
+
+	return new JScrollPane(textArea, VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_NEVER);
     }
 
     public static JComponent createScrollTextToShow(final String text) {

@@ -3,8 +3,14 @@ package org.examemulator.gui.exam;
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.NORTH;
 import static java.awt.BorderLayout.SOUTH;
+import static java.awt.Color.BLACK;
+import static java.awt.Color.BLUE;
+import static java.awt.Color.ORANGE;
+import static java.util.stream.Collectors.joining;
 import static javax.swing.BoxLayout.Y_AXIS;
 import static javax.swing.JFileChooser.DIRECTORIES_ONLY;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.LF;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static org.apache.commons.lang3.StringUtils.leftPad;
 import static org.examemulator.domain.exam.QuestionType.DISCRETE_MULTIPLE_CHOICE;
@@ -22,7 +28,6 @@ import static org.examemulator.util.ControllerUtil.previousQuestion;
 import static org.examemulator.util.FileUtil.extractedExamName;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
@@ -31,7 +36,6 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.swing.BorderFactory;
@@ -330,7 +334,7 @@ public class ExamController {
 
 	view.btnCheckAnswer.addActionListener(event -> {
 
-	    final var dialogTitle = "Question " + leftPad(selectedQuestion.getOrder().toString(), 2, '0') + "'s Answer";
+	    final var dialogTitle = "Question ".concat(leftPad(selectedQuestion.getOrder().toString(), 2, '0')).concat("'s Answer");
 	    final var answerDialog = new JDialog(view, dialogTitle, Dialog.ModalityType.DOCUMENT_MODAL);
 	    answerDialog.setBounds(132, 132, 300, 200);
 	    answerDialog.setSize(600, 500);
@@ -339,16 +343,17 @@ public class ExamController {
 	    final var dialogContainer = answerDialog.getContentPane();
 	    dialogContainer.setLayout(new BorderLayout());
 
-	    final var correctOptions = "Correct Answer(s): " + extractedOptions(selectedQuestion.getCorrectOptions());
+	    final var correctOptions = "Correct Answer(s): ".concat(extractedOptions(selectedQuestion.getCorrectOptions()));
 
 	    final String vs;
 	    if (discreteList.contains(selectedQuestion.getType())) {
-		vs = "\n\n" + selectedQuestion.getOptions().stream() //
+		vs =  LF.concat(LF)
+				.concat(selectedQuestion.getOptions().stream() //
 				.filter(Option::isCorrect) //
 				.map(Option::getText) //
-				.collect(Collectors.joining("\n"));
+				.collect(joining(LF)));
 	    } else {
-		vs = "";
+		vs = EMPTY;
 	    }
 
 	    final var explanation = "\n" + selectedQuestion.getExplanation();
@@ -398,11 +403,11 @@ public class ExamController {
 	if (component.isPresent() && component.get() instanceof JLabel label) {
 
 	    if (selectedQuestion.isMarked()) {
-		label.setForeground(Color.ORANGE);
+		label.setForeground(ORANGE);
 	    } else if (selectedQuestion.isAnswered()) {
-		label.setForeground(Color.BLUE);
+		label.setForeground(BLUE);
 	    } else {
-		label.setForeground(Color.BLACK);
+		label.setForeground(BLACK);
 	    }
 	}
     }
@@ -410,11 +415,13 @@ public class ExamController {
     private void loadPanelQuestion() {
 	
 	view.questionInternPanel.removeAll();
+	
+	final var questionText = LF.concat(selectedQuestion.getValue()).concat(LF);
 
 	final var panelQuestionPanel = new JPanel();
 	panelQuestionPanel.setLayout(new BoxLayout(panelQuestionPanel, Y_AXIS));
-	panelQuestionPanel.setBorder(BorderFactory.createTitledBorder("Question " + leftPad(selectedQuestion.getOrder().toString(), 2, '0')));
-	panelQuestionPanel.add(createScrollTextToShow("\n" + selectedQuestion.getValue() + "\n"));
+	panelQuestionPanel.setBorder(BorderFactory.createTitledBorder("Question ".concat(leftPad(selectedQuestion.getOrder().toString(), 2, '0'))));
+	panelQuestionPanel.add(createScrollTextToShow(questionText));
 	panelQuestionPanel.revalidate();
 	panelQuestionPanel.repaint();
 
@@ -445,7 +452,7 @@ public class ExamController {
 	view.pQuestions.revalidate();
 	view.pQuestions.repaint();
 
-	final var questionLabelListener = new MouseAdapter() {
+	final MouseAdapter questionLabelListener = new MouseAdapter() {
 
 	    @Override
 	    public void mouseClicked(final MouseEvent event) {

@@ -35,9 +35,9 @@ import jakarta.persistence.Table;
 public class Exam {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
-    private final String id; // uuid
+    private Long id;
 
     @Column(name = "NAME")
     private final String name;
@@ -80,7 +80,6 @@ public class Exam {
 
     private Exam(final Builder builder) {
 	super();
-	this.id = UUID.randomUUID().toString();
 	this.name = builder.name;
 	this.randomOrder = builder.randomOrder;
 	this.practiceMode = builder.practiceMode;
@@ -177,7 +176,7 @@ public class Exam {
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    public String getId() {
+    public Long getId() {
 	return id;
     }
     
