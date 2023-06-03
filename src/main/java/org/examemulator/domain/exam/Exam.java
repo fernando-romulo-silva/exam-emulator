@@ -8,13 +8,15 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
-import java.util.UUID;
 import java.util.function.Consumer;
 
+import org.examemulator.domain.base.InquiryInterface;
+import org.examemulator.domain.pretest.PreQuestion;
 import org.examemulator.util.RandomUtil;
 
 import jakarta.persistence.CascadeType;
@@ -78,6 +80,7 @@ public class Exam {
 
     // -------------------------------
 
+    @SuppressWarnings("unchecked")
     private Exam(final Builder builder) {
 	super();
 	this.name = builder.name;
@@ -88,15 +91,7 @@ public class Exam {
 	this.shuffleOptions = builder.shuffleOptions;
 	this.shuffleQuestions = builder.shuffleQuestions;
 	this.origin = builder.origin;
-    }
-
-    public void addQuestion(final Question question) {
-
-	if (status != ExamStatus.INITIAL) {
-	    throw new IllegalStateException("You can add a new question only on Initial status!");
-	}
-
-	questions.add(question);
+	this.questions.addAll(builder.questions);
     }
 
     public void begin() {
@@ -160,7 +155,6 @@ public class Exam {
 	    throw new IllegalStateException("You can pause a exam only on Running status!");
 	}
 	
-	
 	status = ExamStatus.PAUSED;
     }
     
@@ -169,7 +163,6 @@ public class Exam {
 	if (status != ExamStatus.PAUSED) {
 	    throw new IllegalStateException("You can proceed a exam only on Paused status!");
 	}
-
 	
 	status = ExamStatus.RUNNING;
     }
@@ -261,7 +254,6 @@ public class Exam {
 
     public static final class Builder {
 
-	public String name;
 
 	public BigDecimal minScorePercent;
 
@@ -275,8 +267,12 @@ public class Exam {
 	    
 	public boolean shuffleQuestions = true;
 	
-	public ExamOrigin origin = ExamOrigin.FROM_PRETEST;
-
+	public List<? extends InquiryInterface> questions;
+	
+	private String name;
+	
+	private ExamOrigin origin;
+	
 	public Builder with(final Consumer<Builder> function) {
 	    function.accept(this);
 	    return this;
@@ -285,7 +281,26 @@ public class Exam {
 	public Exam build() {
 	    minScorePercent = ofNullable(minScorePercent).orElse(BigDecimal.valueOf(70));
 	    discretPercent = ofNullable(discretPercent).orElse(BigDecimal.ZERO);
+	    
+	    origin = findOrigin();
+	    
+	    if (questions.get(0) instanceof PreQuestion p) {
+		p.get
+	    }
+	    
+	    name = switch (origin) {
+
+	    	case FROM_RETAKE -> "Retake from ";
+	    	case FROM_PRETEST -> "Exame from pre test";
+	    	
+	    	default -> throw new IllegalArgumentException("Unexpected value: ".concat(origin.toString()));
+	    };
+	    
 	    return new Exam(this);
+	}
+
+	private ExamOrigin findOrigin() {
+	    return null;
 	}
     }
 }

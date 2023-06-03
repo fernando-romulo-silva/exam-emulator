@@ -89,7 +89,7 @@ public class StatiticsController {
     private Question selectedQuestion;
 
     @Inject
-    StatiticsController(final StatiticsGui gui) {
+    StatiticsController(final StatiticsView.StatiticsGui gui) {
 	this.view = gui.getView();
     }
 
@@ -148,7 +148,7 @@ public class StatiticsController {
 
 	final var options = selectedQuestion.getOptions() //
 			.stream() //
-			.map(option -> option.getLetter().concat(") ").concat(TAG_BR).concat(convertTextToHtml(option.getText()))) //
+			.map(option -> TAG_OPEN_B.concat(option.getLetter()).concat(") ").concat(TAG_CLOSE_B).concat(TAG_BR).concat(convertTextToHtml(option.getText()))) //
 			.collect(joining(TAG_BR_BR));
 
 	final var answeredOptions = TAG_OPEN_B.concat("Your Answer(s): ").concat(TAG_CLOSE_B).concat(extractedOptions(selectedQuestion.getAnswers()));

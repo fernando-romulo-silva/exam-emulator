@@ -29,6 +29,14 @@ public class PretestService {
     private static AtomicLong idOptions = new AtomicLong(1);
 
     private static AtomicLong idQuestion = new AtomicLong(1);
+    
+    
+    public PreExam findPreExamByPreQuestion(final PreQuestion preQuestion) {
+	
+	return null;
+    }
+    
+    
 
     public PreExam createExam(final String dir) {
 

@@ -37,6 +37,8 @@ import javax.swing.SwingUtilities;
 import org.examemulator.domain.pretest.PreExam;
 import org.examemulator.domain.pretest.PreQuestion;
 import org.examemulator.gui.components.RangeSlider;
+import org.examemulator.gui.exam.ExamController;
+import org.examemulator.gui.preexame.PreExameView.PreExameGui;
 import org.examemulator.service.PretestService;
 import org.slf4j.Logger;
 
@@ -51,6 +53,8 @@ public class PreExameController {
 
     private final PretestService service;
 
+    private final ExamController examController;
+
     private final Logger logger;
 
     private final List<PreQuestion> toExamQuestions = new ArrayList<>();
@@ -62,10 +66,15 @@ public class PreExameController {
     private String currentFolder;
 
     @Inject
-    PreExameController(final PreExameGui gui, final PretestService service, final Logger logger) {
+    PreExameController( //
+		    final PreExameGui gui, //
+		    final PretestService service, //
+		    final ExamController examController, //
+		    final Logger logger) {
 	super();
 	this.view = gui.getView();
 	this.service = service;
+	this.examController = examController;
 	this.logger = logger;
     }
 
@@ -179,8 +188,14 @@ public class PreExameController {
 		selectFirstQuestion();
 		loadPanelQuestion();
 	    }
-
 	});
+
+	view.btnNewExam.addActionListener(event -> {
+	    view.setVisible(false);
+	    
+	    examController.show();
+	});
+
     }
 
     private void loadPanelQuestion() {
@@ -245,31 +260,31 @@ public class PreExameController {
 	    label.addMouseListener(questionLabelListener);
 	}
     }
-    
+
     private void selectFirstQuestion() {
-	
+
 	if (exam.getQuestions().isEmpty()) {
 	    return;
 	}
-	
+
 	selectedQuestion = exam.getQuestions().get(0);
 	view.btnPrevious.setEnabled(hasPreviousQuestion(exam.getQuestions(), selectedQuestion));
 	view.btnNext.setEnabled(hasNextQuestion(exam.getQuestions(), selectedQuestion));
     }
-    
+
     private void selectQuestion(int order) {
-	
+
 	final var questionOptional = exam.getQuestions() //
 			.stream() //
 			.filter(question -> Objects.equals(question.getOrder(), order)) //
 			.findFirst();
-	
+
 	if (questionOptional.isEmpty()) {
 	    return;
 	}
-	
+
 	selectedQuestion = questionOptional.get();
-	
+
 	view.btnPrevious.setEnabled(hasPreviousQuestion(exam.getQuestions(), selectedQuestion));
 	view.btnNext.setEnabled(hasNextQuestion(exam.getQuestions(), selectedQuestion));
     }

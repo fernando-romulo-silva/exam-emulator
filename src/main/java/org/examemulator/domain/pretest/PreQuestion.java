@@ -9,6 +9,8 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import org.examemulator.domain.base.InquiryInterface;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,8 +21,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "PRE_EXAM_QUESTION")
-public class PreQuestion implements Comparable<PreQuestion>  {
+@Table(name = "PRE_QUESTION")
+public class PreQuestion implements Comparable<PreQuestion>, InquiryInterface  {
     
     @Id
     @Column(name = "ID", nullable = false)
@@ -38,7 +40,7 @@ public class PreQuestion implements Comparable<PreQuestion>  {
     @Column(name = "ORDER")
     private Integer order;
 
-    @JoinColumn(name = "QUESTION_ID")
+    @JoinColumn(name = "PRE_QUESTION_ID")
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<PreOption> options = new ArrayList<>();
     
@@ -71,6 +73,14 @@ public class PreQuestion implements Comparable<PreQuestion>  {
 
     public List<PreOption> getOptions() {
 	return Collections.unmodifiableList(options);
+    }
+    
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public List<String> getCorrectOptions() {

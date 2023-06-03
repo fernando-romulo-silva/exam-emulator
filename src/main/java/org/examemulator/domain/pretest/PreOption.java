@@ -10,7 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "PRE_QUESTION_OPTION")
+@Table(name = "PRE_OPTION")
 public class PreOption {
 
     @Id

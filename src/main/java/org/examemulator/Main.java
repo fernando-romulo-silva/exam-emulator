@@ -12,7 +12,7 @@ public class Main {
 
     public static void main(final String... args) {
 
-	executeApplication01();
+	executeApplication02();
     }
 
     static void executeApplication02() {

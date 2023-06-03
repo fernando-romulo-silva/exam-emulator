@@ -23,10 +23,20 @@ import javax.swing.border.EtchedBorder;
 import org.examemulator.gui.components.RangeSlider;
 import org.examemulator.gui.components.WrapLayout;
 
+import jakarta.enterprise.context.ApplicationScoped;
+
 class PreExameView extends JFrame {
-    
+
     private static final long serialVersionUID = 1L;
-    
+
+    @ApplicationScoped
+    static class PreExameGui {
+
+	PreExameView getView() {
+	    return new PreExameView();
+	}
+    }
+
     JPanel questionInternPanel, examPanel, pQuestions;
 
     JButton btnNewExam, btnDelete, btnNew, btnPrevious, btnNext, btnSave;
@@ -38,9 +48,9 @@ class PreExameView extends JFrame {
     JComboBox<String> cbGroup;
 
     RangeSlider rangeQuestions;
-    
+
     JTextField textFieldName;
- 
+
     public PreExameView() {
 	setDefaultCloseOperation(EXIT_ON_CLOSE);
 	setBounds(100, 100, 871, 723);
@@ -76,11 +86,11 @@ class PreExameView extends JFrame {
 	btnSave = new JButton("Save");
 	btnSave.setEnabled(false);
 	examControlPanel1.add(btnSave);
-	
+
 	btnDelete = new JButton("Delete");
 	btnDelete.setEnabled(false);
 	examControlPanel1.add(btnDelete);
-	
+
 	btnNewExam = new JButton("Exam");
 	btnNewExam.setEnabled(false);
 	examControlPanel1.add(btnNewExam);
@@ -92,12 +102,12 @@ class PreExameView extends JFrame {
 	final var lblName = new JLabel("Name");
 	examControlPanel2.add(lblName);
 	lblName.setBorder(new EtchedBorder(LOWERED, null, null));
-	
+
 	textFieldName = new JTextField();
 	textFieldName.setEnabled(false);
 	examControlPanel2.add(textFieldName);
 	textFieldName.setColumns(10);
-	
+
 	lblQuantity = new JLabel("Quantity");
 	examControlPanel2.add(lblQuantity);
 
@@ -145,7 +155,7 @@ class PreExameView extends JFrame {
 	// -------------------------------------------------------------------------------------------
 	// Control Panel
 	// -------------------------------------------------------------------------------------------
-	
+
 	pQuestions = new JPanel(new WrapLayout(LEFT, 5, 5));
 	examPanel.add(pQuestions);
 
@@ -176,5 +186,5 @@ class PreExameView extends JFrame {
 
 	contentPane.add(questionPanel);
     }
-    
+
 }

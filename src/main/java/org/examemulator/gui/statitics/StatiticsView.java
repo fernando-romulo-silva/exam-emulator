@@ -19,9 +19,19 @@ import javax.swing.border.EtchedBorder;
 
 import org.examemulator.gui.components.WrapLayout;
 
+import jakarta.enterprise.context.ApplicationScoped;
+
 class StatiticsView extends JDialog {
 
     private static final long serialVersionUID = 1L;
+    
+    @ApplicationScoped
+    static class StatiticsGui {
+
+	StatiticsView getView() {
+	    return new StatiticsView();
+	}
+    }
 
     JPanel pQuestion, pQuestions, pMain;
 

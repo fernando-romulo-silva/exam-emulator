@@ -6,13 +6,18 @@ import static java.awt.BorderLayout.SOUTH;
 import static java.awt.Color.BLACK;
 import static java.awt.Color.BLUE;
 import static java.awt.Color.ORANGE;
+import static java.awt.Dialog.ModalityType.DOCUMENT_MODAL;
+import static java.awt.event.MouseEvent.BUTTON1;
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
+import static javax.swing.BorderFactory.createTitledBorder;
 import static javax.swing.BoxLayout.Y_AXIS;
 import static javax.swing.JFileChooser.DIRECTORIES_ONLY;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.LF;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static org.apache.commons.lang3.StringUtils.leftPad;
+import static org.examemulator.domain.exam.ExamStatus.RUNNING;
 import static org.examemulator.domain.exam.QuestionType.DISCRETE_MULTIPLE_CHOICE;
 import static org.examemulator.domain.exam.QuestionType.DISCRETE_SINGLE_CHOICE;
 import static org.examemulator.gui.GuiUtil.MILLISECOND;
@@ -28,17 +33,16 @@ import static org.examemulator.util.ControllerUtil.previousQuestion;
 import static org.examemulator.util.FileUtil.extractedExamName;
 
 import java.awt.BorderLayout;
-import java.awt.Dialog;
 import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -55,6 +59,8 @@ import org.examemulator.domain.exam.ExamStatus;
 import org.examemulator.domain.exam.Option;
 import org.examemulator.domain.exam.Question;
 import org.examemulator.domain.exam.QuestionType;
+import org.examemulator.domain.pretest.PreQuestion;
+import org.examemulator.gui.exam.ExamView.ExamGui;
 import org.examemulator.gui.statitics.StatiticsController;
 import org.examemulator.service.ExamService;
 import org.slf4j.Logger;
@@ -76,6 +82,8 @@ public class ExamController {
     
     private final StatiticsController statiticsController;
 
+    private final List<PreQuestion> availableQuestions = new ArrayList<>();
+    
     private Exam exam;
 
     private Question selectedQuestion;
@@ -83,6 +91,7 @@ public class ExamController {
     private String currentFolder;
 
     private Timer timer;
+    
 
     @Inject
     ExamController(
@@ -133,7 +142,7 @@ public class ExamController {
 	    final var shuffleQuestions = view.chckbxShuffleQuestions.isSelected();
 	    final var shuffleOptions = view.chckbxShuffleOptions.isSelected();
 	    
-	    exam = service.createExam(currentFolder, practiceMode, discretPercent, mimScore, shuffleQuestions, shuffleOptions);
+	    exam = service.createExam (availableQuestions, practiceMode, discretPercent, mimScore, shuffleQuestions, shuffleOptions);
 
 	    view.btnStart.setEnabled(false);
 	    view.btnStatistics.setEnabled(false);
@@ -154,7 +163,7 @@ public class ExamController {
 
 	    final var duration = (Integer) view.spinnerTimeDuration.getValue();
 
-	    if (Objects.nonNull(timer)) {
+	    if (nonNull(timer)) {
 		timer.stop();
 	    }
 
@@ -180,7 +189,6 @@ public class ExamController {
 	});
 
 	view.btnPauseProceed.addActionListener(event -> {
-
 	    
 	    if (exam.getStatus().equals(ExamStatus.RUNNING)) {
 		
@@ -203,7 +211,7 @@ public class ExamController {
 		view.btnNext.setEnabled(false);
 		view.btnCheckAnswer.setEnabled(false);
 
-		if (Objects.nonNull(timer)) {
+		if (nonNull(timer)) {
 		    timer.stop();
 		}
 
@@ -226,11 +234,10 @@ public class ExamController {
 		view.btnNext.setEnabled(true);
 		view.btnCheckAnswer.setEnabled(true);		
 		
-		
 		exam.proceed();
 		view.btnPauseProceed.setText("Pause");
 
-		if (Objects.nonNull(timer)) {
+		if (nonNull(timer)) {
 //		    timer = new Timer(MILLISECOND, createTimerAction(duration, view.lblClock, () -> view.btnFinish.doClick()));
 //		    timer.set
 
@@ -245,7 +252,7 @@ public class ExamController {
 
 	    exam.finish();
 
-	    if (Objects.nonNull(timer)) {
+	    if (nonNull(timer)) {
 		timer.stop();
 	    }
 
@@ -288,14 +295,7 @@ public class ExamController {
 	    loadPanelQuestion();
 	});
 
-	view.mntmNew.addActionListener(event -> {
-
-	    final var chooser = new JFileChooser();
-	    chooser.setCurrentDirectory(new File("."));
-	    chooser.setDialogTitle("select an exam folder");
-	    chooser.setFileSelectionMode(DIRECTORIES_ONLY);
-	    chooser.setAcceptAllFileFilterUsed(false);
-	    chooser.showOpenDialog(view);
+	{
 
 	    view.questionInternPanel.removeAll();
 	    view.questionInternPanel.revalidate();
@@ -305,37 +305,34 @@ public class ExamController {
 	    view.pQuestions.revalidate();
 	    view.pQuestions.repaint();
 
-	    currentFolder = chooser.getSelectedFile().getAbsolutePath();
+	    view.btnStart.setEnabled(true);
+	    view.textMinScore.setEnabled(true);
+	    view.textDiscrete.setEnabled(true);
+	    view.cbMode.setEnabled(true);
+	    view.spinnerTimeDuration.setEnabled(true);
+	    view.chckbxShuffleQuestions.setEnabled(true);
+	    view.chckbxShuffleOptions.setEnabled(true);
 
-	    if (Objects.nonNull(currentFolder)) {
+	    view.btnCheckAnswer.setEnabled(false);
+	    view.btnFinish.setEnabled(false);
+	    view.btnNext.setEnabled(false);
+	    view.btnPrevious.setEnabled(false);
+	    view.btnStatistics.setEnabled(false);
+	    view.btnPauseProceed.setEnabled(false);
 
-		view.examPanel.setBorder(BorderFactory.createTitledBorder(extractedExamName(currentFolder)));
+	    view.revalidate();
+	    view.repaint();
+	    view.setVisible(true);
 
-		view.btnStart.setEnabled(true);
-		view.textMinScore.setEnabled(true);
-		view.textDiscrete.setEnabled(true);
-		view.cbMode.setEnabled(true);
-		view.spinnerTimeDuration.setEnabled(true);
-		view.chckbxShuffleQuestions.setEnabled(true);
-		view.chckbxShuffleOptions.setEnabled(true);
+	    view.examPanel.setBorder(createTitledBorder(extractedExamName(currentFolder)));
 
-		view.btnCheckAnswer.setEnabled(false);
-		view.btnFinish.setEnabled(false);
-		view.btnNext.setEnabled(false);
-		view.btnPrevious.setEnabled(false);
-		view.btnStatistics.setEnabled(false);
-		view.btnPauseProceed.setEnabled(false);
 
-		view.revalidate();
-		view.repaint();
-		view.setVisible(true);
-	    }
-	});
+	};
 
 	view.btnCheckAnswer.addActionListener(event -> {
 
 	    final var dialogTitle = "Question ".concat(leftPad(selectedQuestion.getOrder().toString(), 2, '0')).concat("'s Answer");
-	    final var answerDialog = new JDialog(view, dialogTitle, Dialog.ModalityType.DOCUMENT_MODAL);
+	    final var answerDialog = new JDialog(view, dialogTitle, DOCUMENT_MODAL);
 	    answerDialog.setBounds(132, 132, 300, 200);
 	    answerDialog.setSize(600, 500);
 	    answerDialog.setLocationRelativeTo(view);
@@ -356,7 +353,7 @@ public class ExamController {
 		vs = EMPTY;
 	    }
 
-	    final var explanation = "\n" + selectedQuestion.getExplanation();
+	    final var explanation = LF.concat(selectedQuestion.getExplanation());
 
 	    final var text = correctOptions + vs + explanation;
 
@@ -420,7 +417,7 @@ public class ExamController {
 
 	final var panelQuestionPanel = new JPanel();
 	panelQuestionPanel.setLayout(new BoxLayout(panelQuestionPanel, Y_AXIS));
-	panelQuestionPanel.setBorder(BorderFactory.createTitledBorder("Question ".concat(leftPad(selectedQuestion.getOrder().toString(), 2, '0'))));
+	panelQuestionPanel.setBorder(createTitledBorder("Question ".concat(leftPad(selectedQuestion.getOrder().toString(), 2, '0'))));
 	panelQuestionPanel.add(createScrollTextToShow(questionText));
 	panelQuestionPanel.revalidate();
 	panelQuestionPanel.repaint();
@@ -459,7 +456,7 @@ public class ExamController {
 		final var labelEvent = (JLabel) event.getSource();
 		final var text = labelEvent.getText();
 
-		if (event.getButton() == MouseEvent.BUTTON1 && Objects.nonNull(exam) && exam.getStatus() == ExamStatus.RUNNING) {
+		if (event.getButton() == BUTTON1 && nonNull(exam) && exam.getStatus() == RUNNING) {
 		    selectQuestion(Integer.valueOf(text));
 		    loadPanelQuestion();
 		}

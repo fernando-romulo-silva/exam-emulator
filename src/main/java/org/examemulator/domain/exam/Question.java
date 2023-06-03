@@ -17,6 +17,7 @@ import java.util.function.Consumer;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.examemulator.domain.base.InquiryInterface;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -33,7 +34,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "EXAM_QUESTION")
-public class Question implements Comparable<Question> {
+public class Question implements Comparable<Question>, InquiryInterface {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -35,6 +35,10 @@ public class PreExam {
     @OneToOne
     @JoinColumn(name = "GROUP_ID", referencedColumnName = "ID")
     private PreGroup group;
+    
+    @OneToOne
+    @JoinColumn(name = "CERTIFICATION_ID", referencedColumnName = "ID", nullable = false)
+    private Certification certification;
 
     @JoinColumn(name = "PRE_QUESTION_ID")
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)

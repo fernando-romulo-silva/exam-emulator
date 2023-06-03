@@ -77,34 +77,34 @@ public class GuiUtil {
     
     
     public static String convertTextToHtml(final String text) {
-	var originalQuestion = unescapeHtml4(text.trim());
+	var textTemp = unescapeHtml4(text.trim());
 	
-	final var formatteds = StringUtils.substringsBetween(originalQuestion, "```", "´´´");
-	
-	if (nonNull(formatteds)) {
-	    int i = 1;
-	    for (final var formatted : formatteds) {
-		originalQuestion = replace(originalQuestion, formatted, "$"+i);
-		i++;
-	    }
-	}
-	
-	originalQuestion = replace(originalQuestion, "```", "");
-	originalQuestion = replace(originalQuestion, "´´´", "");
-	originalQuestion = replace(originalQuestion, "<", "&lt;");
-	originalQuestion = replace(originalQuestion, ">", "&gt;");
-	originalQuestion = replace(originalQuestion, "&", "&amp;");
-	originalQuestion = replace(originalQuestion, "\n", " <br />");
+	final var formatteds = StringUtils.substringsBetween(textTemp, "```", "´´´");
 	
 	if (nonNull(formatteds)) {
 	    int i = 1;
 	    for (final var formatted : formatteds) {
-		originalQuestion = replace(originalQuestion, "$"+i, "<pre>"+formatted+"</pre>");
+		textTemp = replace(textTemp, formatted, "$"+i);
 		i++;
 	    }
 	}
 	
-	return originalQuestion;
+	textTemp = replace(textTemp, "```", "");
+	textTemp = replace(textTemp, "´´´", "");
+	textTemp = replace(textTemp, "<", "&lt;");
+	textTemp = replace(textTemp, ">", "&gt;");
+	textTemp = replace(textTemp, "&", "&amp;");
+	textTemp = replace(textTemp, "\n", " <br />");
+	
+	if (nonNull(formatteds)) {
+	    int i = 1;
+	    for (final var formatted : formatteds) {
+		textTemp = replace(textTemp, "$"+i, "<pre>"+formatted+"</pre>");
+		i++;
+	    }
+	}
+	
+	return textTemp;
     }
     
     public static JComponent createScrollHtmlTextToShow(final String text) {
@@ -118,8 +118,12 @@ public class GuiUtil {
     }
 
     public static JComponent createScrollTextToShow(final String text) {
+	
+	var textTemp = replace(text, "```", "");
+	textTemp = replace(textTemp, "´´´", "");
+	
 	final var textArea = new JTextArea();
-	textArea.setText(text);
+	textArea.setText(textTemp);
 	textArea.setEditable(false);
 	textArea.setLineWrap(true);
 	textArea.setWrapStyleWord(true);
@@ -315,7 +319,11 @@ public class GuiUtil {
     }
     
     private static JTextArea createTextToShow(final String text) {
-	final var textArea = new JTextArea(text);
+	
+	var textTemp = replace(text, "```", "");
+	textTemp = replace(textTemp, "´´´", "");
+	
+	final var textArea = new JTextArea(textTemp);
 	textArea.setBorder(new EmptyBorder(0, 0, 0, 0));
 	textArea.setOpaque(false);
 	textArea.setEditable(false);

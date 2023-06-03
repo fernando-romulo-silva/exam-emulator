@@ -15,9 +15,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
@@ -26,9 +23,43 @@ import javax.swing.border.EtchedBorder;
 
 import org.examemulator.gui.components.WrapLayout;
 
+import jakarta.enterprise.context.ApplicationScoped;
+
 class ExamView extends JFrame {
 
     private static final long serialVersionUID = 1L;
+    
+    @ApplicationScoped
+    static class ExamGui {
+	
+	ExamView getView() {
+	    return new ExamView();
+	}
+	
+//	    public void showMainWindow() {
+//		exec("show main window", () -> examView.setVisible(true));
+//	    }
+	//
+//	    private void exec(final String name, final Runnable func) {
+//		log.info("starting swing-invoke: " + name);
+	//
+//		SwingUtilities.invokeLater(() -> {
+//		    log.info("starting swing-event: " + name);
+//		    func.run();
+//		    log.info("finished swing-event: " + name);
+//		});
+	//
+//		log.info("finished swing-invoke: " + name);
+//	    }
+	//
+//	    public void onBoot(@Observes final BootEvent event) {
+//		log.info("starting cdi-event: boot");
+//		showMainWindow();
+//		log.info("finished cdi-event: boot");
+//	    }
+	//    
+//	    public static interface BootEvent {}	
+    }
 
     JPanel questionInternPanel, examPanel, pQuestions;
 
@@ -40,8 +71,6 @@ class ExamView extends JFrame {
 
     JCheckBox chckbxMark, chckbxShuffleQuestions, chckbxShuffleOptions;
 
-    JMenuItem mntmNew;
-
     JComboBox<String> cbMode;
 
     public ExamView() {
@@ -52,18 +81,6 @@ class ExamView extends JFrame {
 	// Main Panel
 	// -------------------------------------------------------------------------------------------
 	setTitle("ExamEmulator!");
-
-	final var menuBar = new JMenuBar();
-	setJMenuBar(menuBar);
-
-	final var mnNewMenu = new JMenu("Exam");
-	menuBar.add(mnNewMenu);
-
-	mntmNew = new JMenuItem("New");
-	mnNewMenu.add(mntmNew);
-
-	final var mntmStop = new JMenuItem("Stop");
-	mnNewMenu.add(mntmStop);
 
 	final var contentPane = new JPanel();
 	contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
