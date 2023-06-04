@@ -1,2 +1,2 @@
 # exam-emulator
-An simple desktop software emulator to practicing I.T. exam certifications
+An simple desktop software emulator for practicing I.T. exam certifications

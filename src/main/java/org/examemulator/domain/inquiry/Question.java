@@ -1,9 +1,10 @@
-package org.examemulator.domain.exam;
+package org.examemulator.domain.inquiry;
 
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.collections4.CollectionUtils.containsAny;
 import static org.apache.commons.collections4.CollectionUtils.isEqualCollection;
+import static org.examemulator.util.DomainUtil.DISCRET_LIST;
 import static org.examemulator.util.FileUtil.WORDS_ALL;
 import static org.examemulator.util.FileUtil.WORDS_NONE;
 
@@ -12,12 +13,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.examemulator.domain.base.InquiryInterface;
+import org.examemulator.domain.exam.Option;
+import org.examemulator.domain.exam.QuestionType;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -25,35 +28,32 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "EXAM_QUESTION")
-public class Question implements Comparable<Question>, InquiryInterface {
+public final class Question implements InquiryInterface, Comparable<Question> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
-    private Long id;
-
-    @Column(name = "NAME")
-    private String name;
-
-    @Column(name = "VALUE")
-    private String value;
-
-    @Column(name = "EXPLANATION")
-    private String explanation;
-
+    private String id;
+    
+    @OneToOne
+    @JoinColumn(name = "PRE_QUESTION", referencedColumnName = "ID")
+    private final PreQuestion preQuestion;
+    
     @JoinColumn(name = "QUESTION_ID")
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Option> options = new ArrayList<>();
 
+    @Column(name = "SHUFFLE_OPTIONS")
+    private final boolean shuffleOptions;
+    
     @Column(name = "TYPE")
     @Enumerated(EnumType.STRING)
     private QuestionType type = QuestionType.UNDEFINED;
@@ -65,24 +65,34 @@ public class Question implements Comparable<Question>, InquiryInterface {
     private boolean marked;
 
     // ------------------------------------------------------------------------------
-
     private Question(final Builder builder) {
-	this.id = builder.id;
-	this.name = builder.name;
-	this.value = builder.value;
-	this.explanation = builder.explanation;
-	this.order = builder.order;
+	this.id = UUID.randomUUID().toString();
+	this.shuffleOptions = builder.shuffleOptions;
+	this.preQuestion = builder.preQuestion;
+//	this.type = builder.type;
+	
 	this.options.addAll(builder.options);
+	
+	this.order = Objects.nonNull(builder.order) //
+			? builder.order //
+			: builder.preQuestion.getOrder(); //
+	
+	shuffleOptions(shuffleOptions);
+	defineType(builder.discrete);
     }
 
     // ------------------------------------------------------------------------------
     
-    void shuffleOptions() {
+    private void shuffleOptions(boolean shuffleOptions) {
+	
+	if (!shuffleOptions) {
+	    return;
+	}
 	
 	final var words = ListUtils.union(WORDS_ALL, WORDS_NONE);
 	
 	final var answersOptional = options.stream() //
-			.map(Option::getText) //
+			.map(Option::getValue) //
 			.filter(answer -> containsAny(List.of(answer), words))
 			.findAny();
 	
@@ -91,10 +101,10 @@ public class Question implements Comparable<Question>, InquiryInterface {
 	if (answersOptional.isPresent()) {
 	    
 	    lastOptions.addAll(options.stream()
-			    		.filter(option -> containsAny(List.of(option.getText()), words))
+			    		.filter(option -> containsAny(List.of(option.getValue()), words))
 			    		.toList());
 
-	    options.removeIf(option -> containsAny(List.of(option.getText()), words));
+	    options.removeIf(option -> containsAny(List.of(option.getValue()), words));
 	}
 	
 	Collections.shuffle(options, new Random(System.nanoTime()));
@@ -110,7 +120,29 @@ public class Question implements Comparable<Question>, InquiryInterface {
 	    number++;
 	}
     }
+    
+    private void defineType(final boolean discrete) {
 
+ 	final var correctOptions = getCorrectOptions();
+
+ 	if (discrete) {
+ 	    if (correctOptions.size() == 1) {
+ 		this.type = QuestionType.DISCRETE_SINGLE_CHOICE;
+ 	    } else {
+ 		this.type = QuestionType.DISCRETE_MULTIPLE_CHOICE;
+ 	    }
+
+ 	} else {
+ 	    if (correctOptions.size() == 1) {
+ 		this.type = QuestionType.SINGLE_CHOICE;
+ 	    } else {
+ 		this.type = QuestionType.MULTIPLE_CHOICE;
+ 	    }
+ 	}
+    }
+
+    // ------------------------------------------------------------------------------
+    
     public void selectAnswer(final String answer) {
 
 	if (StringUtils.isEmpty(answer)) {
@@ -168,50 +200,42 @@ public class Question implements Comparable<Question>, InquiryInterface {
 	this.marked = value;
     }
 
-    void defineToDiscrete(final boolean discrete) {
-
-	final var correctOptions = getCorrectOptions();
-
-	if (discrete) {
-	    if (correctOptions.size() == 1) {
-		this.type = QuestionType.DISCRETE_SINGLE_CHOICE;
-	    } else {
-		this.type = QuestionType.DISCRETE_MULTIPLE_CHOICE;
-	    }
-
-	} else {
-	    if (correctOptions.size() == 1) {
-		this.type = QuestionType.SINGLE_CHOICE;
-	    } else {
-		this.type = QuestionType.MULTIPLE_CHOICE;
-	    }
-	}
+    public boolean isDiscrete() {
+	return DISCRET_LIST.contains(type);
     }
-
+   
     // ------------------------------------------------------------------------------
 
+    public String getName() {
+	return preQuestion.getName();
+    }
+    
     public String getValue() {
-	return value;
-    }
-
-    public String getExplanation() {
-	return explanation;
-    }
-
-    public QuestionType getType() {
-	return type;
+	return preQuestion.getValue();
     }
 
     public Integer getOrder() {
 	return order;
     }
     
-    void setOrder(final Integer order) {
+    public String getExplanation() {
+	return preQuestion.getExplanation();
+    }
+
+    public QuestionType getType() {
+	return type;
+    }
+    
+    public void setOrder(final Integer order) {
 	this.order = order;
     }
 
     public List<Option> getOptions() {
 	return options;
+    }
+    
+    public int getOptionsAmount() {
+	return options.size();
     }
 
     public List<String> getCorrectOptions() {
@@ -251,7 +275,7 @@ public class Question implements Comparable<Question>, InquiryInterface {
 	}
 
 	final var answersText = options.stream() //
-			.map(Option::getText) //
+			.map(Option::getValue) //
 			.toList();
 
 	if (CollectionUtils.containsAny(answersText, WORDS_ALL)) {
@@ -301,7 +325,7 @@ public class Question implements Comparable<Question>, InquiryInterface {
 	final var sbToString = new StringBuilder(76);
 
 	sbToString.append("Question [id=").append(id) //
-			.append(", name=").append(name) //
+			.append(", name=").append(getName()) //
 			.append(", type=").append(type) //
 			.append(", order=").append(order) //
 			.append(']');
@@ -318,27 +342,49 @@ public class Question implements Comparable<Question>, InquiryInterface {
 
     public static final class Builder {
 
-	public Long id;
-
-	public String name;
-
-	public String value;
-
-	public String explanation;
-
+	public PreQuestion preQuestion;
+	
+	public boolean shuffleOptions = true;
+	
 	public boolean discrete = false;
-
+	
 	public Integer order;
-
-	public List<Option> options;
-
+	
+//	private QuestionType type = QuestionType.UNDEFINED;
+	
+	private List<Option> options;
+	
 	public Builder with(final Consumer<Builder> function) {
 	    function.accept(this);
 	    return this;
 	}
+	
+	public Builder with(final InquiryInterface question) {
+	    
+	    if (question instanceof PreQuestion q) {
+		return with(q);
+	    } else if (question instanceof Question q) {
+		return with(q);
+	    }
+	    
+	    return this;
+	}
+	
+	public Builder with(final Question question) {
+	    this.preQuestion = question.preQuestion;
+	    this.shuffleOptions = question.shuffleOptions;
+	    this.options = question.getOptions().stream().map(Option::new).toList();
+	    return this;
+	}
+	
+	public Builder with(final PreQuestion question) {
+	    this.preQuestion = question;
+	    this.options = question.getOptions().stream().map(Option::new).toList();
+	    return this;
+	}	
 
 	public Question build() {
-
+	    
 	    if (!checkParams()) {
 		throw new IllegalStateException("");
 	    }
@@ -347,10 +393,7 @@ public class Question implements Comparable<Question>, InquiryInterface {
 	}
 
 	private boolean checkParams() {
-	    return nonNull(name) //
-			    && nonNull(value) //
-			    && nonNull(explanation) //
-			    && nonNull(order);
+	    return nonNull(preQuestion) && CollectionUtils.isEmpty(options);
 	}
     }
 

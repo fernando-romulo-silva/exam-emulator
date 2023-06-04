@@ -12,14 +12,11 @@ import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
 import static javax.swing.BorderFactory.createTitledBorder;
 import static javax.swing.BoxLayout.Y_AXIS;
-import static javax.swing.JFileChooser.DIRECTORIES_ONLY;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.LF;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static org.apache.commons.lang3.StringUtils.leftPad;
 import static org.examemulator.domain.exam.ExamStatus.RUNNING;
-import static org.examemulator.domain.exam.QuestionType.DISCRETE_MULTIPLE_CHOICE;
-import static org.examemulator.domain.exam.QuestionType.DISCRETE_SINGLE_CHOICE;
 import static org.examemulator.gui.GuiUtil.MILLISECOND;
 import static org.examemulator.gui.GuiUtil.createDiscreteOptions;
 import static org.examemulator.gui.GuiUtil.createIndiscreteOptions;
@@ -30,13 +27,13 @@ import static org.examemulator.util.ControllerUtil.hasNextQuestion;
 import static org.examemulator.util.ControllerUtil.hasPreviousQuestion;
 import static org.examemulator.util.ControllerUtil.nextQuestion;
 import static org.examemulator.util.ControllerUtil.previousQuestion;
+import static org.examemulator.util.DomainUtil.DISCRET_LIST;
 import static org.examemulator.util.FileUtil.extractedExamName;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +44,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -57,9 +53,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.examemulator.domain.exam.Exam;
 import org.examemulator.domain.exam.ExamStatus;
 import org.examemulator.domain.exam.Option;
-import org.examemulator.domain.exam.Question;
-import org.examemulator.domain.exam.QuestionType;
-import org.examemulator.domain.pretest.PreQuestion;
+import org.examemulator.domain.inquiry.PreQuestion;
+import org.examemulator.domain.inquiry.Question;
 import org.examemulator.gui.exam.ExamView.ExamGui;
 import org.examemulator.gui.statitics.StatiticsController;
 import org.examemulator.service.ExamService;
@@ -71,8 +66,6 @@ import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class ExamController {
-
-    private final List<QuestionType> discreteList = List.of(DISCRETE_MULTIPLE_CHOICE, DISCRETE_SINGLE_CHOICE);
 
     private final ExamView view;
 
@@ -343,11 +336,11 @@ public class ExamController {
 	    final var correctOptions = "Correct Answer(s): ".concat(extractedOptions(selectedQuestion.getCorrectOptions()));
 
 	    final String vs;
-	    if (discreteList.contains(selectedQuestion.getType())) {
+	    if (DISCRET_LIST.contains(selectedQuestion.getType())) {
 		vs =  LF.concat(LF)
 				.concat(selectedQuestion.getOptions().stream() //
 				.filter(Option::isCorrect) //
-				.map(Option::getText) //
+				.map(Option::getValue) //
 				.collect(joining(LF)));
 	    } else {
 		vs = EMPTY;
@@ -424,9 +417,9 @@ public class ExamController {
 
 	final var groupOptionsQuestionPanel = new JPanel(new BorderLayout());
 
-	if (selectedQuestion.isAnswered() && discreteList.contains(selectedQuestion.getType())) {
+	if (selectedQuestion.isAnswered() && DISCRET_LIST.contains(selectedQuestion.getType())) {
 	    groupOptionsQuestionPanel.add(new JLabel("You alrealdy answered it"), NORTH);
-	} else if (discreteList.contains(selectedQuestion.getType())) {
+	} else if (DISCRET_LIST.contains(selectedQuestion.getType())) {
 	    groupOptionsQuestionPanel.add(createDiscreteOptions(selectedQuestion), CENTER);
 	} else {
 	    groupOptionsQuestionPanel.add(createIndiscreteOptions(selectedQuestion), CENTER);

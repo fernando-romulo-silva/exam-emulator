@@ -1,12 +1,15 @@
 package org.examemulator.domain.exam;
 
 import java.util.Objects;
+import java.util.UUID;
+
+import org.examemulator.domain.pretest.PreOption;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -14,18 +17,15 @@ import jakarta.persistence.Table;
 public class Option {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
-    private Long id;
+    private String id;
     
     @Column(name = "LETTER")
     private String letter;
-
-    @Column(name = "TEXT")
-    private String text;
-
-    @Column(name = "CORRECT")
-    private Boolean correct = Boolean.FALSE;
+    
+    @OneToOne
+    @JoinColumn(name = "PRE_OPTION_ID", referencedColumnName = "ID")
+    private PreOption preOption;
     
     @Column(name = "SELECTED")
     private Boolean selected = Boolean.FALSE;
@@ -34,17 +34,18 @@ public class Option {
 	super();
     }
     
-    public Option(final Long id, final String letter, final String text, final boolean correct) {
-	this(letter, text, correct);
-	this.id = id;
-    }
-
-    public Option(final String letter, final String text, final boolean correct) {
+    public Option(final PreOption preOption) {
 	super();
-	this.text = text;
-	this.letter = letter;
-	this.correct = correct; 
+	this.id = UUID.randomUUID().toString();
+	this.preOption = preOption;
+	this.letter = preOption.getLetter();
     }
+    
+    public Option(final Option option) {
+	super();
+	this.preOption = option.getPreOption();
+	this.letter = option.getLetter();
+    }    
     
     public void select() {
 	selected = true;
@@ -54,19 +55,23 @@ public class Option {
 	selected = false;
     }
 
-    public String getText() {
-	return text;
+    public PreOption getPreOption() {
+        return preOption;
+    }
+    
+    public String getValue() {
+	return preOption.getValue();
     }
 
     public Boolean isCorrect() {
-	return correct;
+	return preOption.isCorrect();
     }
     
     public Boolean isSelected() {
 	return selected;
     }
     
-    void setLetter(final String letter) {
+    public void setLetter(final String letter) {
         this.letter = letter;
     }
     
@@ -104,8 +109,8 @@ public class Option {
 	final var sbToString = new StringBuilder(76);
 
 	sbToString.append("Option [id=").append(id) //
-			.append(", correct=").append(correct) //
-			.append(", text=").append(text) //
+			.append(", preOption=").append(preOption) //
+			.append(", selected=").append(selected) //
 			.append(']');
 
 	return sbToString.toString();

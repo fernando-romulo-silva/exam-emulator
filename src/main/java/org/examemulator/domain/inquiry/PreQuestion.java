@@ -1,4 +1,4 @@
-package org.examemulator.domain.pretest;
+package org.examemulator.domain.inquiry;
 
 import static java.util.Objects.nonNull;
 
@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import org.examemulator.domain.base.InquiryInterface;
+import org.examemulator.domain.pretest.PreOption;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -22,7 +22,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "PRE_QUESTION")
-public class PreQuestion implements Comparable<PreQuestion>, InquiryInterface  {
+public final class PreQuestion implements Comparable<PreQuestion>, InquiryInterface  {
     
     @Id
     @Column(name = "ID", nullable = false)
@@ -88,6 +88,11 @@ public class PreQuestion implements Comparable<PreQuestion>, InquiryInterface  {
 			.filter(PreOption::isCorrect) //
 			.map(PreOption::getLetter) //
 			.toList();
+    }
+    
+    @Override
+    public int getOptionsAmount() {
+	return options.size();
     }
     
     // ------------------------------------------------------------------------------

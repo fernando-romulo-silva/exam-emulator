@@ -8,15 +8,15 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.function.Consumer;
 
-import org.examemulator.domain.base.InquiryInterface;
-import org.examemulator.domain.pretest.PreQuestion;
+import org.examemulator.domain.inquiry.InquiryInterface;
+import org.examemulator.domain.inquiry.PreQuestion;
+import org.examemulator.domain.inquiry.Question;
 import org.examemulator.util.RandomUtil;
 
 import jakarta.persistence.CascadeType;
@@ -44,10 +44,10 @@ public class Exam {
     @Column(name = "NAME")
     private final String name;
 
-    @Column(name= "MIN_SCORE_PERCENT", precision = 19, scale = 2)
+    @Column(name = "MIN_SCORE_PERCENT", precision = 19, scale = 2)
     private final BigDecimal minScorePercent;
 
-    @Column(name= "DISCRETE_PERCENT", precision = 19, scale = 2)
+    @Column(name = "DISCRETE_PERCENT", precision = 19, scale = 2)
     private final BigDecimal discretPercent;
 
     @Column(name = "RANDOM_ORDER")
@@ -55,17 +55,14 @@ public class Exam {
 
     @Column(name = "MODE")
     private final boolean practiceMode;
-    
-    @Column(name = "SHUFFLE_OPTIONS")
-    private final boolean shuffleOptions;
-    
+
     @Column(name = "SHUFFLE_QUESTIONS")
     private final boolean shuffleQuestions;
-    
+
     @JoinColumn(name = "QUESTION_ID")
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Question> questions = new ArrayList<>();
-    
+
     @Column(name = "ORIGIN")
     @Enumerated(EnumType.STRING)
     private final ExamOrigin origin;
@@ -79,8 +76,6 @@ public class Exam {
     private ExamStatus status = ExamStatus.INITIAL;
 
     // -------------------------------
-
-    @SuppressWarnings("unchecked")
     private Exam(final Builder builder) {
 	super();
 	this.name = builder.name;
@@ -88,28 +83,12 @@ public class Exam {
 	this.practiceMode = builder.practiceMode;
 	this.minScorePercent = builder.minScorePercent;
 	this.discretPercent = builder.discretPercent;
-	this.shuffleOptions = builder.shuffleOptions;
 	this.shuffleQuestions = builder.shuffleQuestions;
 	this.origin = builder.origin;
-	this.questions.addAll(builder.questions);
+	this.questions.addAll(builder.questionsIntern);
     }
 
     public void begin() {
-	
-	if (shuffleOptions) {
-	    questions.forEach(Question::shuffleOptions);
-	}
-	
-	if (shuffleQuestions) {
-	    Collections.shuffle(questions, new Random(questions.size()));
-
-	    int number = 1;
-
-	    for (final var question : questions) {
-		question.setOrder(number);
-		number++;
-	    }
-	}
 
 	if (status != ExamStatus.INITIAL) {
 	    throw new IllegalStateException("You can begin a exam only on Initial status!");
@@ -117,22 +96,6 @@ public class Exam {
 
 	if (questions.isEmpty()) {
 	    throw new IllegalStateException("You can't begin a exam withou questions!");
-	}
-
-	if (discretPercent.intValue() > 0) {
-	    final var discreteAvaliableList = questions.stream() //
-			    .filter(question -> question.getOptions().size() > 2) //
-			    .toList();
-
-	    final var matchContext = new MathContext(3, HALF_UP); // 2 precision
-
-	    final var perc = discretPercent.divide(BigDecimal.valueOf(100l)).round(matchContext).doubleValue();
-
-	    final var discreteList = RandomUtil.getRandomSubList(discreteAvaliableList, perc);
-
-	    for (final var question : discreteList) {
-		question.defineToDiscrete(true);
-	    }
 	}
 
 	start = LocalDateTime.now();
@@ -148,22 +111,22 @@ public class Exam {
 	finish = LocalDateTime.now();
 	status = ExamStatus.FINISHED;
     }
-    
+
     public void pause() {
-	
+
 	if (status != ExamStatus.RUNNING) {
 	    throw new IllegalStateException("You can pause a exam only on Running status!");
 	}
-	
+
 	status = ExamStatus.PAUSED;
     }
-    
+
     public void proceed() {
-	
+
 	if (status != ExamStatus.PAUSED) {
 	    throw new IllegalStateException("You can proceed a exam only on Paused status!");
 	}
-	
+
 	status = ExamStatus.RUNNING;
     }
 
@@ -172,7 +135,7 @@ public class Exam {
     public Long getId() {
 	return id;
     }
-    
+
     public String getName() {
 	return name;
     }
@@ -213,7 +176,7 @@ public class Exam {
     public ExamStatus getStatus() {
 	return status;
     }
-    
+
     // -----------------------------------------------------------------------
     @Override
     public int hashCode() {
@@ -247,13 +210,11 @@ public class Exam {
 			.append(']');
 
 	return sbToString.toString();
-    }    
-    
+    }
 
     // -----------------------------------------------------------------------------------------------------------------
 
     public static final class Builder {
-
 
 	public BigDecimal minScorePercent;
 
@@ -262,17 +223,19 @@ public class Exam {
 	public boolean randomOrder;
 
 	public boolean practiceMode;
-	
+
+	public boolean shuffleQuestions = false;
+
 	public boolean shuffleOptions = true;
-	    
-	public boolean shuffleQuestions = true;
-	
+
 	public List<? extends InquiryInterface> questions;
-	
+
+	private List<Question> questionsIntern = new ArrayList<>();
+
 	private String name;
-	
+
 	private ExamOrigin origin;
-	
+
 	public Builder with(final Consumer<Builder> function) {
 	    function.accept(this);
 	    return this;
@@ -281,25 +244,95 @@ public class Exam {
 	public Exam build() {
 	    minScorePercent = ofNullable(minScorePercent).orElse(BigDecimal.valueOf(70));
 	    discretPercent = ofNullable(discretPercent).orElse(BigDecimal.ZERO);
-	    
-	    origin = findOrigin();
-	    
-	    if (questions.get(0) instanceof PreQuestion p) {
-		p.get
-	    }
-	    
-	    name = switch (origin) {
 
-	    	case FROM_RETAKE -> "Retake from ";
-	    	case FROM_PRETEST -> "Exame from pre test";
-	    	
-	    	default -> throw new IllegalArgumentException("Unexpected value: ".concat(origin.toString()));
-	    };
-	    
+	    if (shuffleQuestions) {
+		Collections.shuffle(questions, new Random(questions.size()));
+	    }
+
+	    final List<? extends InquiryInterface> discretPercentList;
+
+	    if (discretPercent.intValue() > 0) {
+		final var discreteAvaliableList = questions.stream() //
+				.filter(question -> question.getOptionsAmount() > 2) //
+				.toList();
+
+		final var matchContext = new MathContext(3, HALF_UP); // 2 precision
+
+		final var perc = discretPercent.divide(BigDecimal.valueOf(100l)).round(matchContext).doubleValue();
+
+		discretPercentList = RandomUtil.getRandomSubList(discreteAvaliableList, perc);
+	    } else {
+		discretPercentList = List.of();
+	    }
+
+	    int i = 1;
+
+	    for (final var qTemp : questions) {
+
+		final var number = Integer.valueOf(i);
+
+		questionsIntern.add(new Question.Builder() //
+				.with(qTemp) //
+				.with($ -> {
+				    $.discrete = discretPercentList.contains(qTemp);
+				    $.shuffleOptions = shuffleOptions;
+				    $.order = number;
+				}) //
+				.build());
+
+		i++;
+	    }
+
+//	    origin = findOrigin();
+//	    
+//	    name = switch (origin) {
+//
+//	    	case FROM_RETAKE -> "Retake from ";
+//	    	case FROM_PRETEST -> "Exame from pre test";
+//	    	
+//	    	default -> throw new IllegalArgumentException("Unexpected value: ".concat(origin.toString()));
+//	    };
+
 	    return new Exam(this);
 	}
 
 	private ExamOrigin findOrigin() {
+
+//	    CDI.current().select(null, null)
+
+	    final var isFromPreQuestion = questions.get(0) instanceof PreQuestion ? true : false;
+
+//		if (discretPercent.intValue() > 0) {
+//		    final var discreteAvaliableList = questions.stream() //
+//				    .filter(question -> question.getOptions().size() > 2) //
+//				    .toList();
+//
+//		    final var matchContext = new MathContext(3, HALF_UP); // 2 precision
+//
+//		    final var perc = discretPercent.divide(BigDecimal.valueOf(100l)).round(matchContext).doubleValue();
+//
+//		    final var discreteList = RandomUtil.getRandomSubList(discreteAvaliableList, perc);
+//
+//		    for (final var question : discreteList) {
+//			question.defineToDiscrete(true);
+//		    }
+//		}
+
+//		    questions.stream()
+//		    	.map(q -> { return q instanceof PreQuestion p 
+//		    			? new Question.Builder().with($ -> {
+////		    			$.id = idQuestion.getAndIncrement();
+//		    			$.discrete =    
+//		    			$
+//		    			
+////		    			$.options = questionsTemp;
+//		    			$.discrete = false;
+//		    		    }).build() 
+//		    			: new Question.Builder()
+//		    				.with((Question)q)
+//		    				.build();})
+//		    	.toList();
+
 	    return null;
 	}
     }

@@ -35,7 +35,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
 import org.examemulator.domain.exam.Exam;
-import org.examemulator.domain.exam.Question;
+import org.examemulator.domain.inquiry.Question;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -148,7 +148,7 @@ public class StatiticsController {
 
 	final var options = selectedQuestion.getOptions() //
 			.stream() //
-			.map(option -> TAG_OPEN_B.concat(option.getLetter()).concat(") ").concat(TAG_CLOSE_B).concat(TAG_BR).concat(convertTextToHtml(option.getText()))) //
+			.map(option -> TAG_OPEN_B.concat(option.getLetter()).concat(") ").concat(TAG_CLOSE_B).concat(TAG_BR).concat(convertTextToHtml(option.getValue()))) //
 			.collect(joining(TAG_BR_BR));
 
 	final var answeredOptions = TAG_OPEN_B.concat("Your Answer(s): ").concat(TAG_CLOSE_B).concat(extractedOptions(selectedQuestion.getAnswers()));

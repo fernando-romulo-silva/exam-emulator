@@ -41,7 +41,7 @@ import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 
 import org.apache.commons.lang3.StringUtils;
-import org.examemulator.domain.exam.Question;
+import org.examemulator.domain.inquiry.Question;
 import org.examemulator.gui.components.WrapLayout;
 
 public class GuiUtil {
@@ -176,7 +176,7 @@ public class GuiUtil {
 
 	for (final var option : question.getOptions()) {
 	    final var letter = option.getLetter();
-	    optionsLabels.add(letter + "|" + option.getText());
+	    optionsLabels.add(letter + "|" + option.getValue());
 	}
 
 	final var substringAfter = substringAfter(optionsLabels.get(0), "|");
@@ -252,7 +252,7 @@ public class GuiUtil {
 
 	    for (final var questionOption : question.getOptions()) {
 
-		final var radio = new JRadioButton(treatOptionText(questionOption.getLetter(), questionOption.getText()));
+		final var radio = new JRadioButton(treatOptionText(questionOption.getLetter(), questionOption.getValue()));
 		radio.setFont(DEFAULT_FONT);
 
 		if (question.getAnswers().contains(questionOption.getLetter())) {
@@ -286,7 +286,7 @@ public class GuiUtil {
 
 	    for (final var questionOption : question.getOptions()) {
 
-		final var check = new JCheckBox(treatOptionText(questionOption.getLetter(), questionOption.getText()));
+		final var check = new JCheckBox(treatOptionText(questionOption.getLetter(), questionOption.getValue()));
 		check.setFont(DEFAULT_FONT);
 
 		if (question.getAnswers().contains(questionOption.getLetter())) {

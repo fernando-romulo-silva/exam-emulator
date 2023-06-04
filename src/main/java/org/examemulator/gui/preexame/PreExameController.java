@@ -34,8 +34,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import org.examemulator.domain.inquiry.PreQuestion;
 import org.examemulator.domain.pretest.PreExam;
-import org.examemulator.domain.pretest.PreQuestion;
 import org.examemulator.gui.components.RangeSlider;
 import org.examemulator.gui.exam.ExamController;
 import org.examemulator.gui.preexame.PreExameView.PreExameGui;

@@ -16,10 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.examemulator.domain.inquiry.PreQuestion;
 import org.examemulator.domain.pretest.PreExam;
 import org.examemulator.domain.pretest.PreGroup;
 import org.examemulator.domain.pretest.PreOption;
-import org.examemulator.domain.pretest.PreQuestion;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -36,8 +36,6 @@ public class PretestService {
 	return null;
     }
     
-    
-
     public PreExam createExam(final String dir) {
 
 	final var questionFiles = new ArrayList<String>();
