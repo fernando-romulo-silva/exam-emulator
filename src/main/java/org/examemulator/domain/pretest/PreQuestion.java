@@ -1,4 +1,4 @@
-package org.examemulator.domain.inquiry;
+package org.examemulator.domain.pretest;
 
 import static java.util.Objects.nonNull;
 
@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import org.examemulator.domain.pretest.PreOption;
+import org.examemulator.domain.inquiry.InquiryInterface;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -17,13 +17,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "PRE_QUESTION")
-public final class PreQuestion implements Comparable<PreQuestion>, InquiryInterface  {
-    
+public final class PreQuestion implements Comparable<PreQuestion>, InquiryInterface {
+
     @Id
     @Column(name = "ID", nullable = false)
     private String id;
@@ -37,13 +38,17 @@ public final class PreQuestion implements Comparable<PreQuestion>, InquiryInterf
     @Column(name = "EXPLANATION")
     private String explanation;
     
+    @ManyToOne
+    @JoinColumn(name = "CONCEPT_ID", referencedColumnName = "ID", nullable = false)
+    private Concept concept;
+
     @Column(name = "ORDER")
     private Integer order;
 
     @JoinColumn(name = "PRE_QUESTION_ID")
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<PreOption> options = new ArrayList<>();
-    
+
     PreQuestion() {
 	super();
     }
@@ -54,15 +59,16 @@ public final class PreQuestion implements Comparable<PreQuestion>, InquiryInterf
 	this.value = builder.value;
 	this.explanation = builder.explanation;
 	this.order = builder.order;
+	this.concept = builder.concept;
 	this.options.addAll(builder.options);
     }
-    
+
     // ------------------------------------------------------------------------------
 
     public String getValue() {
 	return value;
     }
-    
+
     public Integer getOrder() {
 	return order;
     }
@@ -74,13 +80,13 @@ public final class PreQuestion implements Comparable<PreQuestion>, InquiryInterf
     public List<PreOption> getOptions() {
 	return Collections.unmodifiableList(options);
     }
-    
+
     public String getId() {
-        return id;
+	return id;
     }
 
     public String getName() {
-        return name;
+	return name;
     }
 
     public List<String> getCorrectOptions() {
@@ -89,12 +95,12 @@ public final class PreQuestion implements Comparable<PreQuestion>, InquiryInterf
 			.map(PreOption::getLetter) //
 			.toList();
     }
-    
+
     @Override
     public int getOptionsAmount() {
 	return options.size();
     }
-    
+
     // ------------------------------------------------------------------------------
 
     @Override
@@ -131,15 +137,14 @@ public final class PreQuestion implements Comparable<PreQuestion>, InquiryInterf
 
 	return sbToString.toString();
     }
-    
+
     @Override
     public int compareTo(final PreQuestion another) {
 	return this.order.compareTo(another.order);
     }
-    
+
     // ------------------------------------------------------------------------------
     public static final class Builder {
-
 
 	public String name;
 
@@ -148,6 +153,8 @@ public final class PreQuestion implements Comparable<PreQuestion>, InquiryInterf
 	public String explanation;
 
 	public Integer order;
+	
+	public Concept concept;
 
 	public List<PreOption> options;
 

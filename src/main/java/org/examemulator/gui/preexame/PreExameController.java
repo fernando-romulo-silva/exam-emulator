@@ -26,7 +26,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFileChooser;
@@ -34,12 +33,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import org.examemulator.domain.inquiry.PreQuestion;
 import org.examemulator.domain.pretest.PreExam;
+import org.examemulator.domain.pretest.PreQuestion;
 import org.examemulator.gui.components.RangeSlider;
 import org.examemulator.gui.exam.ExamController;
 import org.examemulator.gui.preexame.PreExameView.PreExameGui;
-import org.examemulator.service.PretestService;
+import org.examemulator.service.PreExamService;
 import org.slf4j.Logger;
 
 import jakarta.annotation.PostConstruct;
@@ -51,7 +50,7 @@ public class PreExameController {
 
     private final PreExameView view;
 
-    private final PretestService service;
+    private final PreExamService service;
 
     private final ExamController examController;
 
@@ -68,7 +67,7 @@ public class PreExameController {
     @Inject
     PreExameController( //
 		    final PreExameGui gui, //
-		    final PretestService service, //
+		    final PreExamService service, //
 		    final ExamController examController, //
 		    final Logger logger) {
 	super();
@@ -98,13 +97,13 @@ public class PreExameController {
 	});
     }
 
-    private void updateQuestionLabel() {
-	final var component = Stream.of(view.pQuestions.getComponents()) //
-			.filter(comp -> Objects.equals(comp.getName(), selectedQuestion.getOrder().toString())) //
-			.findFirst();
-
-	if (component.isPresent() && component.get() instanceof JLabel label) {
-
+//    private void updateQuestionLabel() {
+//	final var component = Stream.of(view.pQuestions.getComponents()) //
+//			.filter(comp -> Objects.equals(comp.getName(), selectedQuestion.getOrder().toString())) //
+//			.findFirst();
+//
+//	if (component.isPresent() && component.get() instanceof JLabel label) {
+//
 //	    if (selectedQuestion.isMarked()) {
 //		label.setForeground(Color.ORANGE);
 //	    } else if (selectedQuestion.isAnswered()) {
@@ -112,8 +111,8 @@ public class PreExameController {
 //	    } else {
 //		label.setForeground(Color.BLACK);
 //	    }
-	}
-    }
+//	}
+//    }
 
     private void createButtonActions() {
 
@@ -139,7 +138,7 @@ public class PreExameController {
 	    loadPanelQuestion();
 	});
 
-	view.btnNew.addActionListener(event -> {
+	view.btnLoad.addActionListener(event -> {
 
 	    final var chooser = new JFileChooser();
 	    chooser.setCurrentDirectory(new File("."));
@@ -160,12 +159,11 @@ public class PreExameController {
 
 	    if (Objects.nonNull(currentFolder)) {
 
-		exam = service.createExam(currentFolder);
+		exam = service.loadPreExam(currentFolder);
 
-		view.examPanel.setBorder(BorderFactory.createTitledBorder(extractedExamName(currentFolder)));
+		view.contentPane.setBorder(createTitledBorder(exam.getName()));
 
 		view.btnNewExam.setEnabled(true);
-		view.btnSave.setEnabled(true);
 		view.btnNewExam.setEnabled(true);
 
 //		view.textFieldName.setEnabled(true);
@@ -193,7 +191,9 @@ public class PreExameController {
 	view.btnNewExam.addActionListener(event -> {
 	    view.setVisible(false);
 	    
-	    examController.show();
+	    toExamQuestions.addAll(exam.getQuestions());
+	    
+	    examController.show(exam.getName(), view, toExamQuestions);
 	});
 
     }

@@ -3,16 +3,17 @@ package org.examemulator.gui.statitics;
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.SOUTH;
 import static java.awt.FlowLayout.LEFT;
+import static javax.swing.BorderFactory.createTitledBorder;
 import static javax.swing.BoxLayout.Y_AXIS;
+import static org.examemulator.gui.GuiUtil.APP_NAME;
 
 import java.awt.BorderLayout;
-import java.awt.Dialog;
 import java.awt.FlowLayout;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
@@ -21,7 +22,7 @@ import org.examemulator.gui.components.WrapLayout;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
-class StatiticsView extends JDialog {
+class StatiticsView extends JFrame {
 
     private static final long serialVersionUID = 1L;
     
@@ -33,7 +34,7 @@ class StatiticsView extends JDialog {
 	}
     }
 
-    JPanel pQuestion, pQuestions, pMain;
+    JPanel pQuestion, pQuestions, pMain, contentPane;
 
     JCheckBox chckbxCorrects, chckbxIncorrects, chckbxMarked;
 
@@ -44,10 +45,15 @@ class StatiticsView extends JDialog {
     StatiticsView() {
 	super();
 	
-	setSize(600, 500);
-	setTitle("Statistic Exam");
-	setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
-	setModal(true);
+	setDefaultCloseOperation(EXIT_ON_CLOSE);
+	setBounds(100, 100, 871, 723);
+	
+	setTitle(APP_NAME.concat("Exam Statitics"));
+	
+	contentPane = new JPanel();
+	contentPane.setLayout(new BoxLayout(contentPane, Y_AXIS));
+	contentPane.setBorder(createTitledBorder("No Exam"));
+	setContentPane(contentPane);
 
 	final var dialogContainer = getContentPane();
 	dialogContainer.setLayout(new BorderLayout());
@@ -55,7 +61,7 @@ class StatiticsView extends JDialog {
 	pMain = new JPanel();
 	pMain.setLayout(new BoxLayout(pMain, Y_AXIS));
 
-	add(pMain, CENTER);
+	getContentPane().add(pMain, CENTER);
 
 	final var pGroup = new JPanel();
 	pGroup.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
@@ -102,6 +108,6 @@ class StatiticsView extends JDialog {
 	final var panelButton = new JPanel(new FlowLayout());
 	panelButton.add(okButton);
 
-	add(panelButton, SOUTH);
+	getContentPane().add(panelButton, SOUTH);
     }
 }

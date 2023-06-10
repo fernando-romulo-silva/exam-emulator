@@ -3,6 +3,7 @@ package org.examemulator.domain.exam;
 import java.util.Objects;
 import java.util.UUID;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.examemulator.domain.pretest.PreOption;
 
 import jakarta.persistence.Column;
@@ -19,46 +20,47 @@ public class Option {
     @Id
     @Column(name = "ID", nullable = false)
     private String id;
-    
+
     @Column(name = "LETTER")
     private String letter;
-    
+
     @OneToOne
     @JoinColumn(name = "PRE_OPTION_ID", referencedColumnName = "ID")
     private PreOption preOption;
-    
+
     @Column(name = "SELECTED")
     private Boolean selected = Boolean.FALSE;
 
     Option() {
 	super();
     }
-    
-    public Option(final PreOption preOption) {
+
+    Option(final PreOption preOption) {
 	super();
 	this.id = UUID.randomUUID().toString();
 	this.preOption = preOption;
 	this.letter = preOption.getLetter();
     }
-    
-    public Option(final Option option) {
+
+    Option(final Option option) {
 	super();
+	this.id = UUID.randomUUID().toString();
 	this.preOption = option.getPreOption();
 	this.letter = option.getLetter();
-    }    
-    
+    }
+
     public void select() {
 	selected = true;
     }
-    
+
     public void unselect() {
 	selected = false;
     }
 
     public PreOption getPreOption() {
-        return preOption;
+	return preOption;
     }
-    
+
     public String getValue() {
 	return preOption.getValue();
     }
@@ -66,21 +68,21 @@ public class Option {
     public Boolean isCorrect() {
 	return preOption.isCorrect();
     }
-    
+
     public Boolean isSelected() {
 	return selected;
     }
-    
-    public void setLetter(final String letter) {
-        this.letter = letter;
+
+    void setLetter(final String letter) {
+	this.letter = letter;
     }
-    
+
     public String getLetter() {
-        return letter;
+	return letter;
     }
 
     // ----------------------------------------------------------
-    
+
     @Override
     public int hashCode() {
 	return Objects.hash(id);
@@ -106,13 +108,10 @@ public class Option {
 
     @Override
     public String toString() {
-	final var sbToString = new StringBuilder(76);
-
-	sbToString.append("Option [id=").append(id) //
-			.append(", preOption=").append(preOption) //
-			.append(", selected=").append(selected) //
-			.append(']');
-
-	return sbToString.toString();
+	return new ToStringBuilder(this) //
+			.append("id", id) //
+			.append("preOption", preOption) //
+			.append("selected", selected) //
+			.toString();
     }
 }

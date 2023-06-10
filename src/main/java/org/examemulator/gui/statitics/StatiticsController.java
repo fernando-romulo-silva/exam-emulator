@@ -6,6 +6,7 @@ import static java.awt.Color.ORANGE;
 import static java.awt.Color.RED;
 import static java.math.RoundingMode.HALF_UP;
 import static java.util.stream.Collectors.joining;
+import static javax.swing.BorderFactory.createTitledBorder;
 import static org.apache.commons.lang3.StringUtils.leftPad;
 import static org.examemulator.gui.GuiUtil.TAG_BR;
 import static org.examemulator.gui.GuiUtil.TAG_BR_BR;
@@ -35,7 +36,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
 import org.examemulator.domain.exam.Exam;
-import org.examemulator.domain.inquiry.Question;
+import org.examemulator.domain.exam.Question;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -116,10 +117,12 @@ public class StatiticsController {
 	view.chckbxMarked.addItemListener(itemListener);
     }
     
-    public void show(final Exam exam, final Component owner) {
+    public void show(final Exam exam, final Component lastView) {
 	this.exam = exam;
+	
+	view.contentPane.setBorder(createTitledBorder(exam.getName()));
 	view.lblStatistic.setText(getStatistic(exam));
-
+	
 	questions.clear();
 	questions.addAll(exam.getQuestions());
 
@@ -136,7 +139,7 @@ public class StatiticsController {
 	view.chckbxIncorrects.setSelected(true);
 	view.chckbxCorrects.setSelected(true);
 
-	view.setLocationRelativeTo(owner);
+	view.setLocationRelativeTo(lastView);
 	view.setVisible(true);
     }
 
@@ -197,16 +200,6 @@ public class StatiticsController {
 
 	}
 
-	if (showIncorrect) {
-	    final var questionsIncorrects = exam.getQuestions() //
-			    .stream() //
-			    .filter(question -> !question.isCorrect()) //
-			    .toList();
-
-	    questionsTemp.addAll(questionsIncorrects);
-
-	}
-
 	if (showMarked) {
 	    final var questionsMarked = questionsTemp //
 			    .stream() //
@@ -215,6 +208,16 @@ public class StatiticsController {
 
 	    questionsTemp.clear();
 	    questionsTemp.addAll(questionsMarked);
+	}
+	
+	if (showIncorrect) {
+	    final var questionsIncorrects = exam.getQuestions() //
+			    .stream() //
+			    .filter(question -> !question.isCorrect()) //
+			    .toList();
+
+	    questionsTemp.addAll(questionsIncorrects);
+
 	}
 
 	questions.clear();

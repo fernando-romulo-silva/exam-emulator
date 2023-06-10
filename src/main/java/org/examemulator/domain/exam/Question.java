@@ -1,4 +1,4 @@
-package org.examemulator.domain.inquiry;
+package org.examemulator.domain.exam;
 
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
@@ -19,8 +19,8 @@ import java.util.function.Consumer;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.examemulator.domain.exam.Option;
-import org.examemulator.domain.exam.QuestionType;
+import org.examemulator.domain.inquiry.InquiryInterface;
+import org.examemulator.domain.pretest.PreQuestion;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -69,8 +69,6 @@ public final class Question implements InquiryInterface, Comparable<Question> {
 	this.id = UUID.randomUUID().toString();
 	this.shuffleOptions = builder.shuffleOptions;
 	this.preQuestion = builder.preQuestion;
-//	this.type = builder.type;
-	
 	this.options.addAll(builder.options);
 	
 	this.order = Objects.nonNull(builder.order) //
@@ -234,6 +232,7 @@ public final class Question implements InquiryInterface, Comparable<Question> {
 	return options;
     }
     
+    @Override
     public int getOptionsAmount() {
 	return options.size();
     }
@@ -340,7 +339,7 @@ public final class Question implements InquiryInterface, Comparable<Question> {
 
     // ------------------------------------------------------------------------------
 
-    public static final class Builder {
+    static final class Builder {
 
 	public PreQuestion preQuestion;
 	
@@ -359,12 +358,12 @@ public final class Question implements InquiryInterface, Comparable<Question> {
 	    return this;
 	}
 	
-	public Builder with(final InquiryInterface question) {
+	public Builder with(final InquiryInterface inquiry) {
 	    
-	    if (question instanceof PreQuestion q) {
-		return with(q);
-	    } else if (question instanceof Question q) {
-		return with(q);
+	    if (inquiry instanceof PreQuestion preQuestion) {
+		return with(preQuestion);
+	    } else if (inquiry instanceof Question question) {
+		return with(question);
 	    }
 	    
 	    return this;
@@ -393,7 +392,7 @@ public final class Question implements InquiryInterface, Comparable<Question> {
 	}
 
 	private boolean checkParams() {
-	    return nonNull(preQuestion) && CollectionUtils.isEmpty(options);
+	    return nonNull(preQuestion) && CollectionUtils.isNotEmpty(options);
 	}
     }
 

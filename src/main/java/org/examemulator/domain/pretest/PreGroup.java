@@ -2,11 +2,15 @@ package org.examemulator.domain.pretest;
 
 import java.util.Objects;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -21,13 +25,22 @@ public class PreGroup {
     @Column(name = "NAME")
     private String name;
     
+    @Column(name = "Description")
+    private String description;
+    
+    @ManyToOne
+    @JoinColumn(name = "CERTIFICATION_ID", referencedColumnName = "ID", nullable = false)
+    private Certification certification;
+    
     PreGroup() {
 	super();
     }
 
-    public PreGroup(final String name) {
+    public PreGroup(final String name, final String description, final Certification certification) {
 	super();
 	this.name = name;
+	this.description = description;
+	this.certification = certification;
     }
     
     // ------------------------------------------
@@ -57,12 +70,6 @@ public class PreGroup {
 
     @Override
     public String toString() {
-	final var sbToString = new StringBuilder(76);
-
-	sbToString.append("PretestGroup [id=").append(id) //
-			.append(", name=").append(name) //
-			.append(']');
-
-	return sbToString.toString();
+	return ToStringBuilder.reflectionToString(this);
     }
 }

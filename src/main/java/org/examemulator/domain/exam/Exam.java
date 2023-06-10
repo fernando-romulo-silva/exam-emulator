@@ -14,9 +14,8 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.examemulator.domain.inquiry.InquiryInterface;
-import org.examemulator.domain.inquiry.PreQuestion;
-import org.examemulator.domain.inquiry.Question;
 import org.examemulator.util.RandomUtil;
 
 import jakarta.persistence.CascadeType;
@@ -203,18 +202,18 @@ public class Exam {
 
     @Override
     public String toString() {
-	final var sbToString = new StringBuilder(76);
-
-	sbToString.append("Option [id=").append(id) //
-			.append(", name=").append(name) //
-			.append(']');
-
-	return sbToString.toString();
+	return new ToStringBuilder(this) //
+			.append("id", id) //
+			.append("name", name) //
+			.append("practiceMode", practiceMode) //
+			.toString();
     }
 
     // -----------------------------------------------------------------------------------------------------------------
 
     public static final class Builder {
+
+	public String name;
 
 	public BigDecimal minScorePercent;
 
@@ -231,8 +230,6 @@ public class Exam {
 	public List<? extends InquiryInterface> questions;
 
 	private List<Question> questionsIntern = new ArrayList<>();
-
-	private String name;
 
 	private ExamOrigin origin;
 
@@ -294,46 +291,6 @@ public class Exam {
 //	    };
 
 	    return new Exam(this);
-	}
-
-	private ExamOrigin findOrigin() {
-
-//	    CDI.current().select(null, null)
-
-	    final var isFromPreQuestion = questions.get(0) instanceof PreQuestion ? true : false;
-
-//		if (discretPercent.intValue() > 0) {
-//		    final var discreteAvaliableList = questions.stream() //
-//				    .filter(question -> question.getOptions().size() > 2) //
-//				    .toList();
-//
-//		    final var matchContext = new MathContext(3, HALF_UP); // 2 precision
-//
-//		    final var perc = discretPercent.divide(BigDecimal.valueOf(100l)).round(matchContext).doubleValue();
-//
-//		    final var discreteList = RandomUtil.getRandomSubList(discreteAvaliableList, perc);
-//
-//		    for (final var question : discreteList) {
-//			question.defineToDiscrete(true);
-//		    }
-//		}
-
-//		    questions.stream()
-//		    	.map(q -> { return q instanceof PreQuestion p 
-//		    			? new Question.Builder().with($ -> {
-////		    			$.id = idQuestion.getAndIncrement();
-//		    			$.discrete =    
-//		    			$
-//		    			
-////		    			$.options = questionsTemp;
-//		    			$.discrete = false;
-//		    		    }).build() 
-//		    			: new Question.Builder()
-//		    				.with((Question)q)
-//		    				.build();})
-//		    	.toList();
-
-	    return null;
 	}
     }
 }

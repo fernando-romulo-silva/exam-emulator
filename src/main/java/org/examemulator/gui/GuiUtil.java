@@ -14,7 +14,7 @@ import static org.apache.commons.lang3.StringUtils.remove;
 import static org.apache.commons.lang3.StringUtils.replace;
 import static org.apache.commons.lang3.StringUtils.substringAfter;
 import static org.apache.commons.lang3.StringUtils.substringBefore;
-import static org.apache.commons.text.StringEscapeUtils.unescapeHtml4;
+import static org.apache.commons.lang3.StringUtils.substringsBetween;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -39,9 +39,10 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.html.HTMLEditorKit;
 
 import org.apache.commons.lang3.StringUtils;
-import org.examemulator.domain.inquiry.Question;
+import org.examemulator.domain.exam.Question;
 import org.examemulator.gui.components.WrapLayout;
 
 public class GuiUtil {
@@ -59,6 +60,8 @@ public class GuiUtil {
     public static final String TAG_OPEN_B = "<b>";
     
     public static final String TAG_CLOSE_B = "</b>";
+    
+    public static final String APP_NAME = "ExamEmulator!";
 
     @FunctionalInterface
     public static interface Action {
@@ -77,10 +80,9 @@ public class GuiUtil {
     
     
     public static String convertTextToHtml(final String text) {
-	var textTemp = unescapeHtml4(text.trim());
+	var textTemp = text.trim();
 	
-	final var formatteds = StringUtils.substringsBetween(textTemp, "```", "´´´");
-	
+	final var formatteds = substringsBetween(textTemp, "```", "´´´");
 	if (nonNull(formatteds)) {
 	    int i = 1;
 	    for (final var formatted : formatteds) {
@@ -91,9 +93,9 @@ public class GuiUtil {
 	
 	textTemp = replace(textTemp, "```", "");
 	textTemp = replace(textTemp, "´´´", "");
+	textTemp = replace(textTemp, "&", "&amp;");
 	textTemp = replace(textTemp, "<", "&lt;");
 	textTemp = replace(textTemp, ">", "&gt;");
-	textTemp = replace(textTemp, "&", "&amp;");
 	textTemp = replace(textTemp, "\n", " <br />");
 	
 	if (nonNull(formatteds)) {
@@ -108,13 +110,18 @@ public class GuiUtil {
     }
     
     public static JComponent createScrollHtmlTextToShow(final String text) {
-	final var textArea = new JEditorPane("text/html", "<html>"+ text + "</html>");
-	textArea.setEditable(false);
-	textArea.setMinimumSize(new Dimension(100, 100));
-	textArea.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
-	textArea.setFont(DEFAULT_FONT);
+	final var textComponent = new JEditorPane();
+	textComponent.setEditable(false);
+	final var kit = new HTMLEditorKit();
+	textComponent.setEditorKit(kit);
+	var doc = kit.createDefaultDocument();
+	textComponent.setDocument(doc);
+	textComponent.setText("<html> <body>" +text+" </body> </html>");
+	textComponent.setMinimumSize(new Dimension(100, 100));
+	textComponent.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
+	textComponent.setFont(DEFAULT_FONT);
 
-	return new JScrollPane(textArea, VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_NEVER);
+	return new JScrollPane(textComponent, VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_NEVER);
     }
 
     public static JComponent createScrollTextToShow(final String text) {
@@ -122,14 +129,14 @@ public class GuiUtil {
 	var textTemp = replace(text, "```", "");
 	textTemp = replace(textTemp, "´´´", "");
 	
-	final var textArea = new JTextArea();
-	textArea.setText(textTemp);
-	textArea.setEditable(false);
-	textArea.setLineWrap(true);
-	textArea.setWrapStyleWord(true);
-	textArea.setFont(DEFAULT_FONT);
+	final var textComponent = new JTextArea();
+	textComponent.setText(textTemp);
+	textComponent.setEditable(false);
+	textComponent.setLineWrap(true);
+	textComponent.setWrapStyleWord(true);
+	textComponent.setFont(DEFAULT_FONT);
 
-	return new JScrollPane(textArea, VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_NEVER);
+	return new JScrollPane(textComponent, VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_NEVER);
     }
 
     public static ActionListener createTimerAction(final Integer duration, final JLabel jlabel, final Action action) {
@@ -323,11 +330,11 @@ public class GuiUtil {
 	var textTemp = replace(text, "```", "");
 	textTemp = replace(textTemp, "´´´", "");
 	
-	final var textArea = new JTextArea(textTemp);
-	textArea.setBorder(new EmptyBorder(0, 0, 0, 0));
-	textArea.setOpaque(false);
-	textArea.setEditable(false);
-	textArea.setFont(DEFAULT_FONT);
-	return textArea;
+	final var textComponent = new JTextArea(textTemp);
+	textComponent.setBorder(new EmptyBorder(0, 0, 0, 0));
+	textComponent.setOpaque(false);
+	textComponent.setEditable(false);
+	textComponent.setFont(DEFAULT_FONT);
+	return textComponent;
     }
 }

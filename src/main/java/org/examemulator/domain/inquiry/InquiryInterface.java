@@ -1,6 +1,6 @@
 package org.examemulator.domain.inquiry;
 
-public sealed interface InquiryInterface permits PreQuestion, Question {
+public interface InquiryInterface {
 
     default int getOptionsAmount() {
 	return 0;

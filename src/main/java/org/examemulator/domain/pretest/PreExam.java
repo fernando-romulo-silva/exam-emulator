@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import org.examemulator.domain.inquiry.PreQuestion;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -38,10 +38,6 @@ public class PreExam {
     @JoinColumn(name = "GROUP_ID", referencedColumnName = "ID")
     private PreGroup group;
     
-    @OneToOne
-    @JoinColumn(name = "CERTIFICATION_ID", referencedColumnName = "ID", nullable = false)
-    private Certification certification;
-
     @JoinColumn(name = "PRE_QUESTION_ID")
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<PreQuestion> questions = new ArrayList<>();
@@ -50,9 +46,10 @@ public class PreExam {
 	super();
     }
 
-    public PreExam(final String name, final PreGroup group) {
+    public PreExam(final String name, final String description, final PreGroup group) {
 	super();
 	this.name = name;
+	this.description = description;
 	this.group = group;
     }
 
@@ -98,12 +95,6 @@ public class PreExam {
 
     @Override
     public String toString() {
-	final var sbToString = new StringBuilder(76);
-
-	sbToString.append("Option [id=").append(id) //
-			.append(", name=").append(name) //
-			.append(']');
-
-	return sbToString.toString();
+	return ToStringBuilder.reflectionToString(this);
     }
 }

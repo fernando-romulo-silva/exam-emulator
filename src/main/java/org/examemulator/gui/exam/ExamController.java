@@ -28,14 +28,13 @@ import static org.examemulator.util.ControllerUtil.hasPreviousQuestion;
 import static org.examemulator.util.ControllerUtil.nextQuestion;
 import static org.examemulator.util.ControllerUtil.previousQuestion;
 import static org.examemulator.util.DomainUtil.DISCRET_LIST;
-import static org.examemulator.util.FileUtil.extractedExamName;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -53,8 +52,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.examemulator.domain.exam.Exam;
 import org.examemulator.domain.exam.ExamStatus;
 import org.examemulator.domain.exam.Option;
-import org.examemulator.domain.inquiry.PreQuestion;
-import org.examemulator.domain.inquiry.Question;
+import org.examemulator.domain.exam.Question;
+import org.examemulator.domain.inquiry.InquiryInterface;
 import org.examemulator.gui.exam.ExamView.ExamGui;
 import org.examemulator.gui.statitics.StatiticsController;
 import org.examemulator.service.ExamService;
@@ -72,25 +71,24 @@ public class ExamController {
     private final ExamService service;
 
     private final Logger logger;
-    
+
     private final StatiticsController statiticsController;
 
-    private final List<PreQuestion> availableQuestions = new ArrayList<>();
-    
+    private List<? extends InquiryInterface> availableQuestions;
+
+    private String name;
+
     private Exam exam;
 
     private Question selectedQuestion;
 
-    private String currentFolder;
-
     private Timer timer;
-    
 
     @Inject
-    ExamController(
-		    final ExamGui gui, 
-		    final ExamService service, 
-		    final StatiticsController statiticsController,
+    ExamController(//
+		    final ExamGui gui, //
+		    final ExamService service, //
+		    final StatiticsController statiticsController, //
 		    final Logger logger) {
 	super();
 	this.view = gui.getView();
@@ -101,23 +99,66 @@ public class ExamController {
 
     @PostConstruct
     void init() {
+	initView();
 	creatButtonActions();
-
-	view.btnStart.setEnabled(false);
     }
 
-    public void show() {
-	final var name = "ExamController";
+    public void show(final String name, final Component lastView, final List<? extends InquiryInterface> availableQuestions) {
+
+	this.availableQuestions = availableQuestions;
+	this.name = name;
+
+	view.contentPane.setBorder(createTitledBorder(name));
+
+	for (var i = 1; i <= availableQuestions.size(); i++) {
+	    final var value = Integer.toString(i);
+	    final var label = new JLabel(leftPad(value, 2, '0'));
+	    label.setName(value);
+	    view.pQuestions.add(label);
+	}
+
 	SwingUtilities.invokeLater(() -> {
-	    
+
 	    logger.info("starting swing-event: {}", name);
-	    
+
+	    view.setLocationRelativeTo(lastView);
+
 	    view.revalidate();
 	    view.repaint();
 	    view.setVisible(true);
-	    
+
 	    logger.info("finished swing-event: {}", name);
 	});
+    }
+
+    private void initView() {
+
+	view.questionInternPanel.removeAll();
+	view.questionInternPanel.revalidate();
+	view.questionInternPanel.repaint();
+
+	view.pQuestions.removeAll();
+	view.pQuestions.revalidate();
+	view.pQuestions.repaint();
+
+	view.btnStart.setEnabled(true);
+	view.textMinScore.setEnabled(true);
+	view.textDiscrete.setEnabled(true);
+	view.cbMode.setEnabled(true);
+	view.spinnerTimeDuration.setEnabled(true);
+	view.chckbxShuffleQuestions.setEnabled(true);
+	view.chckbxShuffleOptions.setEnabled(true);
+
+	view.btnCheckAnswer.setEnabled(false);
+	view.btnFinish.setEnabled(false);
+	view.btnNext.setEnabled(false);
+	view.btnPrevious.setEnabled(false);
+	view.btnStatistics.setEnabled(false);
+	view.btnPauseProceed.setEnabled(false);
+
+	view.revalidate();
+	view.repaint();
+	view.setVisible(true);
     }
 
     // =================================================================================================================
@@ -128,14 +169,23 @@ public class ExamController {
 
 	    final var discretPercent = BigDecimal.valueOf((Integer) view.textDiscrete.getValue());
 
-	    final var mimScore = BigDecimal.valueOf((Integer) view.textMinScore.getValue());
+	    final var minScorePercent = BigDecimal.valueOf((Integer) view.textMinScore.getValue());
 
 	    final var practiceMode = equalsIgnoreCase("Practice", (String) view.cbMode.getSelectedItem());
-	    
+
 	    final var shuffleQuestions = view.chckbxShuffleQuestions.isSelected();
 	    final var shuffleOptions = view.chckbxShuffleOptions.isSelected();
-	    
-	    exam = service.createExam (availableQuestions, practiceMode, discretPercent, mimScore, shuffleQuestions, shuffleOptions);
+
+	    exam = new Exam.Builder().with($ -> {
+		$.name = this.name;
+		$.practiceMode = practiceMode;
+		$.discretPercent = discretPercent;
+		$.minScorePercent = minScorePercent;
+		$.randomOrder = false;
+		$.shuffleQuestions = shuffleQuestions;
+		$.shuffleOptions = shuffleOptions;
+		$.questions = availableQuestions;
+	    }).build();
 
 	    view.btnStart.setEnabled(false);
 	    view.btnStatistics.setEnabled(false);
@@ -182,12 +232,12 @@ public class ExamController {
 	});
 
 	view.btnPauseProceed.addActionListener(event -> {
-	    
+
 	    if (exam.getStatus().equals(ExamStatus.RUNNING)) {
-		
+
 		exam.pause();
 		view.btnPauseProceed.setText("Proceed");
-		
+
 		view.btnStart.setEnabled(false);
 		view.btnStatistics.setEnabled(false);
 		view.btnPrevious.setEnabled(false);
@@ -209,7 +259,7 @@ public class ExamController {
 		}
 
 	    } else if (exam.getStatus().equals(ExamStatus.PAUSED)) {
-		
+
 		view.btnStart.setEnabled(false);
 		view.btnStatistics.setEnabled(false);
 		view.btnPrevious.setEnabled(false);
@@ -225,8 +275,8 @@ public class ExamController {
 		view.chckbxMark.setEnabled(true);
 		view.btnFinish.setEnabled(true);
 		view.btnNext.setEnabled(true);
-		view.btnCheckAnswer.setEnabled(true);		
-		
+		view.btnCheckAnswer.setEnabled(true);
+
 		exam.proceed();
 		view.btnPauseProceed.setText("Pause");
 
@@ -234,13 +284,11 @@ public class ExamController {
 //		    timer = new Timer(MILLISECOND, createTimerAction(duration, view.lblClock, () -> view.btnFinish.doClick()));
 //		    timer.set
 
-		    
 		    timer.restart();
 		}
 	    }
-	    
 	});
-	
+
 	view.btnFinish.addActionListener(event -> {
 
 	    exam.finish();
@@ -268,7 +316,10 @@ public class ExamController {
 	    view.questionInternPanel.repaint();
 	});
 
-	view.btnStatistics.addActionListener(event -> statiticsController.show(exam, view));
+	view.btnStatistics.addActionListener(event -> {
+	    view.setVisible(false);
+	    statiticsController.show(exam, view);
+	});
 
 	view.btnNext.addActionListener(event -> {
 	    updateQuestionLabel();
@@ -288,40 +339,6 @@ public class ExamController {
 	    loadPanelQuestion();
 	});
 
-	{
-
-	    view.questionInternPanel.removeAll();
-	    view.questionInternPanel.revalidate();
-	    view.questionInternPanel.repaint();
-
-	    view.pQuestions.removeAll();
-	    view.pQuestions.revalidate();
-	    view.pQuestions.repaint();
-
-	    view.btnStart.setEnabled(true);
-	    view.textMinScore.setEnabled(true);
-	    view.textDiscrete.setEnabled(true);
-	    view.cbMode.setEnabled(true);
-	    view.spinnerTimeDuration.setEnabled(true);
-	    view.chckbxShuffleQuestions.setEnabled(true);
-	    view.chckbxShuffleOptions.setEnabled(true);
-
-	    view.btnCheckAnswer.setEnabled(false);
-	    view.btnFinish.setEnabled(false);
-	    view.btnNext.setEnabled(false);
-	    view.btnPrevious.setEnabled(false);
-	    view.btnStatistics.setEnabled(false);
-	    view.btnPauseProceed.setEnabled(false);
-
-	    view.revalidate();
-	    view.repaint();
-	    view.setVisible(true);
-
-	    view.examPanel.setBorder(createTitledBorder(extractedExamName(currentFolder)));
-
-
-	};
-
 	view.btnCheckAnswer.addActionListener(event -> {
 
 	    final var dialogTitle = "Question ".concat(leftPad(selectedQuestion.getOrder().toString(), 2, '0')).concat("'s Answer");
@@ -337,18 +354,17 @@ public class ExamController {
 
 	    final String vs;
 	    if (DISCRET_LIST.contains(selectedQuestion.getType())) {
-		vs =  LF.concat(LF)
-				.concat(selectedQuestion.getOptions().stream() //
+		vs = LF.concat(LF).concat(selectedQuestion.getOptions().stream() //
 				.filter(Option::isCorrect) //
 				.map(Option::getValue) //
-				.collect(joining(LF)));
+				.collect(joining(LF.concat(LF))));
 	    } else {
 		vs = EMPTY;
 	    }
 
-	    final var explanation = LF.concat(selectedQuestion.getExplanation());
+	    final var explanation = LF.concat(LF).concat("Explanation:").concat(LF).concat(selectedQuestion.getExplanation());
 
-	    final var text = correctOptions + vs + explanation;
+	    final var text = correctOptions.concat(vs).concat(explanation);
 
 	    dialogContainer.add(createScrollTextToShow(text), CENTER);
 
@@ -403,9 +419,9 @@ public class ExamController {
     }
 
     private void loadPanelQuestion() {
-	
+
 	view.questionInternPanel.removeAll();
-	
+
 	final var questionText = LF.concat(selectedQuestion.getValue()).concat(LF);
 
 	final var panelQuestionPanel = new JPanel();

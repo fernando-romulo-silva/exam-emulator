@@ -2,6 +2,8 @@ package org.examemulator.domain.pretest;
 
 import java.util.Objects;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -77,13 +79,6 @@ public class PreOption {
 
     @Override
     public String toString() {
-	final var sbToString = new StringBuilder(76);
-
-	sbToString.append("Option [id=").append(id) //
-			.append(", correct=").append(correct) //
-			.append(", value=").append(value) //
-			.append(']');
-
-	return sbToString.toString();
+	return ToStringBuilder.reflectionToString(this);
     }
 }

@@ -5,6 +5,7 @@ import static java.awt.FlowLayout.LEFT;
 import static javax.swing.BorderFactory.createTitledBorder;
 import static javax.swing.BoxLayout.Y_AXIS;
 import static javax.swing.border.EtchedBorder.LOWERED;
+import static org.examemulator.gui.GuiUtil.APP_NAME;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -18,7 +19,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
 import org.examemulator.gui.components.WrapLayout;
@@ -61,7 +61,7 @@ class ExamView extends JFrame {
 //	    public static interface BootEvent {}	
     }
 
-    JPanel questionInternPanel, examPanel, pQuestions;
+    JPanel questionInternPanel, examPanel, pQuestions, contentPane;
 
     JButton btnPauseProceed, btnStart, btnFinish, btnPrevious, btnNext, btnCheckAnswer, btnStatistics;
 
@@ -80,10 +80,10 @@ class ExamView extends JFrame {
 	// -------------------------------------------------------------------------------------------
 	// Main Panel
 	// -------------------------------------------------------------------------------------------
-	setTitle("ExamEmulator!");
+	setTitle(APP_NAME.concat(" - Exam!"));
 
-	final var contentPane = new JPanel();
-	contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+	contentPane = new JPanel();
+	contentPane.setBorder(createTitledBorder("No Exam"));
 	contentPane.setLayout(new BoxLayout(contentPane, Y_AXIS));
 	setContentPane(contentPane);
 
@@ -94,7 +94,6 @@ class ExamView extends JFrame {
 	examPanel = new JPanel();
 	examPanel.setBorder(new EtchedBorder(LOWERED, null, null));
 	examPanel.setLayout(new BoxLayout(examPanel, Y_AXIS));
-	examPanel.setBorder(createTitledBorder("No Exam"));
 	contentPane.add(examPanel);
 
 	final var examControlPanel1 = new JPanel();

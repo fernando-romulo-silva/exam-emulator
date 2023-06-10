@@ -2,6 +2,8 @@ package org.examemulator.domain.pretest;
 
 import java.util.Objects;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,7 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "CERTIFICATION")
+@Table(name = "CONCEPT")
 public class Concept {
     
     @Id
@@ -18,11 +20,25 @@ public class Concept {
     @Column(name = "ID", nullable = false)
     private Long id;
 
-    @Column(name = "NAME")
+    @Column(name = "NAME", unique = true)
     private String name;
     
+    Concept() {
+	super();
+    }
     
-    // ------------------------------------------
+    public Concept(final String name) {
+	super();
+	this.name = name;
+    }
+    
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
     
     @Override
     public int hashCode() {
@@ -49,12 +65,6 @@ public class Concept {
 
     @Override
     public String toString() {
-	final var sbToString = new StringBuilder(76);
-
-	sbToString.append("Concept [id=").append(id) //
-			.append(", name=").append(name) //
-			.append(']');
-
-	return sbToString.toString();
+	return ToStringBuilder.reflectionToString(this);
     }
 }
