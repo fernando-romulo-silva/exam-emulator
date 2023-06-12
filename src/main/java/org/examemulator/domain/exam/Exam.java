@@ -36,37 +36,35 @@ import jakarta.persistence.Table;
 public class Exam {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID", nullable = false)
     private Long id;
 
     @Column(name = "NAME")
-    private final String name;
+    private String name;
 
     @Column(name = "MIN_SCORE_PERCENT", precision = 19, scale = 2)
-    private final BigDecimal minScorePercent;
+    private BigDecimal minScorePercent;
 
     @Column(name = "DISCRETE_PERCENT", precision = 19, scale = 2)
-    private final BigDecimal discretPercent;
+    private BigDecimal discretPercent;
 
     @Column(name = "RANDOM_ORDER")
-    private final boolean randomOrder;
+    private boolean randomOrder;
 
     @Column(name = "MODE")
-    private final boolean practiceMode;
+    private boolean practiceMode;
 
     @Column(name = "SHUFFLE_QUESTIONS")
-    private final boolean shuffleQuestions;
+    private boolean shuffleQuestions;
 
-    @JoinColumn(name = "QUESTION_ID")
+    @JoinColumn(name = "EXAM_QUESTION_ID")
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<Question> questions = new ArrayList<>();
+    private final List<ExamQuestion> questions = new ArrayList<>();
 
     @Column(name = "ORIGIN")
     @Enumerated(EnumType.STRING)
-    private final ExamOrigin origin;
-
-    // -------------------------------
+    private ExamOrigin origin;
 
     private LocalDateTime start;
 
@@ -74,7 +72,11 @@ public class Exam {
 
     private ExamStatus status = ExamStatus.INITIAL;
 
-    // -------------------------------
+    // -----------------------------------------------------------------
+    private Exam() {
+	super();
+    }
+    
     private Exam(final Builder builder) {
 	super();
 	this.name = builder.name;
@@ -87,6 +89,7 @@ public class Exam {
 	this.questions.addAll(builder.questionsIntern);
     }
 
+    // -----------------------------------------------------------------
     public void begin() {
 
 	if (status != ExamStatus.INITIAL) {
@@ -151,7 +154,7 @@ public class Exam {
 	return practiceMode;
     }
 
-    public List<Question> getQuestions() {
+    public List<ExamQuestion> getQuestions() {
 	return Collections.unmodifiableList(questions);
     }
 
@@ -229,7 +232,7 @@ public class Exam {
 
 	public List<? extends InquiryInterface> questions;
 
-	private List<Question> questionsIntern = new ArrayList<>();
+	private List<ExamQuestion> questionsIntern = new ArrayList<>();
 
 	private ExamOrigin origin;
 
@@ -268,7 +271,7 @@ public class Exam {
 
 		final var number = Integer.valueOf(i);
 
-		questionsIntern.add(new Question.Builder() //
+		questionsIntern.add(new ExamQuestion.Builder() //
 				.with(qTemp) //
 				.with($ -> {
 				    $.discrete = discretPercentList.contains(qTemp);

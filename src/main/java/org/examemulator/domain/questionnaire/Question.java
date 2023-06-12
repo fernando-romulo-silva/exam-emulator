@@ -1,11 +1,13 @@
-package org.examemulator.domain.pretest;
+package org.examemulator.domain.questionnaire;
 
 import static java.util.Objects.nonNull;
+import static java.util.Optional.ofNullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -22,8 +24,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "PRE_QUESTION")
-public final class PreQuestion implements Comparable<PreQuestion>, InquiryInterface {
+@Table(name = "QUESTION")
+public class Question implements Comparable<Question>, InquiryInterface {
 
     @Id
     @Column(name = "ID", nullable = false)
@@ -40,20 +42,20 @@ public final class PreQuestion implements Comparable<PreQuestion>, InquiryInterf
     
     @ManyToOne
     @JoinColumn(name = "CONCEPT_ID", referencedColumnName = "ID", nullable = false)
-    private Concept concept;
+    private QuestionConcept concept;
 
-    @Column(name = "ORDER")
+    @Column(name = "NUM_ORDER")
     private Integer order;
 
-    @JoinColumn(name = "PRE_QUESTION_ID")
+    @JoinColumn(name = "QUESTION_ID")
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<PreOption> options = new ArrayList<>();
+    private final List<Option> options = new ArrayList<>();
 
-    PreQuestion() {
+    Question() {
 	super();
     }
 
-    private PreQuestion(final Builder builder) {
+    private Question(final Builder builder) {
 	this.id = UUID.randomUUID().toString();
 	this.name = builder.name;
 	this.value = builder.value;
@@ -77,7 +79,7 @@ public final class PreQuestion implements Comparable<PreQuestion>, InquiryInterf
 	return explanation;
     }
 
-    public List<PreOption> getOptions() {
+    public List<Option> getOptions() {
 	return Collections.unmodifiableList(options);
     }
 
@@ -91,8 +93,8 @@ public final class PreQuestion implements Comparable<PreQuestion>, InquiryInterf
 
     public List<String> getCorrectOptions() {
 	return options.stream() //
-			.filter(PreOption::isCorrect) //
-			.map(PreOption::getLetter) //
+			.filter(Option::isCorrect) //
+			.map(Option::getLetter) //
 			.toList();
     }
 
@@ -100,7 +102,11 @@ public final class PreQuestion implements Comparable<PreQuestion>, InquiryInterf
     public int getOptionsAmount() {
 	return options.size();
     }
-
+    
+    public Optional<QuestionConcept> getConcept() {
+	return ofNullable(concept);
+    }
+    
     // ------------------------------------------------------------------------------
 
     @Override
@@ -116,7 +122,7 @@ public final class PreQuestion implements Comparable<PreQuestion>, InquiryInterf
 	if (this == obj) {
 	    result = true;
 
-	} else if (obj instanceof PreQuestion other) {
+	} else if (obj instanceof Question other) {
 	    result = Objects.equals(id, other.id);
 
 	} else {
@@ -139,7 +145,7 @@ public final class PreQuestion implements Comparable<PreQuestion>, InquiryInterf
     }
 
     @Override
-    public int compareTo(final PreQuestion another) {
+    public int compareTo(final Question another) {
 	return this.order.compareTo(another.order);
     }
 
@@ -154,22 +160,22 @@ public final class PreQuestion implements Comparable<PreQuestion>, InquiryInterf
 
 	public Integer order;
 	
-	public Concept concept;
+	public QuestionConcept concept;
 
-	public List<PreOption> options;
+	public List<Option> options;
 
 	public Builder with(final Consumer<Builder> function) {
 	    function.accept(this);
 	    return this;
 	}
 
-	public PreQuestion build() {
+	public Question build() {
 
 	    if (!checkParams()) {
 		throw new IllegalStateException("");
 	    }
 
-	    return new PreQuestion(this);
+	    return new Question(this);
 	}
 
 	private boolean checkParams() {

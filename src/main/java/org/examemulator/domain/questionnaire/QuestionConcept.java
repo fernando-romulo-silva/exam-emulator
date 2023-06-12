@@ -1,4 +1,4 @@
-package org.examemulator.domain.pretest;
+package org.examemulator.domain.questionnaire;
 
 import java.util.Objects;
 
@@ -12,48 +12,40 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "PRE_OPTION")
-public class PreOption {
+@Table(name = "QUESTION_CONCEPT")
+public class QuestionConcept {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID", nullable = false)
     private Long id;
-    
-    @Column(name = "LETTER")
-    private String letter;
 
-    @Column(name = "TEXT")
-    private String value;
+    @Column(name = "NAME", unique = true, nullable = false)
+    private String name;
 
-    @Column(name = "CORRECT")
-    private Boolean correct = Boolean.FALSE;
-    
-    PreOption(){
+    // ------------------------------------------------------------------------------
+
+    QuestionConcept() {
 	super();
     }
-    
-    public PreOption(final String letter, final String text, final Boolean correct) {
+
+    public QuestionConcept(final String name) {
 	super();
-	this.letter = letter;
-	this.value = text;
-	this.correct = correct;
+	this.name = name;
     }
 
-    public Boolean isCorrect() {
-	return correct;
-    }
-    
-    public String getLetter() {
-        return letter;
-    }
-    
-    public String getValue() {
-	return value;
+    // ------------------------------------------------------------------------------
+
+    public Long getId() {
+	return id;
     }
 
-    // ----------------------------------------------------------
-    
+    public String getName() {
+	return name;
+    }
+
+    // ------------------------------------------------------------------------------
+
     @Override
     public int hashCode() {
 	return Objects.hash(id);
@@ -67,7 +59,7 @@ public class PreOption {
 	if (this == obj) {
 	    result = true;
 
-	} else if (obj instanceof PreOption other) {
+	} else if (obj instanceof QuestionConcept other) {
 	    result = Objects.equals(id, other.id);
 
 	} else {

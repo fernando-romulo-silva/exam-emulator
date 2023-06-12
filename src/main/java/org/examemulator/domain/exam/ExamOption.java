@@ -4,7 +4,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.examemulator.domain.pretest.PreOption;
+import org.examemulator.domain.questionnaire.Option;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,8 +14,8 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "QUESTION_OPTION")
-public class Option {
+@Table(name = "EXAM_QUESTION_OPTION")
+public class ExamOption {
 
     @Id
     @Column(name = "ID", nullable = false)
@@ -25,27 +25,27 @@ public class Option {
     private String letter;
 
     @OneToOne
-    @JoinColumn(name = "PRE_OPTION_ID", referencedColumnName = "ID")
-    private PreOption preOption;
+    @JoinColumn(name = "OPTION_ID", referencedColumnName = "ID")
+    private Option option;
 
     @Column(name = "SELECTED")
     private Boolean selected = Boolean.FALSE;
 
-    Option() {
+    ExamOption() {
 	super();
     }
 
-    Option(final PreOption preOption) {
+    ExamOption(final Option preOption) {
 	super();
 	this.id = UUID.randomUUID().toString();
-	this.preOption = preOption;
+	this.option = preOption;
 	this.letter = preOption.getLetter();
     }
 
-    Option(final Option option) {
+    ExamOption(final ExamOption option) {
 	super();
 	this.id = UUID.randomUUID().toString();
-	this.preOption = option.getPreOption();
+	this.option = option.getOption();
 	this.letter = option.getLetter();
     }
 
@@ -57,16 +57,16 @@ public class Option {
 	selected = false;
     }
 
-    public PreOption getPreOption() {
-	return preOption;
+    public Option getOption() {
+	return option;
     }
 
     public String getValue() {
-	return preOption.getValue();
+	return option.getValue();
     }
 
     public Boolean isCorrect() {
-	return preOption.isCorrect();
+	return option.isCorrect();
     }
 
     public Boolean isSelected() {
@@ -96,7 +96,7 @@ public class Option {
 	if (this == obj) {
 	    result = true;
 
-	} else if (obj instanceof Option other) {
+	} else if (obj instanceof ExamOption other) {
 	    result = Objects.equals(id, other.id);
 
 	} else {
@@ -110,7 +110,7 @@ public class Option {
     public String toString() {
 	return new ToStringBuilder(this) //
 			.append("id", id) //
-			.append("preOption", preOption) //
+			.append("preOption", option) //
 			.append("selected", selected) //
 			.toString();
     }

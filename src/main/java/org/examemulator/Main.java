@@ -1,8 +1,6 @@
 package org.examemulator;
 
-import org.examemulator.domain.pretest.PreGroup;
-import org.examemulator.gui.preexame.PreExameController;
-import org.examemulator.service.ExamGroupService;
+import org.examemulator.gui.questionnaire.QuestionnaireController;
 import org.examemulator.util.database.HsqldbServer;
 
 import jakarta.enterprise.inject.se.SeContainerInitializer;
@@ -11,15 +9,11 @@ public class Main {
 
     public static void main(final String... args) {
 
-	executeApplication02();
-    }
-
-    static void executeApplication02() {
 	final var container = SeContainerInitializer.newInstance().initialize();
 
 	HsqldbServer.start();
 
-	final var preExamController = container.select(PreExameController.class).get();
+	final var preExamController = container.select(QuestionnaireController.class).get();
 	preExamController.show();
 
 	Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -33,23 +27,4 @@ public class Main {
 	    HsqldbServer.stop();
 	}));
     }
-
-    static void execute01() {
-
-	HsqldbServer.start();
-
-	final var container = SeContainerInitializer.newInstance().initialize();
-
-	final var examGroup = new PreGroup("group1", null, null);
-
-	final var examGroupService = container.select(ExamGroupService.class).get();
-
-	examGroupService.save(examGroup);
-
-	System.out.println(examGroupService.getAll());
-
-	HsqldbServer.stop();
-
-    }
-
 }

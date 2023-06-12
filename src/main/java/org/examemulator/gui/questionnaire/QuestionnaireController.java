@@ -1,4 +1,4 @@
-package org.examemulator.gui.preexame;
+package org.examemulator.gui.questionnaire;
 
 import static java.awt.BorderLayout.CENTER;
 import static java.util.stream.Collectors.joining;
@@ -16,8 +16,6 @@ import static org.examemulator.util.ControllerUtil.hasNextQuestion;
 import static org.examemulator.util.ControllerUtil.hasPreviousQuestion;
 import static org.examemulator.util.ControllerUtil.nextQuestion;
 import static org.examemulator.util.ControllerUtil.previousQuestion;
-import static org.examemulator.util.FileUtil.extractedExamName;
-import static org.examemulator.util.FileUtil.getQtyFiles;
 
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
@@ -27,18 +25,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import javax.swing.BorderFactory;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import org.examemulator.domain.pretest.PreExam;
-import org.examemulator.domain.pretest.PreQuestion;
+import org.examemulator.domain.questionnaire.Question;
+import org.examemulator.domain.questionnaire.Questionnaire;
 import org.examemulator.gui.components.RangeSlider;
 import org.examemulator.gui.exam.ExamController;
-import org.examemulator.gui.preexame.PreExameView.PreExameGui;
-import org.examemulator.service.PreExamService;
+import org.examemulator.gui.questionnaire.QuestionnaireView.PreExameGui;
+import org.examemulator.service.QuestionnaireService;
 import org.slf4j.Logger;
 
 import jakarta.annotation.PostConstruct;
@@ -46,28 +43,28 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 @ApplicationScoped
-public class PreExameController {
+public class QuestionnaireController {
 
-    private final PreExameView view;
+    private final QuestionnaireView view;
 
-    private final PreExamService service;
+    private final QuestionnaireService service;
 
     private final ExamController examController;
 
     private final Logger logger;
 
-    private final List<PreQuestion> toExamQuestions = new ArrayList<>();
+    private final List<Question> toExamQuestions = new ArrayList<>();
 
-    private PreExam exam;
+    private Questionnaire questionnaire;
 
-    private PreQuestion selectedQuestion;
+    private Question selectedQuestion;
 
     private String currentFolder;
 
     @Inject
-    PreExameController( //
+    QuestionnaireController( //
 		    final PreExameGui gui, //
-		    final PreExamService service, //
+		    final QuestionnaireService service, //
 		    final ExamController examController, //
 		    final Logger logger) {
 	super();
@@ -123,7 +120,7 @@ public class PreExameController {
 	});
 
 	view.btnNext.addActionListener(event -> {
-	    final var nextQuestionOptional = nextQuestion(exam.getQuestions(), selectedQuestion);
+	    final var nextQuestionOptional = nextQuestion(questionnaire.getQuestions(), selectedQuestion);
 	    if (nextQuestionOptional.isPresent()) {
 		selectedQuestion = nextQuestionOptional.get();
 	    }
@@ -131,7 +128,7 @@ public class PreExameController {
 	});
 
 	view.btnPrevious.addActionListener(event -> {
-	    final var previousQuestionOptional = previousQuestion(exam.getQuestions(), selectedQuestion);
+	    final var previousQuestionOptional = previousQuestion(questionnaire.getQuestions(), selectedQuestion);
 	    if (previousQuestionOptional.isPresent()) {
 		selectedQuestion = previousQuestionOptional.get();
 	    }
@@ -159,21 +156,30 @@ public class PreExameController {
 
 	    if (Objects.nonNull(currentFolder)) {
 
-		exam = service.loadPreExam(currentFolder);
+		questionnaire = service.loadQuestionnaire(currentFolder);
 
-		view.contentPane.setBorder(createTitledBorder(exam.getName()));
+		view.contentPane.setBorder(createTitledBorder(questionnaire.getName()));
 
 		view.btnNewExam.setEnabled(true);
 		view.btnNewExam.setEnabled(true);
+		view.textDescription.setText(questionnaire.getDescription());
+		
+		final var set = questionnaire.getSet();
+		view.textSet.setText(set.getName());
+		
+		final var certification = questionnaire.getCertification();
+		view.textCertification.setText(certification.getName());
 
 //		view.textFieldName.setEnabled(true);
 //		view.textQuantity.setEnabled(true);
 
 		view.rangeQuestions.setEnabled(true);
 		view.rangeQuestions.setMinimum(1);
-		view.rangeQuestions.setMaximum(getQtyFiles(currentFolder));
+		view.rangeQuestions.setMaximum(questionnaire.getQuestions().size());
 		view.rangeQuestions.setValue(1);
-		view.rangeQuestions.setUpperValue(getQtyFiles(currentFolder));
+		view.rangeQuestions.setUpperValue(questionnaire.getQuestions().size());
+		
+		view.textQuantity.setValue(questionnaire.getQuestions().size());
 
 		view.btnNext.setEnabled(false);
 		view.btnPrevious.setEnabled(false);
@@ -191,9 +197,9 @@ public class PreExameController {
 	view.btnNewExam.addActionListener(event -> {
 	    view.setVisible(false);
 	    
-	    toExamQuestions.addAll(exam.getQuestions());
+	    toExamQuestions.addAll(questionnaire.getQuestions());
 	    
-	    examController.show(exam.getName(), view, toExamQuestions);
+	    examController.show(questionnaire.getName(), view, toExamQuestions);
 	});
 
     }
@@ -217,15 +223,20 @@ public class PreExameController {
 			.concat(correctOptions).concat(TAG_BR_BR) //
 			.concat(explanation);
 
+	final var optionalConcept = selectedQuestion.getConcept();
+	final var conceptName = optionalConcept.isPresent() //
+			? " (".concat(optionalConcept.get().getName()).concat(")") //
+			: "";
+	
 	final var panelQuestionPanel = new JPanel();
 	panelQuestionPanel.setLayout(new BorderLayout());
-	panelQuestionPanel.setBorder(createTitledBorder("Question " + leftPad(selectedQuestion.getOrder().toString(), 2, '0')));
+	panelQuestionPanel.setBorder(createTitledBorder("Question " + leftPad(selectedQuestion.getOrder().toString(), 2, '0').concat(conceptName)));
 	panelQuestionPanel.add(createScrollHtmlTextToShow(txt), CENTER);
 	panelQuestionPanel.revalidate();
 	panelQuestionPanel.repaint();
 
-	view.btnPrevious.setEnabled(hasPreviousQuestion(exam.getQuestions(), selectedQuestion));
-	view.btnNext.setEnabled(hasNextQuestion(exam.getQuestions(), selectedQuestion));
+	view.btnPrevious.setEnabled(hasPreviousQuestion(questionnaire.getQuestions(), selectedQuestion));
+	view.btnNext.setEnabled(hasNextQuestion(questionnaire.getQuestions(), selectedQuestion));
 
 	view.questionInternPanel.add(panelQuestionPanel);
 
@@ -245,14 +256,14 @@ public class PreExameController {
 		final var labelEvent = (JLabel) event.getSource();
 		final var text = labelEvent.getText();
 
-		if (event.getClickCount() == 1 && event.getButton() == MouseEvent.BUTTON1 && Objects.nonNull(exam)) {
+		if (event.getClickCount() == 1 && event.getButton() == MouseEvent.BUTTON1 && Objects.nonNull(questionnaire)) {
 		    selectQuestion(Integer.valueOf(text));
 		    loadPanelQuestion();
 		}
 	    }
 	};
 
-	for (final var question : exam.getQuestions()) {
+	for (final var question : questionnaire.getQuestions()) {
 
 	    final var label = new JLabel(leftPad(question.getOrder().toString(), 2, '0'));
 	    label.setName(question.getOrder().toString());
@@ -263,18 +274,18 @@ public class PreExameController {
 
     private void selectFirstQuestion() {
 
-	if (exam.getQuestions().isEmpty()) {
+	if (questionnaire.getQuestions().isEmpty()) {
 	    return;
 	}
 
-	selectedQuestion = exam.getQuestions().get(0);
-	view.btnPrevious.setEnabled(hasPreviousQuestion(exam.getQuestions(), selectedQuestion));
-	view.btnNext.setEnabled(hasNextQuestion(exam.getQuestions(), selectedQuestion));
+	selectedQuestion = questionnaire.getQuestions().get(0);
+	view.btnPrevious.setEnabled(hasPreviousQuestion(questionnaire.getQuestions(), selectedQuestion));
+	view.btnNext.setEnabled(hasNextQuestion(questionnaire.getQuestions(), selectedQuestion));
     }
 
     private void selectQuestion(int order) {
 
-	final var questionOptional = exam.getQuestions() //
+	final var questionOptional = questionnaire.getQuestions() //
 			.stream() //
 			.filter(question -> Objects.equals(question.getOrder(), order)) //
 			.findFirst();
@@ -285,7 +296,7 @@ public class PreExameController {
 
 	selectedQuestion = questionOptional.get();
 
-	view.btnPrevious.setEnabled(hasPreviousQuestion(exam.getQuestions(), selectedQuestion));
-	view.btnNext.setEnabled(hasNextQuestion(exam.getQuestions(), selectedQuestion));
+	view.btnPrevious.setEnabled(hasPreviousQuestion(questionnaire.getQuestions(), selectedQuestion));
+	view.btnNext.setEnabled(hasNextQuestion(questionnaire.getQuestions(), selectedQuestion));
     }
 }

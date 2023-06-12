@@ -27,7 +27,7 @@ import static org.examemulator.util.ControllerUtil.hasNextQuestion;
 import static org.examemulator.util.ControllerUtil.hasPreviousQuestion;
 import static org.examemulator.util.ControllerUtil.nextQuestion;
 import static org.examemulator.util.ControllerUtil.previousQuestion;
-import static org.examemulator.util.DomainUtil.DISCRET_LIST;
+import static org.examemulator.util.domain.DomainUtil.DISCRET_LIST;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -50,9 +50,9 @@ import javax.swing.Timer;
 
 import org.apache.commons.lang3.StringUtils;
 import org.examemulator.domain.exam.Exam;
+import org.examemulator.domain.exam.ExamOption;
+import org.examemulator.domain.exam.ExamQuestion;
 import org.examemulator.domain.exam.ExamStatus;
-import org.examemulator.domain.exam.Option;
-import org.examemulator.domain.exam.Question;
 import org.examemulator.domain.inquiry.InquiryInterface;
 import org.examemulator.gui.exam.ExamView.ExamGui;
 import org.examemulator.gui.statitics.StatiticsController;
@@ -80,7 +80,7 @@ public class ExamController {
 
     private Exam exam;
 
-    private Question selectedQuestion;
+    private ExamQuestion selectedQuestion;
 
     private Timer timer;
 
@@ -355,8 +355,8 @@ public class ExamController {
 	    final String vs;
 	    if (DISCRET_LIST.contains(selectedQuestion.getType())) {
 		vs = LF.concat(LF).concat(selectedQuestion.getOptions().stream() //
-				.filter(Option::isCorrect) //
-				.map(Option::getValue) //
+				.filter(ExamOption::isCorrect) //
+				.map(ExamOption::getValue) //
 				.collect(joining(LF.concat(LF))));
 	    } else {
 		vs = EMPTY;
@@ -422,11 +422,16 @@ public class ExamController {
 
 	view.questionInternPanel.removeAll();
 
-	final var questionText = LF.concat(selectedQuestion.getValue()).concat(LF);
+	final var optionalConcept = selectedQuestion.getQuestion().getConcept();
+	final var conceptName = optionalConcept.isPresent() //
+			? " (".concat(optionalConcept.get().getName()).concat(")") //
+			: "";
 
+	final var questionText = LF.concat(selectedQuestion.getValue()).concat(LF);
+	
 	final var panelQuestionPanel = new JPanel();
 	panelQuestionPanel.setLayout(new BoxLayout(panelQuestionPanel, Y_AXIS));
-	panelQuestionPanel.setBorder(createTitledBorder("Question ".concat(leftPad(selectedQuestion.getOrder().toString(), 2, '0'))));
+	panelQuestionPanel.setBorder(createTitledBorder("Question ".concat(leftPad(selectedQuestion.getOrder().toString(), 2, '0').concat(conceptName))));
 	panelQuestionPanel.add(createScrollTextToShow(questionText));
 	panelQuestionPanel.revalidate();
 	panelQuestionPanel.repaint();

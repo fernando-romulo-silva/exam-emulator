@@ -36,7 +36,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
 import org.examemulator.domain.exam.Exam;
-import org.examemulator.domain.exam.Question;
+import org.examemulator.domain.exam.ExamQuestion;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -47,7 +47,7 @@ public class StatiticsController {
 
     private final StatiticsView view;
 
-    private final List<Question> questions = new ArrayList<>();
+    private final List<ExamQuestion> questions = new ArrayList<>();
 
     private final MouseAdapter questionLabelListener = new MouseAdapter() {
 	
@@ -87,7 +87,7 @@ public class StatiticsController {
 
     private Exam exam;
 
-    private Question selectedQuestion;
+    private ExamQuestion selectedQuestion;
 
     @Inject
     StatiticsController(final StatiticsView.StatiticsGui gui) {
@@ -188,12 +188,12 @@ public class StatiticsController {
 
 	final var showMarked = view.chckbxMarked.isSelected();
 
-	final var questionsTemp = new TreeSet<Question>();
+	final var questionsTemp = new TreeSet<ExamQuestion>();
 
 	if (showCorrect) {
 	    final var questionsCorrects = exam.getQuestions() //
 			    .stream() //
-			    .filter(Question::isCorrect) //
+			    .filter(ExamQuestion::isCorrect) //
 			    .toList();
 
 	    questionsTemp.addAll(questionsCorrects);
@@ -203,7 +203,7 @@ public class StatiticsController {
 	if (showMarked) {
 	    final var questionsMarked = questionsTemp //
 			    .stream() //
-			    .filter(Question::isMarked) //
+			    .filter(ExamQuestion::isMarked) //
 			    .toList();
 
 	    questionsTemp.clear();

@@ -65,7 +65,6 @@ public class FileUtil {
     public static List<String> readQuestionsFiles(final String dir) {
 	final var questionFiles = new ArrayList<String>();
 
-	// load files
 	try (final var stream = Files.list(Paths.get(dir))) {
 	    questionFiles.addAll(stream.filter(file -> !Files.isDirectory(file)) //
 			    .map(Path::getFileName) //

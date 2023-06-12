@@ -80,7 +80,7 @@ class ExamView extends JFrame {
 	// -------------------------------------------------------------------------------------------
 	// Main Panel
 	// -------------------------------------------------------------------------------------------
-	setTitle(APP_NAME.concat(" - Exam!"));
+	setTitle(APP_NAME.concat(" - Exam"));
 
 	contentPane = new JPanel();
 	contentPane.setBorder(createTitledBorder("No Exam"));

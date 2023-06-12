@@ -42,7 +42,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.text.html.HTMLEditorKit;
 
 import org.apache.commons.lang3.StringUtils;
-import org.examemulator.domain.exam.Question;
+import org.examemulator.domain.exam.ExamQuestion;
 import org.examemulator.gui.components.WrapLayout;
 
 public class GuiUtil {
@@ -61,7 +61,7 @@ public class GuiUtil {
     
     public static final String TAG_CLOSE_B = "</b>";
     
-    public static final String APP_NAME = "ExamEmulator!";
+    public static final String APP_NAME = "ExamEmulator";
 
     @FunctionalInterface
     public static interface Action {
@@ -166,7 +166,7 @@ public class GuiUtil {
 	};
     }
 
-    public static JPanel createDiscreteOptions(final Question question) {
+    public static JPanel createDiscreteOptions(final ExamQuestion question) {
 	final var optionsQuestionPanel = new JPanel();
 	optionsQuestionPanel.setLayout(new BorderLayout());
 
@@ -236,7 +236,7 @@ public class GuiUtil {
 	return optionsQuestionPanel;
     }
 
-    public static JPanel createIndiscreteOptions(final Question question) {
+    public static JPanel createIndiscreteOptions(final ExamQuestion question) {
 
 	final var optionsQuestionPanel = new JPanel();
 	optionsQuestionPanel.setBorder(BorderFactory.createTitledBorder("Options"));

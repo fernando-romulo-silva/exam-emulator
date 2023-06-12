@@ -1,4 +1,4 @@
-package org.examemulator.gui.preexame;
+package org.examemulator.gui.questionnaire;
 
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.FlowLayout.LEFT;
@@ -12,7 +12,6 @@ import java.awt.Dimension;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -26,15 +25,15 @@ import org.examemulator.gui.components.WrapLayout;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
-class PreExameView extends JFrame {
+class QuestionnaireView extends JFrame {
 
     private static final long serialVersionUID = 1L;
 
     @ApplicationScoped
     static class PreExameGui {
 
-	PreExameView getView() {
-	    return new PreExameView();
+	QuestionnaireView getView() {
+	    return new QuestionnaireView();
 	}
     }
 
@@ -42,27 +41,25 @@ class PreExameView extends JFrame {
 
     JButton btnNewExam, btnDelete, btnLoad, btnPrevious, btnNext;
 
-    JLabel lblClock, lblRangeLow, lblUpper, lblQuantity;
+    JLabel lblClock, lblRangeLow, lblUpper, lblQuantity, lblCertification;
 
     JSpinner textQuantity;
 
-    JComboBox<String> cbGroup;
-
     RangeSlider rangeQuestions;
 
-    JTextField textFieldDescription;
+    JTextField textDescription, textSet, textCertification;
 
-    public PreExameView() {
+    public QuestionnaireView() {
 	setDefaultCloseOperation(EXIT_ON_CLOSE);
 	setBounds(100, 100, 871, 723);
 
 	// -------------------------------------------------------------------------------------------
 	// Main Panel
 	// -------------------------------------------------------------------------------------------
-	setTitle(APP_NAME.concat(" - PreExame"));
+	setTitle(APP_NAME.concat(" - Questionnaire"));
 
 	contentPane = new JPanel();
-	contentPane.setBorder(createTitledBorder("No Exam"));
+	contentPane.setBorder(createTitledBorder("No Questionnaire"));
 	contentPane.setLayout(new BoxLayout(contentPane, Y_AXIS));
 	setContentPane(contentPane);
 
@@ -100,56 +97,60 @@ class PreExameView extends JFrame {
 	examControlPanel2.add(lblDescription);
 	lblDescription.setBorder(new EtchedBorder(LOWERED, null, null));
 
-	textFieldDescription = new JTextField();
-	textFieldDescription.setEnabled(false);
-	examControlPanel2.add(textFieldDescription);
-	textFieldDescription.setColumns(20);
+	textDescription = new JTextField();
+	textDescription.setEnabled(false);
+	examControlPanel2.add(textDescription);
+	textDescription.setColumns(30);
+
+	lblQuantity = new JLabel("Quantity");
+	examControlPanel2.add(lblQuantity);
+
+	textQuantity = new JSpinner(new SpinnerNumberModel(Integer.valueOf(100), Integer.valueOf(10), null, Integer.valueOf(10)));
+	examControlPanel2.add(textQuantity);
+	textQuantity.setEnabled(false);
 
 	final var examControlPanel3 = new JPanel(new WrapLayout(LEFT, 5, 5));
 	examPanel.add(examControlPanel3);
 
-	lblQuantity = new JLabel("Quantity");
-	examControlPanel3.add(lblQuantity);
+	final var lblSet = new JLabel("Set");
+	examControlPanel3.add(lblSet);
+	lblSet.setBorder(new EtchedBorder(LOWERED, null, null));
 
-	textQuantity = new JSpinner(new SpinnerNumberModel(Integer.valueOf(100), Integer.valueOf(10), null, Integer.valueOf(10)));
-	examControlPanel3.add(textQuantity);
-	textQuantity.setEnabled(false);
+	textSet = new JTextField();
+	textSet.setEnabled(false);
+	examControlPanel3.add(textSet);
+	textSet.setColumns(16);
 
-	final var lblGroup = new JLabel("Group");
-	examControlPanel3.add(lblGroup);
-	lblGroup.setBorder(new EtchedBorder(LOWERED, null, null));
+	lblCertification = new JLabel("Certification");
+	examControlPanel3.add(lblCertification);
 
-	cbGroup = new JComboBox<>();
-	examControlPanel3.add(cbGroup);
-	cbGroup.setEnabled(false);
-	cbGroup.addItem("Practice");
-	cbGroup.addItem("Exam");
-	cbGroup.addItem("Study");
+	textCertification = new JTextField();
+	textCertification.setEnabled(false);
+	examControlPanel3.add(textCertification);
+	textCertification.setColumns(20);
 
-	cbGroup.setSize(400, cbGroup.getPreferredSize().height);
-
-	final var examControlPane4 = new JPanel();
-	examControlPane4.setLayout(new WrapLayout(LEFT, 5, 5));
-	examPanel.add(examControlPane4);
+	final var examControlPanel4 = new JPanel();
+	examControlPanel4.setLayout(new WrapLayout(LEFT, 5, 5));
+	examPanel.add(examControlPanel4);
 
 	final var lblRange = new JLabel("Range");
-	examControlPane4.add(lblRange);
+	examControlPanel4.add(lblRange);
 
 	lblRangeLow = new JLabel("1");
-	examControlPane4.add(lblRangeLow);
+	examControlPanel4.add(lblRangeLow);
 
 	rangeQuestions = new RangeSlider();
 	rangeQuestions.setEnabled(false);
-	examControlPane4.add(rangeQuestions);
-	rangeQuestions.setPreferredSize(new Dimension(340, rangeQuestions.getPreferredSize().height));
+	examControlPanel4.add(rangeQuestions);
+	rangeQuestions.setPreferredSize(new Dimension(450, 12));
 	rangeQuestions.setMinimum(0);
 	rangeQuestions.setMaximum(10);
 
 	lblUpper = new JLabel("10");
-	examControlPane4.add(lblUpper);
+	examControlPanel4.add(lblUpper);
 
 	lblClock = new JLabel("");
-	examControlPane4.add(lblClock);
+	examControlPanel4.add(lblClock);
 	lblClock.setBorder(new EtchedBorder(LOWERED, null, null));
 
 	// -------------------------------------------------------------------------------------------
@@ -186,5 +187,4 @@ class PreExameView extends JFrame {
 
 	contentPane.add(questionPanel);
     }
-
 }

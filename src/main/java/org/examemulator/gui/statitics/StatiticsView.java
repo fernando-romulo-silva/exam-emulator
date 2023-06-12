@@ -48,7 +48,7 @@ class StatiticsView extends JFrame {
 	setDefaultCloseOperation(EXIT_ON_CLOSE);
 	setBounds(100, 100, 871, 723);
 	
-	setTitle(APP_NAME.concat("Exam Statitics"));
+	setTitle(APP_NAME.concat(" - Exam Statitics"));
 	
 	contentPane = new JPanel();
 	contentPane.setLayout(new BoxLayout(contentPane, Y_AXIS));

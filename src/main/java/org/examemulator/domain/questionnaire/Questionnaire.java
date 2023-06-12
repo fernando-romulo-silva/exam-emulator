@@ -1,4 +1,4 @@
-package org.examemulator.domain.pretest;
+package org.examemulator.domain.questionnaire;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.examemulator.domain.cerfication.Certification;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -15,43 +16,54 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "PRE_EXAM")
-public class PreExam {
+@Table(name = "QUESTIONNARIE", uniqueConstraints = { //
+	@UniqueConstraint(columnNames = { "NAME", "CERTIFICATION_ID" }) //
+})
+public class Questionnaire {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID", nullable = false)
     private Long id;
 
-    @Column(name = "NAME", unique = true)
+    @Column(name = "NAME")
     private String name;
 
     @Column(name = "DESCRIPTION")
     private String description;
-    
+
     @OneToOne
-    @JoinColumn(name = "GROUP_ID", referencedColumnName = "ID")
-    private PreGroup group;
-    
+    @JoinColumn(name = "SET_ID", referencedColumnName = "ID")
+    private QuestionnaireSet set;
+
+    @ManyToOne
+    @JoinColumn(name = "CERTIFICATION_ID", referencedColumnName = "ID", nullable = false)
+    private Certification certification;
+
     @JoinColumn(name = "PRE_QUESTION_ID")
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<PreQuestion> questions = new ArrayList<>();
+    private final List<Question> questions = new ArrayList<>();
 
-    PreExam() {
+    Questionnaire() {
 	super();
     }
 
-    public PreExam(final String name, final String description, final PreGroup group) {
+    public Questionnaire(final String name, final String description, final QuestionnaireSet set) {
 	super();
 	this.name = name;
 	this.description = description;
-	this.group = group;
+	this.set = set;
+	this.certification = set.getCertification();
     }
+
+    // ------------------------------------------
 
     public Long getId() {
 	return id;
@@ -61,11 +73,23 @@ public class PreExam {
 	return name;
     }
 
-    public List<PreQuestion> getQuestions() {
+    public String getDescription() {
+	return description;
+    }
+
+    public QuestionnaireSet getSet() {
+	return set;
+    }
+    
+    public Certification getCertification() {
+        return certification;
+    }    
+
+    public List<Question> getQuestions() {
 	return Collections.unmodifiableList(questions);
     }
 
-    public void addQuestion(final PreQuestion question) {
+    public void addQuestion(final Question question) {
 	questions.add(question);
     }
 
@@ -83,7 +107,7 @@ public class PreExam {
 	if (this == obj) {
 	    result = true;
 
-	} else if (obj instanceof PreExam other) {
+	} else if (obj instanceof Questionnaire other) {
 	    result = Objects.equals(id, other.id);
 
 	} else {

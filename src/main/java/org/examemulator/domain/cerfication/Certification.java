@@ -1,4 +1,4 @@
-package org.examemulator.domain.pretest;
+package org.examemulator.domain.cerfication;
 
 import java.util.Objects;
 
@@ -12,34 +12,53 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "CONCEPT")
-public class Concept {
-    
+@Table(name = "CERTIFICATION")
+public class Certification {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID", nullable = false)
     private Long id;
 
-    @Column(name = "NAME", unique = true)
+    @Column(name = "NAME", unique = true, nullable = false)
     private String name;
+
+    @Column(name = "MAX_MINUTES")
+    private Integer maxMinutes;
+
+//    @JoinTable(name="BOOK_CHAPTER", joinColumns=@JoinColumn(name="BOOK_ID"))  
+//    @ElementCollection(fetch=FetchType.EAGER)
+//    @CollectionTable(name = "CERTIFICATION_CONCEPTS")
+//    @MapKeyColumn(name = "KEY")
+//    @Column(name = "VALUE")
+//    private Map<Concept, BigDecimal> concepts;
+
+    // ------------------------------------------
     
-    Concept() {
+    Certification() {
 	super();
     }
-    
-    public Concept(final String name) {
+
+    public Certification(final String name) {
 	super();
 	this.name = name;
     }
     
+    // ------------------------------------------
+
     public Long getId() {
-        return id;
+	return id;
     }
 
     public String getName() {
-        return name;
+	return name;
     }
-    
+
+    public Integer getMaxMinutes() {
+	return maxMinutes;
+    }
+
+    // ------------------------------------------
     @Override
     public int hashCode() {
 	return Objects.hash(id);
@@ -53,7 +72,7 @@ public class Concept {
 	if (this == obj) {
 	    result = true;
 
-	} else if (obj instanceof Concept other) {
+	} else if (obj instanceof Certification other) {
 	    result = Objects.equals(id, other.id);
 
 	} else {

@@ -1,4 +1,4 @@
-package org.examemulator.domain.pretest;
+package org.examemulator.domain.questionnaire;
 
 import java.util.Objects;
 
@@ -9,41 +9,50 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "GROUP")
-public class PreGroup {
+@Table(name = "OPTION")
+public class Option {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID", nullable = false)
     private Long id;
+    
+    @Column(name = "LETTER")
+    private String letter;
 
-    @Column(name = "NAME")
-    private String name;
+    @Column(name = "TEXT")
+    private String value;
+
+    @Column(name = "CORRECT")
+    private Boolean correct = Boolean.FALSE;
     
-    @Column(name = "Description")
-    private String description;
-    
-    @ManyToOne
-    @JoinColumn(name = "CERTIFICATION_ID", referencedColumnName = "ID", nullable = false)
-    private Certification certification;
-    
-    PreGroup() {
+    Option(){
 	super();
     }
-
-    public PreGroup(final String name, final String description, final Certification certification) {
+    
+    public Option(final String letter, final String text, final Boolean correct) {
 	super();
-	this.name = name;
-	this.description = description;
-	this.certification = certification;
+	this.letter = letter;
+	this.value = text;
+	this.correct = correct;
+    }
+
+    public Boolean isCorrect() {
+	return correct;
     }
     
-    // ------------------------------------------
+    public String getLetter() {
+        return letter;
+    }
+    
+    public String getValue() {
+	return value;
+    }
+
+    // ----------------------------------------------------------
     
     @Override
     public int hashCode() {
@@ -58,7 +67,7 @@ public class PreGroup {
 	if (this == obj) {
 	    result = true;
 
-	} else if (obj instanceof PreGroup other) {
+	} else if (obj instanceof Option other) {
 	    result = Objects.equals(id, other.id);
 
 	} else {

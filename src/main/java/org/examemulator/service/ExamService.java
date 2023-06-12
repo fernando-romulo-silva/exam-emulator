@@ -24,5 +24,4 @@ public class ExamService {
     public List<Exam> getAll() {
 	return entityManager.createQuery("select p from Exam p", Exam.class).getResultList();
     }
-    
 }

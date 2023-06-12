@@ -4,8 +4,8 @@
              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/orm/orm_3_1.xsd"
              version="3.1">
 
-		<named-query name="ExamGroup.findAll">
-			<query>SELECT e FROM ExamGroup e</query>
+		<named-query name="QuestionnaireSet.findAll">
+			<query>SELECT o FROM QuestionnaireSet o</query>
 		</named-query>
 
 </entity-mappings>
