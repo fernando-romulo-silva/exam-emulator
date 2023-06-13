@@ -1,18 +1,22 @@
-package org.examemulator.domain.questionnaire;
+package org.examemulator.domain.questionnaire.question;
 
 import java.util.Objects;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.examemulator.domain.cerfication.Certification;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "QUESTION_CONCEPT")
+@Table(name = "QUESTION_CONCEPT", uniqueConstraints = { @UniqueConstraint(columnNames = { "NAME", "CERTIFICATION_ID" }) })
 public class QuestionConcept {
 
     @Id
@@ -20,18 +24,22 @@ public class QuestionConcept {
     @Column(name = "ID", nullable = false)
     private Long id;
 
-    @Column(name = "NAME", unique = true, nullable = false)
+    @Column(name = "NAME", nullable = false)
     private String name;
 
-    // ------------------------------------------------------------------------------
+    @ManyToOne
+    @JoinColumn(name = "CERTIFICATION_ID", referencedColumnName = "ID", nullable = false)
+    private Certification certification;
 
+    // ------------------------------------------------------------------------------
     QuestionConcept() {
 	super();
     }
 
-    public QuestionConcept(final String name) {
+    public QuestionConcept(final String name, final Certification certification) {
 	super();
 	this.name = name;
+	this.certification = certification;
     }
 
     // ------------------------------------------------------------------------------
@@ -42,6 +50,10 @@ public class QuestionConcept {
 
     public String getName() {
 	return name;
+    }
+
+    public Certification getCertification() {
+	return certification;
     }
 
     // ------------------------------------------------------------------------------

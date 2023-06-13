@@ -30,8 +30,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import org.examemulator.domain.questionnaire.Question;
 import org.examemulator.domain.questionnaire.Questionnaire;
+import org.examemulator.domain.questionnaire.question.Question;
 import org.examemulator.gui.components.RangeSlider;
 import org.examemulator.gui.exam.ExamController;
 import org.examemulator.gui.questionnaire.QuestionnaireView.PreExameGui;

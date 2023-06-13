@@ -1,4 +1,4 @@
-package org.examemulator.domain.questionnaire;
+package org.examemulator.domain.questionnaire.set;
 
 import java.util.Optional;
 

@@ -7,6 +7,8 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.examemulator.domain.cerfication.Certification;
+import org.examemulator.domain.questionnaire.question.Question;
+import org.examemulator.domain.questionnaire.set.QuestionnaireSet;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

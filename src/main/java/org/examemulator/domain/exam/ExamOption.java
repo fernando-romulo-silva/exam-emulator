@@ -4,7 +4,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.examemulator.domain.questionnaire.Option;
+import org.examemulator.domain.questionnaire.question.Option;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

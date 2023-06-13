@@ -1,4 +1,4 @@
-package org.examemulator.domain.questionnaire;
+package org.examemulator.domain.questionnaire.set;
 
 import java.util.Objects;
 
@@ -16,9 +16,12 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "QUESTIONNARIE_SET", uniqueConstraints = { //
-	@UniqueConstraint(columnNames = { "NAME", "CERTIFICATION_ID" }) //
-})
+@Table( //
+		name = "QUESTIONNARIE_SET", //
+		uniqueConstraints = { //
+			@UniqueConstraint(columnNames = { "NAME", "CERTIFICATION_ID" }) //
+		} //
+)
 public class QuestionnaireSet {
 
     @Id
@@ -40,7 +43,10 @@ public class QuestionnaireSet {
 	super();
     }
 
-    public QuestionnaireSet(final String name, final String description, final Certification certification) {
+    public QuestionnaireSet(//
+		    final String name, //
+		    final String description, //
+		    final Certification certification) {
 	super();
 	this.name = name;
 	this.description = description;
