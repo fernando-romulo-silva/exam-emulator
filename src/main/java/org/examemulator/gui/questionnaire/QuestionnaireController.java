@@ -35,6 +35,7 @@ import org.examemulator.domain.questionnaire.Questionnaire;
 import org.examemulator.gui.components.RangeSlider;
 import org.examemulator.gui.exam.ExamController;
 import org.examemulator.gui.questionnaire.QuestionnaireView.PreExameGui;
+import org.examemulator.service.LoadFromFileService;
 import org.examemulator.service.QuestionnaireService;
 import org.slf4j.Logger;
 
@@ -48,6 +49,8 @@ public class QuestionnaireController {
     private final QuestionnaireView view;
 
     private final QuestionnaireService service;
+    
+    private final LoadFromFileService loadFromFileService;
 
     private final ExamController examController;
 
@@ -65,11 +68,13 @@ public class QuestionnaireController {
     QuestionnaireController( //
 		    final PreExameGui gui, //
 		    final QuestionnaireService service, //
+		    final LoadFromFileService loadFromFileService, //
 		    final ExamController examController, //
 		    final Logger logger) {
 	super();
 	this.view = gui.getView();
 	this.service = service;
+	this.loadFromFileService = loadFromFileService;
 	this.examController = examController;
 	this.logger = logger;
     }
@@ -156,7 +161,7 @@ public class QuestionnaireController {
 
 	    if (Objects.nonNull(currentFolder)) {
 
-		questionnaire = service.loadQuestionnaire(currentFolder);
+		questionnaire = loadFromFileService.loadQuestionnaire(currentFolder);
 
 		view.contentPane.setBorder(createTitledBorder(questionnaire.getName()));
 

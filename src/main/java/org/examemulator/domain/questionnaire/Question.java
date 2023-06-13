@@ -19,6 +19,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -34,14 +35,16 @@ public class Question implements Comparable<Question>, InquiryInterface {
     @Column(name = "NAME")
     private String name;
 
+    @Lob
     @Column(name = "VALUE")
     private String value;
 
+    @Lob
     @Column(name = "EXPLANATION")
     private String explanation;
     
     @ManyToOne
-    @JoinColumn(name = "CONCEPT_ID", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "CONCEPT_ID", referencedColumnName = "ID")
     private QuestionConcept concept;
 
     @Column(name = "NUM_ORDER")

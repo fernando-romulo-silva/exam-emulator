@@ -21,8 +21,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.examemulator.domain.cerfication.Certification;
 import org.examemulator.domain.questionnaire.Option;
 import org.examemulator.domain.questionnaire.Question;
@@ -31,7 +29,6 @@ import org.examemulator.domain.questionnaire.Questionnaire;
 import org.examemulator.domain.questionnaire.QuestionnaireRepository;
 import org.examemulator.domain.questionnaire.QuestionnaireSet;
 import org.examemulator.domain.questionnaire.QuestionnaireSetRespository;
-import org.jboss.weld.exceptions.IllegalArgumentException;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -44,17 +41,13 @@ public class QuestionnaireService {
 
     private final QuestionnaireSetRespository questionnaireSetRespository;
 
-    private final CertificationService certificationService;
-
     @Inject
     QuestionnaireService( //
 		    final QuestionnaireRepository questionnaireRepository, //
-		    final QuestionnaireSetRespository questionnaireSetRespository, //
-		    final CertificationService certificationService) {
+		    final QuestionnaireSetRespository questionnaireSetRespository) {
 	super();
 	this.questionnaireRepository = questionnaireRepository;
 	this.questionnaireSetRespository = questionnaireSetRespository;
-	this.certificationService = certificationService;
     }
 
     public Questionnaire findPreExamByPreQuestion(final Question preQuestion) {
@@ -62,25 +55,12 @@ public class QuestionnaireService {
 	return null;
     }
 
-    public Questionnaire loadQuestionnaire(final String dir) {
-
-	final var data = loadData(dir);
-
-	final var certification = certificationService.loadCertification(data);
-
-	final var questionnaireSet = loadQuestionnaireSet(data, certification);
-
-	final var questionnaire = loadQuestionnaire(dir, data, questionnaireSet);
-
-	return questionnaire;
-    }
-
     @Transactional
     public Questionnaire loadQuestionnaire(final String dir, final ExamStructureFolder data, final QuestionnaireSet questionnaireSet) {
 
 	final var questionFiles = readQuestionsFiles(dir);
 
-	final var optionalQuestionnaire = questionnaireRepository.findByNameAndCertification(data.setName, questionnaireSet.getCertification());
+	final var optionalQuestionnaire = questionnaireRepository.findByNameAndCertification(data.questionnaireName, questionnaireSet.getCertification());
 
 	if (optionalQuestionnaire.isEmpty()) {
 	    final var questionnaireTemp = new Questionnaire(data.questionnaireName, data.examDesc, questionnaireSet);
@@ -107,9 +87,9 @@ public class QuestionnaireService {
 
 	    return questionnaireRepository.save(questionnaireTemp);
 	}
+	
 
 	return optionalQuestionnaire.get();
-
     }
 
     @Transactional
@@ -178,30 +158,6 @@ public class QuestionnaireService {
 			.toList();
     }
 
-    private ExamStructureFolder loadData(final String dir) {
-
-	final var splitedDir = StringUtils.split(dir, File.separator);
-
-	if (StringUtils.isBlank(dir) || ArrayUtils.isEmpty(splitedDir) || splitedDir.length < 3) {
-	    throw new IllegalArgumentException("Dirs are out of pattern, please check the documentation");
-	}
-
-	final var questionnaireTemp = splitedDir[splitedDir.length - 1];
-	final var questionnaireName = substringBefore(questionnaireTemp, "(");
-	final var questionnaireDesc = substringBetween(questionnaireTemp, "(", ")");
-
-	final var setTemp = splitedDir[splitedDir.length - 2];
-	final var setName = substringBefore(setTemp, "(");
-	final var setDesc = substringBetween(setTemp, "(", ")");
-
-	final var certificationName = substringBefore(splitedDir[splitedDir.length - 3], "(");
-
-	return new ExamStructureFolder( //
-			questionnaireName, //
-			questionnaireDesc, setName, //
-			setDesc, certificationName //
-	);
-    }
 
     public record ExamStructureFolder(String questionnaireName, String examDesc, String setName, String setDesc, String certificationName) {
     }

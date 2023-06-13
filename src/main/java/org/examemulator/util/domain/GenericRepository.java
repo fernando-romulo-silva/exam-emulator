@@ -29,12 +29,17 @@ public abstract class GenericRepository<T, K> implements CrudRepository<T, K> {
 
 	return entity;
     }
+    
+    public <S extends T> S update(final S entity) {
 
+	return entityManager.merge(entity);
+    }
+    
     @Override
     public <S extends T> Iterable<S> saveAll(final Iterable<S> entities) {
 
 	for (final var s : entities) {
-	    entityManager.persist(s);
+	    entityManager.merge(s);
 	}
 
 	return entities;

@@ -18,7 +18,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
@@ -39,11 +38,11 @@ public class Questionnaire {
     @Column(name = "DESCRIPTION")
     private String description;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "SET_ID", referencedColumnName = "ID")
     private QuestionnaireSet set;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "CERTIFICATION_ID", referencedColumnName = "ID", nullable = false)
     private Certification certification;
 
