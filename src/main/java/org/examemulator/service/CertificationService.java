@@ -2,7 +2,6 @@ package org.examemulator.service;
 
 import org.examemulator.domain.cerfication.Certification;
 import org.examemulator.domain.cerfication.CertificationRepository;
-import org.examemulator.service.QuestionnaireService.ExamStructureFolder;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;

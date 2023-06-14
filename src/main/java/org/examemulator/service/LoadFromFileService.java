@@ -2,7 +2,6 @@ package org.examemulator.service;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toMap;
-import static org.apache.commons.lang3.StringUtils.containsNone;
 import static org.apache.commons.lang3.StringUtils.substringBefore;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.examemulator.util.FileUtil.readCorrectOptions;
@@ -16,12 +15,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 
-import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.examemulator.domain.cerfication.Certification;
@@ -29,7 +29,6 @@ import org.examemulator.domain.questionnaire.Questionnaire;
 import org.examemulator.domain.questionnaire.question.Option;
 import org.examemulator.domain.questionnaire.question.Question;
 import org.examemulator.domain.questionnaire.question.QuestionConcept;
-import org.examemulator.service.QuestionnaireService.ExamStructureFolder;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -62,8 +61,9 @@ public class LoadFromFileService {
 	final var concepts = loadConcepts(questionFiles, certification);
 	
 	final var questions = loadQuestions(dir, questionFiles, concepts);
+	
+	final var questionnaire = questionnaireService.saveOrUpdateQuestionnaire(data, questionnaireSet, questions);
 
-	final var questionnaire = questionnaireService.saveOrUpdateQuestionnaire(dir, data, questionnaireSet);
 
 	return questionnaire;
     }
@@ -97,26 +97,31 @@ public class LoadFromFileService {
     private Map<String, QuestionConcept> loadConcepts(final List<String> questionFiles, final Certification certification) {
 
 	final var concepts = questionFiles.stream() //
-			.filter(fn -> !containsNone(fn, '(', ')')) //
+			.filter(fn -> !StringUtils.containsNone(fn, '(', ')')) //
 			.map(fn -> substringBetween(fn, "(", ")")) //
 			.distinct() //
 			.map(fn -> new SimpleEntry<>(fn, new QuestionConcept(fn, certification))) //
 			.collect(toMap(Entry::getKey, Entry::getValue));
 	
+	final var result = new HashMap<String, QuestionConcept>();
+	
 	for (final var conceptEntry : concepts.entrySet()) {
+
+	    final var conceptFileName = conceptEntry.getKey();
 	    final var conceptFile = conceptEntry.getValue();
 	    
 	    final var concept = questionnaireService.readOrSaveQuestionConcept(conceptFile.getName(), certification);
-	    
+
+	    result.put(conceptFileName, concept);
 	}
 	
 
-	return null;
+	return result;
     }
 
-    private Map<String, Question> loadQuestions(final String dir, final List<String> questionFiles, final Map<String, QuestionConcept> conceptsMap) {
+    private List<Question> loadQuestions(final String dir, final List<String> questionFiles, final Map<String, QuestionConcept> conceptsMap) {
 
-	final var questionsTemp = new HashedMap<String, Question>();
+	final var questionsTemp = new ArrayList<Question>();
 
 	for (final var questionFile : questionFiles) {
 
@@ -124,7 +129,7 @@ public class LoadFromFileService {
 
 	    try (final var lines = Files.lines(questionPath)) {
 
-		questionsTemp.put(questionFile, loadQuestion(questionFile, lines.collect(joining("\n")), conceptsMap));
+		questionsTemp.add(loadQuestion(questionFile, lines.collect(joining("\n")), conceptsMap));
 
 	    } catch (final IOException ex) {
 		throw new IllegalStateException(ex);

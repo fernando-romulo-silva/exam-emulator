@@ -56,12 +56,13 @@ public class Questionnaire {
 	super();
     }
 
-    public Questionnaire(final String name, final String description, final QuestionnaireSet set) {
+    public Questionnaire(final String name, final String description, final QuestionnaireSet set, final List<Question> questions) {
 	super();
 	this.name = name;
 	this.description = description;
 	this.set = set;
 	this.certification = set.getCertification();
+	this.questions.addAll(questions);
     }
 
     // ------------------------------------------
@@ -88,10 +89,6 @@ public class Questionnaire {
 
     public List<Question> getQuestions() {
 	return Collections.unmodifiableList(questions);
-    }
-
-    public void addQuestion(final Question question) {
-	questions.add(question);
     }
 
     // -----------------------------------------------------------------------

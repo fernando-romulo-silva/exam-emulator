@@ -1,8 +1,11 @@
 package org.examemulator.service;
 
+import java.util.List;
+
 import org.examemulator.domain.cerfication.Certification;
 import org.examemulator.domain.questionnaire.Questionnaire;
 import org.examemulator.domain.questionnaire.QuestionnaireRepository;
+import org.examemulator.domain.questionnaire.question.Question;
 import org.examemulator.domain.questionnaire.question.QuestionConcept;
 import org.examemulator.domain.questionnaire.question.QuestionConceptRepository;
 import org.examemulator.domain.questionnaire.set.QuestionnaireSet;
@@ -32,17 +35,15 @@ public class QuestionnaireService {
 	this.questionConceptRepository = questionConceptRepository;
     }
 
-    public record ExamStructureFolder(String questionnaireName, String examDesc, String setName, String setDesc, String certificationName) {
-    }
-    
     @Transactional
-    public Questionnaire saveOrUpdateQuestionnaire(final String dir, final ExamStructureFolder data, final QuestionnaireSet questionnaireSet) {
+    public Questionnaire saveOrUpdateQuestionnaire(final ExamStructureFolder data, final QuestionnaireSet questionnaireSet, final List<Question> questionFromFile) {
 
-	final var optionalQuestionnaire = questionnaireRepository.findByNameAndCertification(data.questionnaireName, questionnaireSet.getCertification());
+	final var optionalQuestionnaire = questionnaireRepository.findByNameAndCertification(data.questionnaireName(), questionnaireSet.getCertification());
 
 	if (optionalQuestionnaire.isEmpty()) {
-	    final var questionnaireTemp = new Questionnaire(data.questionnaireName, data.examDesc, questionnaireSet);
-//
+	    final var questionnaireTemp = new Questionnaire(data.questionnaireName(), data.examDesc(), questionnaireSet, questionFromFile);
+	    
+	    
 //	    final var conceptsMap = questionFiles.stream() //
 //			    .filter(fn -> !containsNone(fn, '(', ')')) //
 //			    .map(fn -> substringBetween(fn, "(", ")")) //
@@ -72,10 +73,10 @@ public class QuestionnaireService {
     @Transactional
     public QuestionnaireSet readOrSaveQuestionnaireSet(final ExamStructureFolder data, final Certification certification) {
 
-	final var optionalQuestionnaireSet = questionnaireSetRespository.findByNameAndCertification(data.setName, certification);
+	final var optionalQuestionnaireSet = questionnaireSetRespository.findByNameAndCertification(data.setName(), certification);
 
 	if (optionalQuestionnaireSet.isEmpty()) {
-	    final var questionnaireSetTemp = new QuestionnaireSet(data.setName, data.setDesc, certification);
+	    final var questionnaireSetTemp = new QuestionnaireSet(data.setName(), data.setDesc(), certification);
 	    return questionnaireSetRespository.save(questionnaireSetTemp);
 	}
 
