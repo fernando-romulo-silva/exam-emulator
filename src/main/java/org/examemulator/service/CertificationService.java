@@ -20,7 +20,7 @@ public class CertificationService {
     }
 
     @Transactional
-    public Certification loadCertification(final ExamStructureFolder data) {
+    public Certification readOrSaveCertification(final ExamStructureFolder data) {
 
 	final var optionalCertification = certificationRepository.findByName(data.certificationName());
 
@@ -28,7 +28,7 @@ public class CertificationService {
 	    final var certificationTemp = new Certification(data.certificationName());
 	    return certificationRepository.save(certificationTemp);
 	}
-
+	
 	return optionalCertification.get();
     }
 

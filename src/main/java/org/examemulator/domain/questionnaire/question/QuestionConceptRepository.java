@@ -11,7 +11,7 @@ import jakarta.persistence.NoResultException;
 
 @Repository
 @ApplicationScoped
-public class QuestionnaireRepository extends GenericRepository<QuestionConcept, Long> {
+public class QuestionConceptRepository extends GenericRepository<QuestionConcept, Long> {
     
     public Optional<QuestionConcept> findByNameAndCertification(final String name, final Certification certification) {
 	

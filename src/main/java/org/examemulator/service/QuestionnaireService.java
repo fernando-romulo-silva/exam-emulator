@@ -3,7 +3,8 @@ package org.examemulator.service;
 import org.examemulator.domain.cerfication.Certification;
 import org.examemulator.domain.questionnaire.Questionnaire;
 import org.examemulator.domain.questionnaire.QuestionnaireRepository;
-import org.examemulator.domain.questionnaire.question.Question;
+import org.examemulator.domain.questionnaire.question.QuestionConcept;
+import org.examemulator.domain.questionnaire.question.QuestionConceptRepository;
 import org.examemulator.domain.questionnaire.set.QuestionnaireSet;
 import org.examemulator.domain.questionnaire.set.QuestionnaireSetRespository;
 
@@ -17,23 +18,25 @@ public class QuestionnaireService {
     private final QuestionnaireRepository questionnaireRepository;
 
     private final QuestionnaireSetRespository questionnaireSetRespository;
+    
+    private final QuestionConceptRepository questionConceptRepository;
 
     @Inject
     QuestionnaireService( //
 		    final QuestionnaireRepository questionnaireRepository, //
-		    final QuestionnaireSetRespository questionnaireSetRespository) {
+		    final QuestionnaireSetRespository questionnaireSetRespository,
+		    final QuestionConceptRepository questionConceptRepository) {
 	super();
 	this.questionnaireRepository = questionnaireRepository;
 	this.questionnaireSetRespository = questionnaireSetRespository;
+	this.questionConceptRepository = questionConceptRepository;
     }
 
-    public Questionnaire findPreExamByPreQuestion(final Question preQuestion) {
-
-	return null;
+    public record ExamStructureFolder(String questionnaireName, String examDesc, String setName, String setDesc, String certificationName) {
     }
-
+    
     @Transactional
-    public Questionnaire loadQuestionnaire(final String dir, final ExamStructureFolder data, final QuestionnaireSet questionnaireSet) {
+    public Questionnaire saveOrUpdateQuestionnaire(final String dir, final ExamStructureFolder data, final QuestionnaireSet questionnaireSet) {
 
 	final var optionalQuestionnaire = questionnaireRepository.findByNameAndCertification(data.questionnaireName, questionnaireSet.getCertification());
 
@@ -62,13 +65,12 @@ public class QuestionnaireService {
 
 	    return questionnaireRepository.save(questionnaireTemp);
 	}
-	
 
 	return optionalQuestionnaire.get();
     }
 
     @Transactional
-    public QuestionnaireSet loadQuestionnaireSet(final ExamStructureFolder data, final Certification certification) {
+    public QuestionnaireSet readOrSaveQuestionnaireSet(final ExamStructureFolder data, final Certification certification) {
 
 	final var optionalQuestionnaireSet = questionnaireSetRespository.findByNameAndCertification(data.setName, certification);
 
@@ -79,8 +81,20 @@ public class QuestionnaireService {
 
 	return optionalQuestionnaireSet.get();
     }
+    
+    // ---------------------------------------------------------------------------------------------
+    
+    @Transactional
+    public QuestionConcept readOrSaveQuestionConcept(final String questionConceptName, final Certification certification) {
 
+	final var optionalQuestionConcept = questionConceptRepository.findByNameAndCertification(questionConceptName, certification);
 
-    public record ExamStructureFolder(String questionnaireName, String examDesc, String setName, String setDesc, String certificationName) {
-    }
+	if (optionalQuestionConcept.isEmpty()) {
+	    final var questionnaireSetTemp = new QuestionConcept(questionConceptName, certification);
+	    return questionConceptRepository.save(questionnaireSetTemp);
+	}
+
+	return optionalQuestionConcept.get();
+    }    
+    
 }

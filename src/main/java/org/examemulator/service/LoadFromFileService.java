@@ -15,11 +15,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.lang3.ArrayUtils;
@@ -55,15 +55,15 @@ public class LoadFromFileService {
 
 	final var data = loadData(dir);
 
-	final var certification = certificationService.loadCertification(data);
+	final var certification = certificationService.readOrSaveCertification(data);
+	
+	final var questionnaireSet = questionnaireService.readOrSaveQuestionnaireSet(data, certification);
 	
 	final var concepts = loadConcepts(questionFiles, certification);
 	
 	final var questions = loadQuestions(dir, questionFiles, concepts);
 
-	final var questionnaireSet = questionnaireService.loadQuestionnaireSet(data, certification);
-
-	final var questionnaire = questionnaireService.loadQuestionnaire(dir, data, questionnaireSet);
+	final var questionnaire = questionnaireService.saveOrUpdateQuestionnaire(dir, data, questionnaireSet);
 
 	return questionnaire;
     }
@@ -96,13 +96,22 @@ public class LoadFromFileService {
 
     private Map<String, QuestionConcept> loadConcepts(final List<String> questionFiles, final Certification certification) {
 
-	return questionFiles.stream() //
+	final var concepts = questionFiles.stream() //
 			.filter(fn -> !containsNone(fn, '(', ')')) //
 			.map(fn -> substringBetween(fn, "(", ")")) //
 			.distinct() //
 			.map(fn -> new SimpleEntry<>(fn, new QuestionConcept(fn, certification))) //
 			.collect(toMap(Entry::getKey, Entry::getValue));
+	
+	for (final var conceptEntry : concepts.entrySet()) {
+	    final var conceptFile = conceptEntry.getValue();
+	    
+	    final var concept = questionnaireService.readOrSaveQuestionConcept(conceptFile.getName(), certification);
+	    
+	}
+	
 
+	return null;
     }
 
     private Map<String, Question> loadQuestions(final String dir, final List<String> questionFiles, final Map<String, QuestionConcept> conceptsMap) {
