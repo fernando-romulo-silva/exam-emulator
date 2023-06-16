@@ -81,12 +81,15 @@ public class QuestionnaireController {
 
     @PostConstruct
     void init() {
-	createButtonActions();
+	initActions();
     }
 
     public void show() {
 
 	final var name = "ExamController";
+
+	initView();
+	
 	SwingUtilities.invokeLater(() -> {
 
 	    logger.info("starting swing-event: {}", name);
@@ -97,6 +100,7 @@ public class QuestionnaireController {
 
 	    logger.info("finished swing-event: {}", name);
 	});
+	
     }
 
 //    private void updateQuestionLabel() {
@@ -115,8 +119,18 @@ public class QuestionnaireController {
 //	    }
 //	}
 //    }
+    
+    private void initView() {
+	view.questionInternPanel.removeAll();
+	view.questionInternPanel.revalidate();
+	view.questionInternPanel.repaint();
 
-    private void createButtonActions() {
+	view.pQuestions.removeAll();
+	view.pQuestions.revalidate();
+	view.pQuestions.repaint();
+    }
+
+    private void initActions() {
 
 	view.rangeQuestions.addChangeListener(event -> {
 	    final var slider = (RangeSlider) event.getSource();

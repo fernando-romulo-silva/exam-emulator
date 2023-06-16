@@ -37,6 +37,7 @@ import javax.swing.JLabel;
 
 import org.examemulator.domain.exam.Exam;
 import org.examemulator.domain.exam.ExamQuestion;
+import org.examemulator.gui.exam.ExamController;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -48,6 +49,8 @@ public class StatiticsController {
     private final StatiticsView view;
 
     private final List<ExamQuestion> questions = new ArrayList<>();
+    
+    private final ExamController examController;
 
     private final MouseAdapter questionLabelListener = new MouseAdapter() {
 	
@@ -90,12 +93,14 @@ public class StatiticsController {
     private ExamQuestion selectedQuestion;
 
     @Inject
-    StatiticsController(final StatiticsView.StatiticsGui gui) {
+    StatiticsController(final StatiticsView.StatiticsGui gui, final ExamController examController) {
 	this.view = gui.getView();
+	this.examController = examController;
     }
 
     @PostConstruct
     void init() {
+	
 	view.btnNext.addActionListener(event -> {
 	    final var nextQuestionOptional = nextQuestion(questions, selectedQuestion);
 	    if (nextQuestionOptional.isPresent()) {
@@ -110,6 +115,11 @@ public class StatiticsController {
 		selectedQuestion = previousQuestionOptional.get();
 	    }
 	    loadPanelQuestion();
+	});
+	
+	view.newExamButton.addActionListener(event -> {
+	    view.setVisible(false);
+	    examController.show(exam.getName() + " new attempt", view, questions);
 	});
 
 	view.chckbxCorrects.addItemListener(itemListener);

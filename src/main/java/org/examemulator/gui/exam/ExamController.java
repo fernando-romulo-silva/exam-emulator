@@ -99,8 +99,7 @@ public class ExamController {
 
     @PostConstruct
     void init() {
-	initView();
-	creatButtonActions();
+	initActions();
     }
 
     public void show(final String name, final Component lastView, final List<? extends InquiryInterface> availableQuestions) {
@@ -110,6 +109,8 @@ public class ExamController {
 
 	view.contentPane.setBorder(createTitledBorder(name));
 
+	initView();
+	
 	for (var i = 1; i <= availableQuestions.size(); i++) {
 	    final var value = Integer.toString(i);
 	    final var label = new JLabel(leftPad(value, 2, '0'));
@@ -131,6 +132,8 @@ public class ExamController {
 	});
     }
 
+    // =================================================================================================================
+    
     private void initView() {
 
 	view.questionInternPanel.removeAll();
@@ -155,15 +158,9 @@ public class ExamController {
 	view.btnPrevious.setEnabled(false);
 	view.btnStatistics.setEnabled(false);
 	view.btnPauseProceed.setEnabled(false);
-
-	view.revalidate();
-	view.repaint();
-	view.setVisible(true);
     }
 
-    // =================================================================================================================
-
-    private void creatButtonActions() {
+    private void initActions() {
 
 	view.btnStart.addActionListener(event -> {
 
