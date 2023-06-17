@@ -64,7 +64,6 @@ public class LoadFromFileService {
 	
 	final var questionnaire = questionnaireService.saveOrUpdateQuestionnaire(data, questionnaireSet, questions);
 
-
 	return questionnaire;
     }
 
@@ -114,7 +113,6 @@ public class LoadFromFileService {
 
 	    result.put(conceptFileName, concept);
 	}
-	
 
 	return result;
     }
@@ -179,5 +177,4 @@ public class LoadFromFileService {
 			.map(e -> new Option(e.getKey(), e.getValue(), correctOptions.contains(e.getKey()))) //
 			.toList();
     }
-
 }

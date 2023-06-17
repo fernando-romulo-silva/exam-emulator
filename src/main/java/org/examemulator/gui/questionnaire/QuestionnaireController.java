@@ -86,19 +86,17 @@ public class QuestionnaireController {
 
     public void show() {
 
-	final var name = "ExamController";
-
 	initView();
 	
 	SwingUtilities.invokeLater(() -> {
 
-	    logger.info("starting swing-event: {}", name);
+	    logger.info("starting swing-event: {}", this.getClass().getSimpleName());
 
 	    view.revalidate();
 	    view.repaint();
 	    view.setVisible(true);
 
-	    logger.info("finished swing-event: {}", name);
+	    logger.info("finished swing-event: {}", this.getClass().getSimpleName());
 	});
 	
     }

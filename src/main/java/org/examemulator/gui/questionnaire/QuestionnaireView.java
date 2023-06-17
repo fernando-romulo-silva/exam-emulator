@@ -49,7 +49,10 @@ class QuestionnaireView extends JFrame {
 
     JTextField textDescription, textSet, textCertification;
 
-    public QuestionnaireView() {
+    QuestionnaireView() {
+	
+	super();
+	
 	setDefaultCloseOperation(EXIT_ON_CLOSE);
 	setBounds(100, 100, 871, 723);
 

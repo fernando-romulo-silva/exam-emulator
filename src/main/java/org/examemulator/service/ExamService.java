@@ -1,27 +1,32 @@
 package org.examemulator.service;
 
-import java.util.List;
+import java.util.stream.Stream;
 
 import org.examemulator.domain.exam.Exam;
+import org.examemulator.domain.exam.ExamRepository;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class ExamService {
 
-    @Inject
-    private EntityManager entityManager;
+    private final ExamRepository examRepository;
     
+    @Inject
+    ExamService(ExamRepository examRepository) {
+	super();
+	this.examRepository = examRepository;
+    }
+
     @Transactional
     public void save(final Exam exam) {
 
-	entityManager.persist(exam);
+	examRepository.save(exam);
     }
 
-    public List<Exam> getAll() {
-	return entityManager.createQuery("select p from Exam p", Exam.class).getResultList();
+    public Stream<Exam> getAll() {
+	return examRepository.findAll();
     }
 }
