@@ -1,6 +1,10 @@
 package org.examemulator.service;
 
+import static jakarta.transaction.Transactional.TxType.REQUIRED;
+import static jakarta.transaction.Transactional.TxType.SUPPORTS;
+
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.examemulator.domain.cerfication.Certification;
 import org.examemulator.domain.questionnaire.Questionnaire;
@@ -16,18 +20,19 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
+@Transactional(value = SUPPORTS)
 public class QuestionnaireService {
 
     private final QuestionnaireRepository questionnaireRepository;
 
     private final QuestionnaireSetRespository questionnaireSetRespository;
-    
+
     private final QuestionConceptRepository questionConceptRepository;
 
     @Inject
     QuestionnaireService( //
 		    final QuestionnaireRepository questionnaireRepository, //
-		    final QuestionnaireSetRespository questionnaireSetRespository,
+		    final QuestionnaireSetRespository questionnaireSetRespository, //
 		    final QuestionConceptRepository questionConceptRepository) {
 	super();
 	this.questionnaireRepository = questionnaireRepository;
@@ -35,15 +40,14 @@ public class QuestionnaireService {
 	this.questionConceptRepository = questionConceptRepository;
     }
 
-    @Transactional
+    @Transactional(value = REQUIRED)
     public Questionnaire saveOrUpdateQuestionnaire(final ExamStructureFolder data, final QuestionnaireSet questionnaireSet, final List<Question> questionFromFile) {
 
 	final var optionalQuestionnaire = questionnaireRepository.findByNameAndCertification(data.questionnaireName(), questionnaireSet.getCertification());
 
 	if (optionalQuestionnaire.isEmpty()) {
 	    final var questionnaireTemp = new Questionnaire(data.questionnaireName(), data.examDesc(), questionnaireSet, questionFromFile);
-	    
-	    
+
 //	    final var conceptsMap = questionFiles.stream() //
 //			    .filter(fn -> !containsNone(fn, '(', ')')) //
 //			    .map(fn -> substringBetween(fn, "(", ")")) //
@@ -70,7 +74,7 @@ public class QuestionnaireService {
 	return optionalQuestionnaire.get();
     }
 
-    @Transactional
+    @Transactional(value = REQUIRED)
     public QuestionnaireSet readOrSaveQuestionnaireSet(final ExamStructureFolder data, final Certification certification) {
 
 	final var optionalQuestionnaireSet = questionnaireSetRespository.findByNameAndCertification(data.setName(), certification);
@@ -82,8 +86,8 @@ public class QuestionnaireService {
 
 	return optionalQuestionnaireSet.get();
     }
-    
-    @Transactional
+
+    @Transactional(value = REQUIRED)
     public QuestionConcept readOrSaveQuestionConcept(final String questionConceptName, final Certification certification) {
 
 	final var optionalQuestionConcept = questionConceptRepository.findByNameAndCertification(questionConceptName, certification);
@@ -94,6 +98,9 @@ public class QuestionnaireService {
 	}
 
 	return optionalQuestionConcept.get();
-    }    
+    }
     
+    public Stream<Questionnaire> findByCertificationAndQuestionnaireSet(final Certification certification,  final QuestionnaireSet questionnaireSet) {
+	return questionnaireRepository.findByCertificationAndQuestionnaireSet(certification, questionnaireSet);
+    }
 }

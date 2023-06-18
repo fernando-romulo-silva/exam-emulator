@@ -1,6 +1,7 @@
 package org.examemulator;
 
 import org.examemulator.gui.main.MainController;
+import org.examemulator.gui.questionnaire.QuestionnaireController;
 import org.examemulator.util.database.HsqldbServer;
 
 import jakarta.enterprise.inject.se.SeContainerInitializer;
@@ -13,8 +14,9 @@ public class Main {
 
 	HsqldbServer.start();
 
-	final var preExamController = container.select(MainController.class).get();
-	preExamController.show();
+//	final var mainController = container.select(QuestionnaireController.class).get();
+	final var mainController = container.select(MainController.class).get();
+	mainController.show();
 
 	Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 

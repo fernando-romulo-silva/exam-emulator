@@ -7,7 +7,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -86,8 +88,41 @@ public class ControllerUtil {
 
 	return Optional.empty();
     }
-
-    public static <T> AbstractTableModel createTableModel(final Class<T> beanClass, final List<T> list) {
+    
+    public static record TableModelField(String name, String label, Function<String, Object> formatter) {
+	
+	 public TableModelField {
+	       Objects.requireNonNull(name);
+	       Objects.requireNonNull(label);
+	 }
+	
+	public static TableModelField fieldOf(String name, Function<String, Object> formatter){
+	    return new TableModelField(name, createLabel(name), formatter);
+	}
+	
+	public static TableModelField fieldOf (String name, String label) {
+	    return new TableModelField(name, label, null);   
+	}
+	
+	public static TableModelField fieldOf(String name) {
+	    return new TableModelField(name, createLabel(name), null);
+	}
+	
+	private static String createLabel(final String name) {
+	    
+	    final var nameTemp = Character.toUpperCase(name.charAt(0)) + name.substring(1);
+	    final var splitedName = nameTemp.split("(?=\\p{Upper})");
+	    final var displayName = new StringBuilder("");
+	    
+	    for (var nameItem : splitedName) {
+		displayName.append(nameItem).append(" ");
+	    }
+	    
+	    return displayName.toString();
+	}
+    }
+    
+    public static <T> AbstractTableModel createTableModel(final Class<T> beanClass, final List<T> list, final List<TableModelField> fields) {
 
 	final BeanInfo beanInfo;
 	try {
@@ -101,22 +136,19 @@ public class ControllerUtil {
 
 	for (final var pd : beanInfo.getPropertyDescriptors()) {
 	    
-	    var name = pd.getName();
+	    final var name = pd.getName();
 	    
-	    if (name.equals("class")) {
+	    final var fieldOptional = fields.stream() //
+			    .filter(field -> Objects.equals(field.name(), name)) //
+			    .findFirst(); //
+	    
+	    if (name.equals("class") || fieldOptional.isEmpty()) {
 		continue;
 	    }
 	    
-	    name = Character.toUpperCase(name.charAt(0)) + name.substring(1);
+	    final var field = fieldOptional.get();
 	    
-	    final var splitedName = name.split("(?=\\p{Upper})");
-	    final var displayName = new StringBuilder("");
-	    
-	    for (var nameItem : splitedName) {
-		displayName.append(nameItem).append(" ");
-	    }
-
-	    columns.add(displayName.toString());
+	    columns.add(field.label());
 	    getters.add(pd.getReadMethod());
 	}
 

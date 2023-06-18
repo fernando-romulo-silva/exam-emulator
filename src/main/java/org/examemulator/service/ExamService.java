@@ -1,7 +1,11 @@
 package org.examemulator.service;
 
+import static jakarta.transaction.Transactional.TxType.REQUIRED;
+import static jakarta.transaction.Transactional.TxType.SUPPORTS;
+
 import java.util.stream.Stream;
 
+import org.examemulator.domain.cerfication.Certification;
 import org.examemulator.domain.exam.Exam;
 import org.examemulator.domain.exam.ExamRepository;
 
@@ -10,6 +14,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
+@Transactional(value = SUPPORTS)
 public class ExamService {
 
     private final ExamRepository examRepository;
@@ -20,7 +25,7 @@ public class ExamService {
 	this.examRepository = examRepository;
     }
 
-    @Transactional
+    @Transactional(value = REQUIRED)
     public void save(final Exam exam) {
 
 	examRepository.save(exam);
@@ -28,5 +33,9 @@ public class ExamService {
 
     public Stream<Exam> getAll() {
 	return examRepository.findAll();
+    }
+
+    public Stream<Exam> findByCertification(final Certification selectedCertification) {
+	return examRepository.findByCertification(selectedCertification);
     }
 }

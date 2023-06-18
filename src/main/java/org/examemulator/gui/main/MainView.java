@@ -145,7 +145,16 @@ class MainView extends JFrame {
 	spQuestionnaire = new JScrollPane(questionnaireTable);
 	tabbedPane.addTab("Questionnaires", null, spQuestionnaire, null);
 	
-	spExams = new JScrollPane();
+        Object[] columnNamesExam = { "id", "name", "status" };
+        Object[][] rowDataExam = { 
+                { "1", "Questionnaire 01", "passed" },
+        };
+	
+	examTable = new ExtendedJTable(new DefaultTableModel(rowDataExam, columnNamesExam));
+	examTable.setCellSelectionEnabled(false);
+	examTable.setRowSelectionAllowed(true);
+	
+	spExams = new JScrollPane(examTable);
 	tabbedPane.addTab("Exams", null, spExams, null);
     }
 }

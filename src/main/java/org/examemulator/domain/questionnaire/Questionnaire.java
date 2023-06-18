@@ -48,7 +48,7 @@ public class Questionnaire {
     @JoinColumn(name = "CERTIFICATION_ID", referencedColumnName = "ID", nullable = false)
     private Certification certification;
 
-    @JoinColumn(name = "PRE_QUESTION_ID")
+    @JoinColumn(name = "QUESTIONNAIRE_ID")
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Question> questions = new ArrayList<>();
 
