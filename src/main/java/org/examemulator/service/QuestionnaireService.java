@@ -83,8 +83,6 @@ public class QuestionnaireService {
 	return optionalQuestionnaireSet.get();
     }
     
-    // ---------------------------------------------------------------------------------------------
-    
     @Transactional
     public QuestionConcept readOrSaveQuestionConcept(final String questionConceptName, final Certification certification) {
 

@@ -14,7 +14,13 @@ public class CertificationRepository extends GenericRepository<Certification, Lo
 
     public Optional<Certification> findByName(final String name) {
 
-	final var query = entityManager.createQuery("select c from Certification c where c.name = :name", Certification.class);
+	final var qlString = """
+				select c 
+				  from Certification c 
+				 where c.name = :name
+					""";
+	
+	final var query = entityManager.createQuery(qlString, Certification.class);
 	query.setParameter("name", name);
 
 	try {

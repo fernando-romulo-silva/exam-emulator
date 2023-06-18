@@ -1,5 +1,9 @@
 package org.examemulator.service;
 
+import static jakarta.transaction.Transactional.TxType.SUPPORTS;
+
+import java.util.stream.Stream;
+
 import org.examemulator.domain.cerfication.Certification;
 import org.examemulator.domain.cerfication.CertificationRepository;
 
@@ -30,5 +34,9 @@ public class CertificationService {
 	
 	return optionalCertification.get();
     }
-
+    
+    @Transactional(value = SUPPORTS)
+    public Stream<Certification> findAll() {
+	return certificationRepository.findAll();
+    }
 }

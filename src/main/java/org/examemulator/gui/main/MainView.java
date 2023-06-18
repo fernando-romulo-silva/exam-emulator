@@ -14,10 +14,11 @@ import java.awt.FlowLayout;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
@@ -55,11 +56,14 @@ class MainView extends JFrame {
 
     JLabel lblCertificationStatistics, lblQuestionnaireSetStatistics;
     
-    JTable certificantionTable, questionnaireSetTable, questionnaireTable, examTable;
+    JXTable certificantionTable, questionnaireSetTable, questionnaireTable, examTable;
     
     JTabbedPane tabbedPane;
     
     JScrollPane spQuestionnaire, spExams;
+    
+    JPopupMenu popupMenuCertification;
+    JMenuItem menuItemLoadCertification, menuItemStatiticsCertification;
 
     MainView() {
 	setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -87,11 +91,20 @@ class MainView extends JFrame {
         Object[] columnNamesCertification = { "id", "name" };
         Object[][] rowDataCertification = { 
                 { "1", "Docker Certified Associate (DCA)"},
-                { "2", "Certified Kubernetes Application Developer (CKAD)"}
         };
         
 	certificantionTable = new ExtendedJTable(new DefaultTableModel(rowDataCertification, columnNamesCertification));
-	certificantionTable.setCellSelectionEnabled(true);
+	certificantionTable.setCellSelectionEnabled(false);
+	certificantionTable.setRowSelectionAllowed(true);
+	
+	menuItemLoadCertification = new JMenuItem("Load from file");
+	menuItemStatiticsCertification = new JMenuItem("Show the statitics");
+	
+	popupMenuCertification = new JPopupMenu();
+	popupMenuCertification.add(menuItemLoadCertification);
+	popupMenuCertification.add(menuItemStatiticsCertification);
+
+	certificantionTable.setComponentPopupMenu(popupMenuCertification);
 	
 	final var pCertificationTable = new JScrollPane(certificantionTable, VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	pCertificationTable.setPreferredSize(new Dimension(100, 250));
@@ -107,10 +120,11 @@ class MainView extends JFrame {
         Object[] columnNamesQuestionnaireSet = { "id", "name" };
         Object[][] rowDataQuestionnaireSet = { 
                 { "1", "Set01"},
-                { "2", "Set02"}
         };
 
 	questionnaireSetTable = new ExtendedJTable(new DefaultTableModel(rowDataQuestionnaireSet, columnNamesQuestionnaireSet));
+	questionnaireSetTable.setCellSelectionEnabled(false);
+	questionnaireSetTable.setRowSelectionAllowed(true);
 	
 	final var pQuestionnaireSetTable = new JScrollPane(questionnaireSetTable, VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	pQuestionnaireSetTable.setSize(new Dimension(50, 50));
@@ -122,10 +136,11 @@ class MainView extends JFrame {
         Object[] columnNamesQuestionnarie = { "id", "name" };
         Object[][] rowDataQuestionnarie = { 
                 { "1", "Questionnaire 01"},
-                { "2", "Questionnaire 02"}
         };
         
 	questionnaireTable = new ExtendedJTable(new DefaultTableModel(rowDataQuestionnarie, columnNamesQuestionnarie));
+	questionnaireTable.setCellSelectionEnabled(false);
+	questionnaireTable.setRowSelectionAllowed(true);
 
 	spQuestionnaire = new JScrollPane(questionnaireTable);
 	tabbedPane.addTab("Questionnaires", null, spQuestionnaire, null);
