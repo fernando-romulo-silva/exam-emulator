@@ -1,6 +1,7 @@
 package org.examemulator.gui.main;
 
 import static javax.swing.ListSelectionModel.SINGLE_SELECTION;
+import static org.examemulator.util.ControllerUtil.alignColumns;
 import static org.examemulator.util.ControllerUtil.createTableModel;
 import static org.examemulator.util.ControllerUtil.TableModelField.fieldOf;
 
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Objects;
 
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -23,7 +25,6 @@ import org.examemulator.service.CertificationService;
 import org.examemulator.service.ExamService;
 import org.examemulator.service.QuestionnaireService;
 import org.examemulator.service.QuestionnaireSetService;
-import org.examemulator.util.ControllerUtil.TableModelField;
 import org.slf4j.Logger;
 
 import jakarta.annotation.PostConstruct;
@@ -36,9 +37,9 @@ public class MainController {
     private final CertificationService certificationService;
 
     private final QuestionnaireSetService questionnaireSetService;
-    
+
     private final QuestionnaireService questionnaireService;
-    
+
     private final ExamService examService;
 
     private final Logger logger;
@@ -50,20 +51,19 @@ public class MainController {
 
     private QuestionnaireSet selectedQuestionnaireSet;
     private final List<QuestionnaireSet> questionnaireSets = new ArrayList<>();
-    
+
     private Questionnaire selectedQuestionnaire;
     private final List<Questionnaire> questionnaires = new ArrayList<>();
-    
+
     private Exam selectedExam;
     private final List<Exam> exams = new ArrayList<>();
-    
+
     @Inject
     MainController( //
 		    final MainGui mainGui, //
 		    final CertificationService certificationService, //
 		    final QuestionnaireSetService questionnaireSetService, //
-		    final QuestionnaireService questionnaireService,
-		    final ExamService examService, //
+		    final QuestionnaireService questionnaireService, final ExamService examService, //
 		    final Logger logger) {
 	super();
 	this.certificationService = certificationService;
@@ -80,9 +80,9 @@ public class MainController {
     }
 
     public void show() {
-	
+
 	initView();
-	
+
 	SwingUtilities.invokeLater(() -> {
 
 	    logger.info("starting swing-event: {}", this.getClass().getSimpleName());
@@ -94,7 +94,7 @@ public class MainController {
 	    logger.info("finished swing-event: {}", this.getClass().getSimpleName());
 	});
     }
-    
+
     private void initView() {
 //	view.questionInternPanel.removeAll();
 //	view.questionInternPanel.revalidate();
@@ -103,23 +103,15 @@ public class MainController {
 //	view.pQuestions.removeAll();
 //	view.pQuestions.revalidate();
 //	view.pQuestions.repaint();
-	
+
 	loadCertificationTable();
 	loadQuestionnaireSetTable();
-	loadQuestionnaireTable();	
+	loadQuestionnaireTable();
 	loadExamTable();
-	
-//	model.fireTableDataChanged();
-	
-//	view.certificantionTable.addMouseListener(()(event) -> {});
-	
-//	int column = 0;
-//	int row = view.certificantionTable.getSelectedRow();
     }
 
-    
     private void initActions() {
-	    
+
 	view.certificantionTable.addMouseListener(new MouseAdapter() {
 
 	    @Override
@@ -131,7 +123,7 @@ public class MainController {
 		if (event.getClickCount() == 1 && !event.isConsumed() && currentRow != -1) {
 		    final var row = 0; // id
 		    final var valueAt = table.getModel().getValueAt(row, currentRow);
-		    
+
 		    if (Objects.nonNull(valueAt)) {
 			selectCertification(valueAt.toString());
 			loadQuestionnaireSetTable();
@@ -139,7 +131,7 @@ public class MainController {
 		}
 	    }
 	});
-	
+
 	view.questionnaireSetTable.addMouseListener(new MouseAdapter() {
 
 	    @Override
@@ -151,7 +143,7 @@ public class MainController {
 		if (event.getClickCount() == 1 && !event.isConsumed() && currentRow != -1) {
 		    final var row = 0; // id
 		    final var valueAt = table.getModel().getValueAt(row, currentRow);
-		    
+
 		    if (Objects.nonNull(valueAt)) {
 			selectQuestionnaireSet(valueAt.toString());
 			loadQuestionnaireTable();
@@ -160,7 +152,7 @@ public class MainController {
 	    }
 	});
     }
-    
+
     private boolean selectCertification(final String id) {
 
 	final var value = Long.valueOf(id);
@@ -176,7 +168,7 @@ public class MainController {
 
 	return false;
     }
-    
+
     private boolean selectQuestionnaireSet(final String id) {
 
 	final var value = Long.valueOf(id);
@@ -186,61 +178,68 @@ public class MainController {
 			.findAny();
 
 	if (questionnaireSetOptional.isPresent()) {
-	    selectedQuestionnaireSet= questionnaireSetOptional.get();
+	    selectedQuestionnaireSet = questionnaireSetOptional.get();
 	    return true;
 	}
 
 	return false;
     }
-    
-    
+
     private void loadCertificationTable() {
 	certifications.clear();
 	selectedCertification = null;
-	
+
 	certifications.addAll(certificationService.findAll().toList());
-	view.certificantionTable.setModel(createTableModel(Certification.class, certifications, List.of(fieldOf("id"), fieldOf("name"))));
+	view.certificantionTable.setModel(createTableModel(Certification.class, certifications, List.of(fieldOf("id", "   Identifier  "), fieldOf("name"))));
 	view.certificantionTable.getSelectionModel().setSelectionMode(SINGLE_SELECTION);
+
+	alignColumns(view.certificantionTable, List.of(0), SwingConstants.CENTER);
+
     }
-    
+
     private void loadQuestionnaireSetTable() {
-	
+
 	questionnaireSets.clear();
-	
+
 	if (Objects.nonNull(selectedCertification)) {
 	    questionnaireSets.addAll(questionnaireSetService.findByCertification(selectedCertification).toList());
 	}
-	
+
 	selectedQuestionnaireSet = null;
-	view.questionnaireSetTable.setModel(createTableModel(QuestionnaireSet.class, questionnaireSets, List.of(fieldOf("id"), fieldOf("name"), fieldOf("description"))));
+	view.questionnaireSetTable.setModel(createTableModel(QuestionnaireSet.class, questionnaireSets, List.of(fieldOf("id", "   Identifier  "), fieldOf("name"), fieldOf("description"))));
 	view.questionnaireSetTable.getSelectionModel().setSelectionMode(SINGLE_SELECTION);
+	
+	alignColumns(view.questionnaireSetTable, List.of(0), SwingConstants.CENTER);
     }
-    
 
     private void loadQuestionnaireTable() {
-	
+
 	questionnaires.clear();
-	
+
 	if (ObjectUtils.anyNotNull(selectedCertification, selectedQuestionnaireSet)) {
 	    questionnaires.addAll(questionnaireService.findByCertificationAndQuestionnaireSet(selectedCertification, selectedQuestionnaireSet).toList());
 	}
-	
+
 	selectedQuestionnaire = null;
-	view.questionnaireTable.setModel(createTableModel(Questionnaire.class, questionnaires, List.of(fieldOf("id"), fieldOf("name"), fieldOf("Description"))));
+	view.questionnaireTable.setModel(createTableModel(Questionnaire.class, questionnaires, List.of(fieldOf("id", "   Identifier  "), fieldOf("name"), fieldOf("Description"))));
 	view.questionnaireTable.getSelectionModel().setSelectionMode(SINGLE_SELECTION);
+	
+	alignColumns(view.questionnaireTable, List.of(0), SwingConstants.CENTER);
     }
-    
+
     private void loadExamTable() {
-	
+
 	exams.clear();
-	
+
 	if (ObjectUtils.anyNotNull(selectedCertification, selectedQuestionnaireSet)) {
 	    exams.addAll(examService.findByCertification(selectedCertification).toList());
 	}
-	
+
 	selectedExam = null;
 	view.examTable.setModel(createTableModel(Exam.class, exams, List.of(fieldOf("Id"), fieldOf("Name"))));
 	view.examTable.getSelectionModel().setSelectionMode(SINGLE_SELECTION);
+	
+	alignColumns(view.examTable, List.of(0), SwingConstants.CENTER);
     }
-    
+
 }

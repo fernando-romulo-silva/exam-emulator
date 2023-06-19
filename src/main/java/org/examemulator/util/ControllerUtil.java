@@ -10,8 +10,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
+import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+
+import org.examemulator.gui.components.TableColumnAdjuster;
 
 public class ControllerUtil {
 
@@ -88,40 +93,40 @@ public class ControllerUtil {
 
 	return Optional.empty();
     }
-    
+
     public static record TableModelField(String name, String label, Function<String, Object> formatter) {
-	
-	 public TableModelField {
-	       Objects.requireNonNull(name);
-	       Objects.requireNonNull(label);
-	 }
-	
-	public static TableModelField fieldOf(String name, Function<String, Object> formatter){
+
+	public TableModelField {
+	    Objects.requireNonNull(name);
+	    Objects.requireNonNull(label);
+	}
+
+	public static TableModelField fieldOf(String name, Function<String, Object> formatter) {
 	    return new TableModelField(name, createLabel(name), formatter);
 	}
-	
-	public static TableModelField fieldOf (String name, String label) {
-	    return new TableModelField(name, label, null);   
+
+	public static TableModelField fieldOf(String name, String label) {
+	    return new TableModelField(name, label, null);
 	}
-	
+
 	public static TableModelField fieldOf(String name) {
 	    return new TableModelField(name, createLabel(name), null);
 	}
-	
+
 	private static String createLabel(final String name) {
-	    
+
 	    final var nameTemp = Character.toUpperCase(name.charAt(0)) + name.substring(1);
 	    final var splitedName = nameTemp.split("(?=\\p{Upper})");
 	    final var displayName = new StringBuilder("");
-	    
+
 	    for (var nameItem : splitedName) {
 		displayName.append(nameItem).append(" ");
 	    }
-	    
+
 	    return displayName.toString();
 	}
     }
-    
+
     public static <T> AbstractTableModel createTableModel(final Class<T> beanClass, final List<T> list, final List<TableModelField> fields) {
 
 	final BeanInfo beanInfo;
@@ -134,22 +139,21 @@ public class ControllerUtil {
 	final var columns = new ArrayList<String>();
 	final var getters = new ArrayList<Method>();
 
-	for (final var pd : beanInfo.getPropertyDescriptors()) {
-	    
-	    final var name = pd.getName();
-	    
-	    final var fieldOptional = fields.stream() //
-			    .filter(field -> Objects.equals(field.name(), name)) //
-			    .findFirst(); //
-	    
-	    if (name.equals("class") || fieldOptional.isEmpty()) {
+	final var propertyDescriptors = beanInfo.getPropertyDescriptors();
+
+	for (final var field : fields) {
+	    final var name = field.name();
+
+	    final var optionalDescriptor = Stream.of(propertyDescriptors).filter(desc -> Objects.equals(desc.getName(), name)).findFirst();
+
+	    if (optionalDescriptor.isEmpty()) {
 		continue;
 	    }
-	    
-	    final var field = fieldOptional.get();
-	    
+
+	    final var descriptor = optionalDescriptor.get();
+
 	    columns.add(field.label());
-	    getters.add(pd.getReadMethod());
+	    getters.add(descriptor.getReadMethod());
 	}
 
 	return new AbstractTableModel() {
@@ -180,5 +184,22 @@ public class ControllerUtil {
 		}
 	    }
 	};
+    }
+
+    public static void alignColumns(final JTable table, final List<Integer> columns, final int alignment) {
+
+	final var centerRenderer = new DefaultTableCellRenderer();
+	centerRenderer.setHorizontalAlignment(alignment);
+
+	if (!table.getColumnModel().getColumns().hasMoreElements()) {
+	    return;
+	}
+	
+	for (final var column : columns) {
+	    table.getColumnModel().getColumn(column).setCellRenderer(centerRenderer);
+	}
+	
+	final var tca = new TableColumnAdjuster(table);
+	tca.adjustColumns();
     }
 }

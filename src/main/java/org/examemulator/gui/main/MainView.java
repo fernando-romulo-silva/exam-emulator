@@ -29,6 +29,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 class MainView extends JFrame {
 
     private static final long serialVersionUID = 1L;
+    
+    public static final int HEADER_HEIGHT = 32;
 
     private static final class ExtendedJTable extends JXTable {
 

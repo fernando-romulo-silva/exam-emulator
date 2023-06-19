@@ -24,9 +24,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "QUESTIONNARIE", uniqueConstraints = { //
-	@UniqueConstraint(columnNames = { "NAME", "CERTIFICATION_ID" }) //
-})
+@Table(name = "QUESTIONNARIE", uniqueConstraints = { @UniqueConstraint(columnNames = { "NAME", "CERTIFICATION_ID" }) })
 public class Questionnaire {
 
     @Id
@@ -56,7 +54,11 @@ public class Questionnaire {
 	super();
     }
 
-    public Questionnaire(final String name, final String description, final QuestionnaireSet set, final List<Question> questions) {
+    public Questionnaire( //
+		    final String name, //
+		    final String description, //
+		    final QuestionnaireSet set, //
+		    final List<Question> questions) {
 	super();
 	this.name = name;
 	this.description = description;
@@ -82,10 +84,10 @@ public class Questionnaire {
     public QuestionnaireSet getSet() {
 	return set;
     }
-    
+
     public Certification getCertification() {
-        return certification;
-    }    
+	return certification;
+    }
 
     public List<Question> getQuestions() {
 	return Collections.unmodifiableList(questions);
