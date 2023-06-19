@@ -4,6 +4,7 @@ import static java.awt.BorderLayout.CENTER;
 import static java.util.stream.Collectors.joining;
 import static javax.swing.BorderFactory.createTitledBorder;
 import static javax.swing.JFileChooser.DIRECTORIES_ONLY;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.leftPad;
 import static org.examemulator.gui.GuiUtil.TAG_BR;
 import static org.examemulator.gui.GuiUtil.TAG_BR_BR;
@@ -30,6 +31,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import org.apache.commons.lang3.StringUtils;
 import org.examemulator.domain.questionnaire.Questionnaire;
 import org.examemulator.domain.questionnaire.question.Question;
 import org.examemulator.gui.components.RangeSlider;
@@ -169,9 +171,11 @@ public class QuestionnaireController {
 	    view.pQuestions.revalidate();
 	    view.pQuestions.repaint();
 
-	    currentFolder = chooser.getSelectedFile().getAbsolutePath();
-
-	    if (Objects.nonNull(currentFolder)) {
+	    currentFolder = Objects.nonNull(chooser.getSelectedFile()) // 
+			    ? chooser.getSelectedFile().getAbsolutePath() // 
+			    : StringUtils.EMPTY;
+	    
+	    if (isNotBlank(currentFolder)) {
 
 		questionnaire = loadFromFileService.loadQuestionnaire(currentFolder);
 
