@@ -16,7 +16,13 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "QUESTIONNARIE_SET", uniqueConstraints = { @UniqueConstraint(columnNames = { "NAME", "CERTIFICATION_ID" }) })
+@Table( //
+	name = "QUESTIONNARIE_SET", //
+	uniqueConstraints = { //
+		@UniqueConstraint(columnNames = { "NAME", "CERTIFICATION_ID" }), //
+		@UniqueConstraint(columnNames = { "SEQUENCE", "CERTIFICATION_ID" }) //
+	} //
+)
 public class QuestionnaireSet {
 
     @Id
@@ -27,8 +33,11 @@ public class QuestionnaireSet {
     @Column(name = "NAME")
     private String name;
 
-    @Column(name = "Description")
+    @Column(name = "DESCRIPTION")
     private String description;
+
+    @Column(name = "SEQUENCE")
+    private Integer order;
 
     @ManyToOne
     @JoinColumn(name = "CERTIFICATION_ID", referencedColumnName = "ID", nullable = false)
@@ -41,10 +50,12 @@ public class QuestionnaireSet {
     public QuestionnaireSet(//
 		    final String name, //
 		    final String description, //
+		    final Integer order, // 
 		    final Certification certification) {
 	super();
 	this.name = name;
 	this.description = description;
+	this.order = order;
 	this.certification = certification;
     }
 
@@ -60,6 +71,10 @@ public class QuestionnaireSet {
 
     public String getDescription() {
 	return description;
+    }
+    
+    public Integer getOrder() {
+	return order;
     }
 
     public Certification getCertification() {

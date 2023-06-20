@@ -24,7 +24,13 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "QUESTIONNARIE", uniqueConstraints = { @UniqueConstraint(columnNames = { "NAME", "CERTIFICATION_ID" }) })
+@Table(
+	name = "QUESTIONNARIE", // 
+	uniqueConstraints = { 
+		@UniqueConstraint(columnNames = { "NAME", "CERTIFICATION_ID" }),
+		@UniqueConstraint(columnNames = { "SEQUENCE", "CERTIFICATION_ID" })
+	}
+)
 public class Questionnaire {
 
     @Id
@@ -37,6 +43,9 @@ public class Questionnaire {
 
     @Column(name = "DESCRIPTION")
     private String description;
+    
+    @Column(name = "SEQUENCE")
+    private Integer order;
 
     @ManyToOne
     @JoinColumn(name = "SET_ID", referencedColumnName = "ID")
@@ -57,12 +66,14 @@ public class Questionnaire {
     public Questionnaire( //
 		    final String name, //
 		    final String description, //
+		    final Integer order,
 		    final QuestionnaireSet set, //
 		    final List<Question> questions) {
 	super();
 	this.name = name;
 	this.description = description;
 	this.set = set;
+	this.order = order;
 	this.certification = set.getCertification();
 	this.questions.addAll(questions);
     }
@@ -79,6 +90,10 @@ public class Questionnaire {
 
     public String getDescription() {
 	return description;
+    }
+    
+    public Integer getOrder() {
+	return order;
     }
 
     public QuestionnaireSet getSet() {

@@ -41,12 +41,15 @@ public class QuestionnaireService {
     }
 
     @Transactional(value = REQUIRED)
-    public Questionnaire saveOrUpdateQuestionnaire(final ExamStructureFolder data, final QuestionnaireSet questionnaireSet, final List<Question> questionFromFile) {
+    public Questionnaire saveOrUpdateQuestionnaire(//
+		    final ExamStructureFolder data, // 
+		    final QuestionnaireSet questionnaireSet, // 
+		    final List<Question> questionsFromFile) {
 
 	final var optionalQuestionnaire = questionnaireRepository.findByNameAndCertification(data.questionnaireName(), questionnaireSet.getCertification());
 
 	if (optionalQuestionnaire.isEmpty()) {
-	    final var questionnaireTemp = new Questionnaire(data.questionnaireName(), data.examDesc(), questionnaireSet, questionFromFile);
+	    final var questionnaireTemp = new Questionnaire(data.questionnaireName(), data.questionnaireDesc(), data.questionnaireOrder(), questionnaireSet, questionsFromFile);
 
 //	    final var conceptsMap = questionFiles.stream() //
 //			    .filter(fn -> !containsNone(fn, '(', ')')) //
@@ -80,7 +83,7 @@ public class QuestionnaireService {
 	final var optionalQuestionnaireSet = questionnaireSetRespository.findByNameAndCertification(data.setName(), certification);
 
 	if (optionalQuestionnaireSet.isEmpty()) {
-	    final var questionnaireSetTemp = new QuestionnaireSet(data.setName(), data.setDesc(), certification);
+	    final var questionnaireSetTemp = new QuestionnaireSet(data.setName(), data.setDesc(), data.setOrder(), certification);
 	    return questionnaireSetRespository.save(questionnaireSetTemp);
 	}
 

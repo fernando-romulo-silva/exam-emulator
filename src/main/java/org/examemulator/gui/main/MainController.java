@@ -63,7 +63,8 @@ public class MainController {
 		    final MainGui mainGui, //
 		    final CertificationService certificationService, //
 		    final QuestionnaireSetService questionnaireSetService, //
-		    final QuestionnaireService questionnaireService, final ExamService examService, //
+		    final QuestionnaireService questionnaireService, //
+		    final ExamService examService, //
 		    final Logger logger) {
 	super();
 	this.certificationService = certificationService;

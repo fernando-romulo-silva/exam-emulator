@@ -133,12 +133,14 @@ public class QuestionnaireController {
     private void initActions() {
 
 	view.rangeQuestions.addChangeListener(event -> {
+	    
 	    final var slider = (RangeSlider) event.getSource();
 	    view.lblRangeLow.setText(String.valueOf(slider.getValue()));
 	    view.lblUpper.setText(String.valueOf(slider.getUpperValue()));
 	});
 
 	view.btnNext.addActionListener(event -> {
+	    
 	    final var nextQuestionOptional = nextQuestion(questionnaire.getQuestions(), selectedQuestion);
 	    if (nextQuestionOptional.isPresent()) {
 		selectedQuestion = nextQuestionOptional.get();
@@ -147,6 +149,7 @@ public class QuestionnaireController {
 	});
 
 	view.btnPrevious.addActionListener(event -> {
+	    
 	    final var previousQuestionOptional = previousQuestion(questionnaire.getQuestions(), selectedQuestion);
 	    if (previousQuestionOptional.isPresent()) {
 		selectedQuestion = previousQuestionOptional.get();

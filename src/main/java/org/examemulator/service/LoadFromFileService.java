@@ -2,6 +2,7 @@ package org.examemulator.service;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toMap;
+import static org.apache.commons.lang3.StringUtils.substringAfter;
 import static org.apache.commons.lang3.StringUtils.substringBefore;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.examemulator.util.FileUtil.readCorrectOptions;
@@ -76,10 +77,12 @@ public class LoadFromFileService {
 	}
 
 	final var questionnaireTemp = splitedDir[splitedDir.length - 1];
-	final var questionnaireName = substringBefore(questionnaireTemp, "(");
-	final var questionnaireDesc = substringBetween(questionnaireTemp, "(", ")");
+	final var questionnaireOrder = substringBefore(questionnaireTemp, "-").trim();
+	final var questionnaireName = substringAfter(substringBefore(questionnaireTemp, "("), "-").trim();
+	final var questionnaireDesc = substringBetween(questionnaireTemp, "(", ")").trim();
 
 	final var setTemp = splitedDir[splitedDir.length - 2];
+	final var setOrder = substringAfter(substringBefore(setTemp, "("), "-").trim();
 	final var setName = substringBefore(setTemp, "(");
 	final var setDesc = substringBetween(setTemp, "(", ")");
 
@@ -87,8 +90,11 @@ public class LoadFromFileService {
 
 	return new ExamStructureFolder( //
 			questionnaireName, //
-			questionnaireDesc, setName, //
+			questionnaireDesc, // 
+			Integer.getInteger(questionnaireOrder),
+			setName, //
 			setDesc, //
+			Integer.getInteger(setOrder),
 			certificationName //
 	);
     }
@@ -143,7 +149,9 @@ public class LoadFromFileService {
 
 	// read concepts
 	final var conceptName = substringBetween(questionFileName, "(", ")");
-	final var concept = Objects.nonNull(conceptName) ? conceptsMap.get(conceptName) : null;
+	final var concept = Objects.nonNull(conceptName) // 
+			? conceptsMap.get(conceptName) //
+			: null;
 
 	// read question number
 	final var number = questionName.replaceAll("\\D", "");

@@ -1,4 +1,11 @@
 package org.examemulator.service;
 
-record ExamStructureFolder(String questionnaireName, String examDesc, String setName, String setDesc, String certificationName) {
+record ExamStructureFolder(
+		String questionnaireName, // 
+		String questionnaireDesc,  //
+		Integer questionnaireOrder,
+		String setName,  //
+		String setDesc,  //
+		Integer setOrder,
+		String certificationName) {
 }
