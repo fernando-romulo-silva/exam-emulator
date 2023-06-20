@@ -25,6 +25,7 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.examemulator.domain.cerfication.Certification;
 import org.examemulator.domain.questionnaire.Questionnaire;
 import org.examemulator.domain.questionnaire.question.Option;
@@ -68,7 +69,7 @@ public class LoadFromFileService {
 	return questionnaire;
     }
 
-    private ExamStructureFolder loadData(final String dir) {
+    private FolderStruc loadData(final String dir) {
 
 	final var splitedDir = StringUtils.split(dir, File.separator);
 
@@ -82,19 +83,19 @@ public class LoadFromFileService {
 	final var questionnaireDesc = substringBetween(questionnaireTemp, "(", ")").trim();
 
 	final var setTemp = splitedDir[splitedDir.length - 2];
-	final var setOrder = substringAfter(substringBefore(setTemp, "("), "-").trim();
-	final var setName = substringBefore(setTemp, "(");
+	final var setOrder = substringBefore(setTemp, "-").trim();
+	final var setName = substringAfter(substringBefore(setTemp, "("), "-").trim();
 	final var setDesc = substringBetween(setTemp, "(", ")");
 
 	final var certificationName = substringBefore(splitedDir[splitedDir.length - 4], "(");
 
-	return new ExamStructureFolder( //
+	return new FolderStruc( //
 			questionnaireName, //
 			questionnaireDesc, // 
-			Integer.getInteger(questionnaireOrder),
+			NumberUtils.toInt(questionnaireOrder),
 			setName, //
 			setDesc, //
-			Integer.getInteger(setOrder),
+			NumberUtils.toInt(setOrder),
 			certificationName //
 	);
     }

@@ -1,6 +1,6 @@
 package org.examemulator.service;
 
-record ExamStructureFolder(
+record FolderStruc(
 		String questionnaireName, // 
 		String questionnaireDesc,  //
 		Integer questionnaireOrder,

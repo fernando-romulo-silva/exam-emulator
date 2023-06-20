@@ -23,7 +23,7 @@ public class CertificationService {
     }
 
     @Transactional
-    public Certification readOrSaveCertification(final ExamStructureFolder data) {
+    public Certification readOrSaveCertification(final FolderStruc data) {
 
 	final var optionalCertification = certificationRepository.findByName(data.certificationName());
 

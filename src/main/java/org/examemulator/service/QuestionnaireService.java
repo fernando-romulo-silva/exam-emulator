@@ -42,7 +42,7 @@ public class QuestionnaireService {
 
     @Transactional(value = REQUIRED)
     public Questionnaire saveOrUpdateQuestionnaire(//
-		    final ExamStructureFolder data, // 
+		    final FolderStruc data, // 
 		    final QuestionnaireSet questionnaireSet, // 
 		    final List<Question> questionsFromFile) {
 
@@ -78,7 +78,7 @@ public class QuestionnaireService {
     }
 
     @Transactional(value = REQUIRED)
-    public QuestionnaireSet readOrSaveQuestionnaireSet(final ExamStructureFolder data, final Certification certification) {
+    public QuestionnaireSet readOrSaveQuestionnaireSet(final FolderStruc data, final Certification certification) {
 
 	final var optionalQuestionnaireSet = questionnaireSetRespository.findByNameAndCertification(data.setName(), certification);
 

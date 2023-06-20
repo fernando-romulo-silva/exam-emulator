@@ -170,12 +170,12 @@ public class MainController {
 	return false;
     }
 
-    private boolean selectQuestionnaireSet(final String id) {
+    private boolean selectQuestionnaireSet(final String order) {
 
-	final var value = Long.valueOf(id);
+	final var value = Integer.valueOf(order);
 
 	final var questionnaireSetOptional = questionnaireSets.stream() //
-			.filter(cert -> Objects.equals(cert.getId(), value)) //
+			.filter(cert -> Objects.equals(cert.getOrder(), value)) //
 			.findAny();
 
 	if (questionnaireSetOptional.isPresent()) {
@@ -207,7 +207,7 @@ public class MainController {
 	}
 
 	selectedQuestionnaireSet = null;
-	view.questionnaireSetTable.setModel(createTableModel(QuestionnaireSet.class, questionnaireSets, List.of(fieldOf("id", "   Identifier  "), fieldOf("name"), fieldOf("description"))));
+	view.questionnaireSetTable.setModel(createTableModel(QuestionnaireSet.class, questionnaireSets, List.of(fieldOf("order", "   Order  "), fieldOf("name"), fieldOf("description"))));
 	view.questionnaireSetTable.getSelectionModel().setSelectionMode(SINGLE_SELECTION);
 	
 	alignColumns(view.questionnaireSetTable, List.of(0), SwingConstants.CENTER);
@@ -222,7 +222,7 @@ public class MainController {
 	}
 
 	selectedQuestionnaire = null;
-	view.questionnaireTable.setModel(createTableModel(Questionnaire.class, questionnaires, List.of(fieldOf("id", "   Identifier  "), fieldOf("name"), fieldOf("Description"))));
+	view.questionnaireTable.setModel(createTableModel(Questionnaire.class, questionnaires, List.of(fieldOf("order", "   Order  "), fieldOf("name"), fieldOf("Description"))));
 	view.questionnaireTable.getSelectionModel().setSelectionMode(SINGLE_SELECTION);
 	
 	alignColumns(view.questionnaireTable, List.of(0), SwingConstants.CENTER);
