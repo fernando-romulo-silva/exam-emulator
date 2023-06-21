@@ -10,16 +10,17 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "OPTION")
+@Table(name = "OPTION", uniqueConstraints = @UniqueConstraint(columnNames = { "LETTER", "QUESTION_ID" }))
 public class Option {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID", nullable = false)
     private Long id;
-    
+
     @Column(name = "LETTER")
     private String letter;
 
@@ -28,32 +29,37 @@ public class Option {
 
     @Column(name = "CORRECT")
     private Boolean correct = Boolean.FALSE;
-    
-    Option(){
+
+    Option() {
 	super();
     }
-    
-    public Option(final String letter, final String text, final Boolean correct) {
+
+    public Option(final String letter, final String value, final Boolean correct) {
 	super();
 	this.letter = letter;
-	this.value = text;
+	this.value = value;
 	this.correct = correct;
+    }
+
+    void update(final Option updatedOption) {
+	this.value = updatedOption.value;
+	this.correct = updatedOption.correct;
     }
 
     public Boolean isCorrect() {
 	return correct;
     }
-    
+
     public String getLetter() {
-        return letter;
+	return letter;
     }
-    
+
     public String getValue() {
 	return value;
     }
 
     // ----------------------------------------------------------
-    
+
     @Override
     public int hashCode() {
 	return Objects.hash(id);

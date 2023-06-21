@@ -1,5 +1,8 @@
 package org.examemulator.domain.questionnaire;
 
+import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.FetchType.EAGER;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,10 +13,8 @@ import org.examemulator.domain.cerfication.Certification;
 import org.examemulator.domain.questionnaire.question.Question;
 import org.examemulator.domain.questionnaire.set.QuestionnaireSet;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -51,12 +52,12 @@ public class Questionnaire {
     @JoinColumn(name = "SET_ID", referencedColumnName = "ID")
     private QuestionnaireSet set;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = EAGER)
     @JoinColumn(name = "CERTIFICATION_ID", referencedColumnName = "ID", nullable = false)
     private Certification certification;
 
     @JoinColumn(name = "QUESTIONNAIRE_ID")
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = EAGER, cascade = ALL, orphanRemoval = true)
     private final List<Question> questions = new ArrayList<>();
 
     Questionnaire() {
@@ -76,6 +77,33 @@ public class Questionnaire {
 	this.order = order;
 	this.certification = set.getCertification();
 	this.questions.addAll(questions);
+    }
+    
+    // ------------------------------------------
+    public void update( //
+		    final Integer order,
+		    final QuestionnaireSet set, //
+		    final List<Question> questions) {
+	
+	this.set = set;
+	this.order = order;
+	this.certification = set.getCertification();
+	
+	questions.stream().forEach(this::updateQuestion);
+    }
+    
+    private void updateQuestion(final Question updatedQuestion) {
+	
+	final var optinalQuestion = this.questions.stream()
+		.filter(question -> Objects.equals(question.getName(), updatedQuestion.getName()))
+		.findFirst();
+	
+	if (optinalQuestion.isPresent()) {
+	    final var currentQuestion = optinalQuestion.get();
+	    currentQuestion.update(updatedQuestion);
+	} else {
+	    this.questions.add(updatedQuestion);
+	}
     }
 
     // ------------------------------------------
@@ -105,7 +133,10 @@ public class Questionnaire {
     }
 
     public List<Question> getQuestions() {
-	return Collections.unmodifiableList(questions);
+	return Collections.unmodifiableList(questions) //
+			.stream() //
+			.sorted((question1, question2) -> question1.getOrder().compareTo(question2.getOrder())) //
+			.toList();
     }
 
     // -----------------------------------------------------------------------

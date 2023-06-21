@@ -14,8 +14,8 @@ public class Main {
 
 	HsqldbServer.start();
 
-//	final var mainController = container.select(QuestionnaireController.class).get();
-	final var mainController = container.select(MainController.class).get();
+	final var mainController = container.select(QuestionnaireController.class).get();
+//	final var mainController = container.select(MainController.class).get();
 	mainController.show();
 
 	Runtime.getRuntime().addShutdownHook(new Thread(() -> {

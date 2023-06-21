@@ -49,7 +49,14 @@ public class QuestionnaireService {
 	final var optionalQuestionnaire = questionnaireRepository.findByNameAndCertification(data.questionnaireName(), questionnaireSet.getCertification());
 
 	if (optionalQuestionnaire.isEmpty()) {
-	    final var questionnaireTemp = new Questionnaire(data.questionnaireName(), data.questionnaireDesc(), data.questionnaireOrder(), questionnaireSet, questionsFromFile);
+	    
+	    final var questionnaireTemp = new Questionnaire( //
+			    data.questionnaireName(), //
+			    data.questionnaireDesc(), //
+			    data.questionnaireOrder(), //
+			    questionnaireSet, //
+			    questionsFromFile //
+	    ); //
 
 //	    final var conceptsMap = questionFiles.stream() //
 //			    .filter(fn -> !containsNone(fn, '(', ')')) //
@@ -73,8 +80,10 @@ public class QuestionnaireService {
 
 	    return questionnaireRepository.save(questionnaireTemp);
 	}
-
-	return optionalQuestionnaire.get();
+	
+	final var questionnaire = optionalQuestionnaire.get();
+	questionnaire.update(data.questionnaireOrder(), questionnaireSet, questionsFromFile);
+	return  questionnaireRepository.update(questionnaire);
     }
 
     @Transactional(value = REQUIRED)

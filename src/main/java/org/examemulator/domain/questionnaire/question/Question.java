@@ -1,5 +1,7 @@
 package org.examemulator.domain.questionnaire.question;
 
+import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.FetchType.EAGER;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 
@@ -13,10 +15,8 @@ import java.util.function.Consumer;
 
 import org.examemulator.domain.inquiry.InquiryInterface;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
@@ -51,7 +51,7 @@ public class Question implements Comparable<Question>, InquiryInterface {
     private Integer order;
 
     @JoinColumn(name = "QUESTION_ID")
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = EAGER, cascade = ALL, orphanRemoval = true)
     private final List<Option> options = new ArrayList<>();
 
     Question() {
@@ -67,7 +67,32 @@ public class Question implements Comparable<Question>, InquiryInterface {
 	this.concept = builder.concept;
 	this.options.addAll(builder.options);
     }
+    
+    // ------------------------------------------------------------------------------
+    public void update(final Question updatedQuestion) {
+	
+	this.name = updatedQuestion.name;
+	this.value = updatedQuestion.value;
+	this.explanation = updatedQuestion.explanation;
+	this.order = updatedQuestion.order;
+	this.concept = updatedQuestion.concept;
+	
+	updatedQuestion.options.stream().forEach(this::updateOption);
+    }
+    
+    private void updateOption(final Option updatedOption) {
+	final var optinalOption = this.options.stream() //
+			.filter(option -> Objects.equals(option.getLetter(), updatedOption.getLetter())) //
+			.findFirst();
 
+	if (optinalOption.isPresent()) {
+	    final var currentQuestion = optinalOption.get();
+	    currentQuestion.update(updatedOption);
+	} else {
+	    this.options.add(updatedOption);
+	}
+    }
+    
     // ------------------------------------------------------------------------------
 
     public String getValue() {
@@ -171,7 +196,7 @@ public class Question implements Comparable<Question>, InquiryInterface {
 	    function.accept(this);
 	    return this;
 	}
-
+	
 	public Question build() {
 
 	    if (!checkParams()) {
