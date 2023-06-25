@@ -11,16 +11,15 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSpinner;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
-import javax.swing.SpinnerNumberModel;
 import javax.swing.border.EtchedBorder;
 
-import org.examemulator.gui.components.RangeSlider;
 import org.examemulator.gui.components.WrapLayout;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -41,13 +40,13 @@ class QuestionnaireView extends JFrame {
 
     JButton btnNewExam, btnDelete, btnLoad, btnPrevious, btnNext;
 
-    JLabel lblClock, lblRangeLow, lblUpper, lblQuantity, lblCertification;
+    JLabel lblOrder, lblCertification;
 
-    JSpinner textQuantity;
-
-    RangeSlider rangeQuestions;
-
-    JTextField textDescription, textSet, textCertification;
+    JTextField textDescription, textSet, textCertification, textOrder;
+    
+    ButtonGroup bgSelection;
+    
+    JRadioButton rdbtnAll, rdbtnNone, rdbtnAny;
 
     QuestionnaireView() {
 	
@@ -105,12 +104,13 @@ class QuestionnaireView extends JFrame {
 	examControlPanel2.add(textDescription);
 	textDescription.setColumns(30);
 
-	lblQuantity = new JLabel("Quantity");
-	examControlPanel2.add(lblQuantity);
+	lblOrder = new JLabel("Order");
+	examControlPanel2.add(lblOrder);
 
-	textQuantity = new JSpinner(new SpinnerNumberModel(Integer.valueOf(100), Integer.valueOf(10), null, Integer.valueOf(10)));
-	examControlPanel2.add(textQuantity);
-	textQuantity.setEnabled(false);
+	textOrder = new JTextField();
+	textOrder.setEnabled(false);
+	textOrder.setColumns(5);
+	examControlPanel2.add(textOrder);
 
 	final var examControlPanel3 = new JPanel(new WrapLayout(LEFT, 5, 5));
 	examPanel.add(examControlPanel3);
@@ -136,25 +136,28 @@ class QuestionnaireView extends JFrame {
 	examControlPanel4.setLayout(new WrapLayout(LEFT, 5, 5));
 	examPanel.add(examControlPanel4);
 
-	final var lblRange = new JLabel("Range");
+	final var lblRange = new JLabel("Selection");
 	examControlPanel4.add(lblRange);
-
-	lblRangeLow = new JLabel("1");
-	examControlPanel4.add(lblRangeLow);
-
-	rangeQuestions = new RangeSlider();
-	rangeQuestions.setEnabled(false);
-	examControlPanel4.add(rangeQuestions);
-	rangeQuestions.setPreferredSize(new Dimension(450, 12));
-	rangeQuestions.setMinimum(0);
-	rangeQuestions.setMaximum(10);
-
-	lblUpper = new JLabel("10");
-	examControlPanel4.add(lblUpper);
-
-	lblClock = new JLabel("");
-	examControlPanel4.add(lblClock);
-	lblClock.setBorder(new EtchedBorder(LOWERED, null, null));
+	
+	rdbtnAll = new JRadioButton("All");
+	rdbtnAll.setSelected(true);
+	rdbtnAll.setEnabled(false);
+	examControlPanel4.add(rdbtnAll);
+	
+	rdbtnNone = new JRadioButton("None");
+	rdbtnNone.setSelected(false);
+	rdbtnNone.setEnabled(false);
+	examControlPanel4.add(rdbtnNone);
+	
+	rdbtnAny = new JRadioButton("Any");
+	rdbtnAny.setSelected(false);
+	rdbtnAny.setEnabled(false);
+	examControlPanel4.add(rdbtnAny);
+	
+	bgSelection = new ButtonGroup();
+	bgSelection.add(rdbtnAll);
+	bgSelection.add(rdbtnNone);
+	bgSelection.add(rdbtnAny);
 
 	// -------------------------------------------------------------------------------------------
 	// Control Panel

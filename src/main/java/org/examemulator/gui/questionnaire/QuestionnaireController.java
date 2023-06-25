@@ -1,6 +1,8 @@
 package org.examemulator.gui.questionnaire;
 
 import static java.awt.BorderLayout.CENTER;
+import static java.awt.Color.BLACK;
+import static java.awt.Color.BLUE;
 import static java.util.stream.Collectors.joining;
 import static javax.swing.BorderFactory.createTitledBorder;
 import static javax.swing.JFileChooser.DIRECTORIES_ONLY;
@@ -34,7 +36,6 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.StringUtils;
 import org.examemulator.domain.questionnaire.Questionnaire;
 import org.examemulator.domain.questionnaire.question.Question;
-import org.examemulator.gui.components.RangeSlider;
 import org.examemulator.gui.exam.ExamController;
 import org.examemulator.gui.questionnaire.QuestionnaireView.PreExameGui;
 import org.examemulator.service.LoadFromFileService;
@@ -51,7 +52,7 @@ public class QuestionnaireController {
     private final QuestionnaireView view;
 
     private final QuestionnaireService service;
-    
+
     private final LoadFromFileService loadFromFileService;
 
     private final ExamController examController;
@@ -89,7 +90,7 @@ public class QuestionnaireController {
     public void show() {
 
 	initView();
-	
+
 	SwingUtilities.invokeLater(() -> {
 
 	    logger.info("starting swing-event: {}", this.getClass().getSimpleName());
@@ -100,26 +101,9 @@ public class QuestionnaireController {
 
 	    logger.info("finished swing-event: {}", this.getClass().getSimpleName());
 	});
-	
+
     }
 
-//    private void updateQuestionLabel() {
-//	final var component = Stream.of(view.pQuestions.getComponents()) //
-//			.filter(comp -> Objects.equals(comp.getName(), selectedQuestion.getOrder().toString())) //
-//			.findFirst();
-//
-//	if (component.isPresent() && component.get() instanceof JLabel label) {
-//
-//	    if (selectedQuestion.isMarked()) {
-//		label.setForeground(Color.ORANGE);
-//	    } else if (selectedQuestion.isAnswered()) {
-//		label.setForeground(Color.BLUE);
-//	    } else {
-//		label.setForeground(Color.BLACK);
-//	    }
-//	}
-//    }
-    
     private void initView() {
 	view.questionInternPanel.removeAll();
 	view.questionInternPanel.revalidate();
@@ -132,15 +116,8 @@ public class QuestionnaireController {
 
     private void initActions() {
 
-	view.rangeQuestions.addChangeListener(event -> {
-	    
-	    final var slider = (RangeSlider) event.getSource();
-	    view.lblRangeLow.setText(String.valueOf(slider.getValue()));
-	    view.lblUpper.setText(String.valueOf(slider.getUpperValue()));
-	});
-
 	view.btnNext.addActionListener(event -> {
-	    
+
 	    final var nextQuestionOptional = nextQuestion(questionnaire.getQuestions(), selectedQuestion);
 	    if (nextQuestionOptional.isPresent()) {
 		selectedQuestion = nextQuestionOptional.get();
@@ -149,7 +126,7 @@ public class QuestionnaireController {
 	});
 
 	view.btnPrevious.addActionListener(event -> {
-	    
+
 	    final var previousQuestionOptional = previousQuestion(questionnaire.getQuestions(), selectedQuestion);
 	    if (previousQuestionOptional.isPresent()) {
 		selectedQuestion = previousQuestionOptional.get();
@@ -174,36 +151,31 @@ public class QuestionnaireController {
 	    view.pQuestions.revalidate();
 	    view.pQuestions.repaint();
 
-	    currentFolder = Objects.nonNull(chooser.getSelectedFile()) // 
-			    ? chooser.getSelectedFile().getAbsolutePath() // 
+	    currentFolder = Objects.nonNull(chooser.getSelectedFile()) //
+			    ? chooser.getSelectedFile().getAbsolutePath() //
 			    : StringUtils.EMPTY;
-	    
+
 	    if (isNotBlank(currentFolder)) {
 
 		questionnaire = loadFromFileService.loadQuestionnaire(currentFolder);
+		toExamQuestions.addAll(questionnaire.getQuestions());
 
 		view.contentPane.setBorder(createTitledBorder(questionnaire.getName()));
 
+		view.rdbtnAll.setEnabled(true);
+		view.rdbtnNone.setEnabled(true);
+		
 		view.btnNewExam.setEnabled(true);
 		view.btnNewExam.setEnabled(true);
 		view.textDescription.setText(questionnaire.getDescription());
-		
+
 		final var set = questionnaire.getSet();
 		view.textSet.setText(set.getName());
-		
+
 		final var certification = questionnaire.getCertification();
 		view.textCertification.setText(certification.getName());
 
-//		view.textFieldName.setEnabled(true);
-//		view.textQuantity.setEnabled(true);
-
-		view.rangeQuestions.setEnabled(true);
-		view.rangeQuestions.setMinimum(1);
-		view.rangeQuestions.setMaximum(questionnaire.getQuestions().size());
-		view.rangeQuestions.setValue(1);
-		view.rangeQuestions.setUpperValue(questionnaire.getQuestions().size());
-		
-		view.textQuantity.setValue(questionnaire.getQuestions().size());
+		view.textOrder.setText(StringUtils.leftPad(questionnaire.getOrder().toString(), 2, "0"));
 
 		view.btnNext.setEnabled(false);
 		view.btnPrevious.setEnabled(false);
@@ -220,10 +192,22 @@ public class QuestionnaireController {
 
 	view.btnNewExam.addActionListener(event -> {
 	    view.setVisible(false);
-	    
-	    toExamQuestions.addAll(questionnaire.getQuestions());
-	    
+
+	    if (toExamQuestions.isEmpty()) {
+		toExamQuestions.addAll(questionnaire.getQuestions());
+	    }
+
 	    examController.show(questionnaire.getName(), view, toExamQuestions);
+	});
+	
+	view.rdbtnAll.addActionListener(event -> {
+	    toExamQuestions.addAll(questionnaire.getQuestions());
+	    loadNumbersPanel();
+	});
+	
+	view.rdbtnNone.addActionListener(event -> {
+	    toExamQuestions.clear();
+	    loadNumbersPanel();
 	});
 
     }
@@ -251,7 +235,7 @@ public class QuestionnaireController {
 	final var conceptName = optionalConcept.isPresent() //
 			? " (".concat(optionalConcept.get().getName()).concat(")") //
 			: "";
-	
+
 	final var panelQuestionPanel = new JPanel();
 	panelQuestionPanel.setLayout(new BorderLayout());
 	panelQuestionPanel.setBorder(createTitledBorder("Question " + leftPad(selectedQuestion.getOrder().toString(), 2, '0').concat(conceptName)));
@@ -273,23 +257,18 @@ public class QuestionnaireController {
 	view.pQuestions.revalidate();
 	view.pQuestions.repaint();
 
-	final var questionLabelListener = new MouseAdapter() {
-
-	    @Override
-	    public void mouseClicked(final MouseEvent event) {
-		final var labelEvent = (JLabel) event.getSource();
-		final var text = labelEvent.getText();
-
-		if (event.getClickCount() == 1 && event.getButton() == MouseEvent.BUTTON1 && Objects.nonNull(questionnaire)) {
-		    selectQuestion(Integer.valueOf(text));
-		    loadPanelQuestion();
-		}
-	    }
-	};
+	final var questionLabelListener = new QuestionLabelListener();
 
 	for (final var question : questionnaire.getQuestions()) {
 
 	    final var label = new JLabel(leftPad(question.getOrder().toString(), 2, '0'));
+	    
+	    if (toExamQuestions.contains(question)) {
+		label.setForeground(BLUE);
+	    } else {
+		label.setForeground(BLACK);
+	    }
+	    
 	    label.setName(question.getOrder().toString());
 	    view.pQuestions.add(label);
 	    label.addMouseListener(questionLabelListener);
@@ -307,20 +286,62 @@ public class QuestionnaireController {
 	view.btnNext.setEnabled(hasNextQuestion(questionnaire.getQuestions(), selectedQuestion));
     }
 
-    private void selectQuestion(int order) {
+    private class QuestionLabelListener extends MouseAdapter {
 
-	final var questionOptional = questionnaire.getQuestions() //
-			.stream() //
-			.filter(question -> Objects.equals(question.getOrder(), order)) //
-			.findFirst();
+	@Override
+	public void mouseClicked(final MouseEvent event) {
+	    final var label = (JLabel) event.getSource();
+	    final var text = label.getText();
 
-	if (questionOptional.isEmpty()) {
-	    return;
+	    if (event.getClickCount() == 1 && event.getButton() == MouseEvent.BUTTON1 && Objects.nonNull(questionnaire)) {
+
+		selectQuestion(Integer.valueOf(text));
+		loadPanelQuestion();
+
+	    } else if (event.getClickCount() == 2 && !event.isConsumed() && event.getButton() == MouseEvent.BUTTON1 && Objects.nonNull(questionnaire)) {
+
+		selectQuestion(Integer.valueOf(text));
+
+		if (toExamQuestions.contains(selectedQuestion)) {
+		    toExamQuestions.remove(selectedQuestion);
+		    label.setForeground(BLACK);
+		} else {
+		    toExamQuestions.add(selectedQuestion);
+		    label.setForeground(BLUE);
+		}
+
+		label.repaint();
+	    }
+
+	    if (toExamQuestions.isEmpty()) {
+		view.rdbtnNone.setSelected(true);
+	    } else {
+
+		final var questionnaireQuestionSize = Objects.nonNull(questionnaire) ? questionnaire.getQuestions().size() : 0;
+
+		if (toExamQuestions.size() < questionnaireQuestionSize) {
+		    view.rdbtnAny.setSelected(true);
+		} else {
+		    view.rdbtnAll.setSelected(true);
+		}
+	    }
 	}
 
-	selectedQuestion = questionOptional.get();
+	private void selectQuestion(int order) {
 
-	view.btnPrevious.setEnabled(hasPreviousQuestion(questionnaire.getQuestions(), selectedQuestion));
-	view.btnNext.setEnabled(hasNextQuestion(questionnaire.getQuestions(), selectedQuestion));
+	    final var questionOptional = questionnaire.getQuestions() //
+			    .stream() //
+			    .filter(question -> Objects.equals(question.getOrder(), order)) //
+			    .findFirst();
+
+	    if (questionOptional.isEmpty()) {
+		return;
+	    }
+
+	    selectedQuestion = questionOptional.get();
+
+	    view.btnPrevious.setEnabled(hasPreviousQuestion(questionnaire.getQuestions(), selectedQuestion));
+	    view.btnNext.setEnabled(hasNextQuestion(questionnaire.getQuestions(), selectedQuestion));
+	}
     }
 }

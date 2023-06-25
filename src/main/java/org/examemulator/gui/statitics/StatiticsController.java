@@ -1,8 +1,9 @@
 package org.examemulator.gui.statitics;
 
 import static java.awt.BorderLayout.CENTER;
+import static java.awt.Color.BLACK;
+import static java.awt.Color.BLUE;
 import static java.awt.Color.GREEN;
-import static java.awt.Color.ORANGE;
 import static java.awt.Color.RED;
 import static java.math.RoundingMode.HALF_UP;
 import static java.util.stream.Collectors.joining;
@@ -238,16 +239,21 @@ public class StatiticsController {
 	for (final var question : questionsTemp) {
 
 	    final var label = new JLabel(leftPad(question.getOrder().toString(), 2, '0'));
-	    label.setForeground(GREEN);
+	    
+	    label.setForeground(BLACK);
+	    
+	    if (question.isCorrect()) {
+		label.setForeground(GREEN);
+	    }
 
 	    if (question.isMarked()) {
-		label.setForeground(ORANGE);
+		label.setForeground(BLUE);
 	    }
 
 	    if (!question.isCorrect()) {
 		label.setForeground(RED);
 	    }
-
+	    
 	    view.pQuestions.add(label);
 	    label.addMouseListener(questionLabelListener);
 	}

@@ -69,7 +69,7 @@ class ExamView extends JFrame {
 
     JSpinner textDiscrete, textMinScore, spinnerTimeDuration;
 
-    JCheckBox chckbxMark, chckbxShuffleQuestions, chckbxShuffleOptions;
+    JCheckBox chckbxShuffleQuestions, chckbxShuffleOptions;
 
     JComboBox<String> cbMode;
 
@@ -149,7 +149,6 @@ class ExamView extends JFrame {
 	cbMode.setEnabled(false);
 	cbMode.addItem("Practice");
 	cbMode.addItem("Exam");
-	cbMode.addItem("Study");
 
 	cbMode.setSize(200, cbMode.getPreferredSize().height);
 
@@ -192,10 +191,6 @@ class ExamView extends JFrame {
 	btnNext = new JButton("Next");
 	btnNext.setEnabled(false);
 	quesitonControlPanel.add(btnNext);
-
-	chckbxMark = new JCheckBox("Mark");
-	chckbxMark.setEnabled(false);
-	quesitonControlPanel.add(chckbxMark);
 
 	btnCheckAnswer = new JButton("Check Answer");
 	btnCheckAnswer.setEnabled(false);

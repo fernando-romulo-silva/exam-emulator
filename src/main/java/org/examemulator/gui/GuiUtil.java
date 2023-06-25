@@ -8,6 +8,7 @@ import static javax.swing.BoxLayout.Y_AXIS;
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER;
 import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS;
 import static org.apache.commons.lang3.RegExUtils.replaceAll;
+import static org.apache.commons.lang3.StringUtils.containsAny;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static org.apache.commons.lang3.StringUtils.leftPad;
 import static org.apache.commons.lang3.StringUtils.remove;
@@ -41,8 +42,8 @@ import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.html.HTMLEditorKit;
 
-import org.apache.commons.lang3.StringUtils;
 import org.examemulator.domain.exam.ExamQuestion;
+import org.examemulator.gui.components.MultiLineLabelUI;
 import org.examemulator.gui.components.WrapLayout;
 
 public class GuiUtil {
@@ -52,16 +53,24 @@ public class GuiUtil {
     public static final Font DEFAULT_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
 
     public static final int MILLISECOND = 1000;
-    
+
     public static final String TAG_BR = "<br />";
-    
+
     public static final String TAG_BR_BR = "<br /> <br />";
-    
+
     public static final String TAG_OPEN_B = "<b>";
-    
+
     public static final String TAG_CLOSE_B = "</b>";
-    
+
+    public static final String TAG_OPEN_HTML = "<html>";
+
     public static final String APP_NAME = "ExamEmulator";
+
+    public static final String TAG_CLOSE_HTML = "</html>";
+
+    private GuiUtil() {
+	throw new IllegalStateException("You can't instance this class!");
+    }
 
     @FunctionalInterface
     public static interface Action {
@@ -70,45 +79,49 @@ public class GuiUtil {
 
     private static String treatOptionText(final String id, final String text) {
 
-	if (StringUtils.containsAny(text, "\n")) { // large text option
-	    return "<html>" + id + ")"+ TAG_BR + replaceAll(text, "[\\n]", TAG_BR) + "</html>";
+	// convert text to px
+	// calculate mim text size
+	if (containsAny(text, "\n")) { // large text option
+	    return TAG_OPEN_HTML + id + ")" + TAG_BR + replaceAll(text, "[\\n]", TAG_BR) + TAG_CLOSE_HTML;
 	}
 
+	final var tagOpenP = (text.length() > 150) ? "<p style=\"width:640px\"> " : "<p>";
+	final var tagCloseP = "</p>";
+
 	// short text option
-	return "<html>" + id + ")" + TAG_BR + text + "</html>";
+	return TAG_OPEN_HTML + id + ")" + TAG_BR + tagOpenP + text + tagCloseP + TAG_CLOSE_HTML;
     }
-    
-    
+
     public static String convertTextToHtml(final String text) {
 	var textTemp = text.trim();
-	
+
 	final var formatteds = substringsBetween(textTemp, "```", "´´´");
 	if (nonNull(formatteds)) {
 	    int i = 1;
 	    for (final var formatted : formatteds) {
-		textTemp = replace(textTemp, formatted, "$"+i);
+		textTemp = replace(textTemp, formatted, "$" + i);
 		i++;
 	    }
 	}
-	
+
 	textTemp = replace(textTemp, "```", "");
 	textTemp = replace(textTemp, "´´´", "");
 	textTemp = replace(textTemp, "&", "&amp;");
 	textTemp = replace(textTemp, "<", "&lt;");
 	textTemp = replace(textTemp, ">", "&gt;");
 	textTemp = replace(textTemp, "\n", " <br />");
-	
+
 	if (nonNull(formatteds)) {
 	    int i = 1;
 	    for (final var formatted : formatteds) {
-		textTemp = replace(textTemp, "$"+i, "<pre>"+formatted+"</pre>");
+		textTemp = replace(textTemp, "$" + i, "<pre>" + formatted + "</pre>");
 		i++;
 	    }
 	}
-	
+
 	return textTemp;
     }
-    
+
     public static JComponent createScrollHtmlTextToShow(final String text) {
 	final var textComponent = new JEditorPane();
 	textComponent.setEditable(false);
@@ -116,7 +129,7 @@ public class GuiUtil {
 	textComponent.setEditorKit(kit);
 	var doc = kit.createDefaultDocument();
 	textComponent.setDocument(doc);
-	textComponent.setText("<html> <body>" +text+" </body> </html>");
+	textComponent.setText("<html> <body>" + text + " </body> </html>");
 	textComponent.setMinimumSize(new Dimension(100, 100));
 	textComponent.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
 	textComponent.setFont(DEFAULT_FONT);
@@ -125,10 +138,10 @@ public class GuiUtil {
     }
 
     public static JComponent createScrollTextToShow(final String text) {
-	
+
 	var textTemp = replace(text, "```", "");
 	textTemp = replace(textTemp, "´´´", "");
-	
+
 	final var textComponent = new JTextArea();
 	textComponent.setText(textTemp);
 	textComponent.setEditable(false);
@@ -140,7 +153,7 @@ public class GuiUtil {
     }
 
     public static ActionListener createTimerAction(final Integer duration, final JLabel jlabel, final Action action) {
-	
+
 	return new ActionListener() {
 
 	    private long time = (long) duration * MILLISECOND * SIXTY_VALUE;
@@ -180,6 +193,7 @@ public class GuiUtil {
 	final var optionsLabels = new ArrayList<String>();
 
 	final var optionPanel = new JPanel(new WrapLayout(LEFT, 5, 5));
+//	final var optionPanel = new JPanel(new BorderLayout());
 
 	for (final var option : question.getOptions()) {
 	    final var letter = option.getLetter();
@@ -248,7 +262,7 @@ public class GuiUtil {
 
 	    final ItemListener radioItemListener = event -> {
 		final var radioEvent = (JRadioButton) event.getSource();
-		final var option = substringBefore(remove(radioEvent.getText(), "<html>"), ")");
+		final var option = substringBefore(remove(radioEvent.getText(), TAG_OPEN_HTML), ")");
 
 		if (radioEvent.isSelected()) {
 		    question.selectAnswer(option);
@@ -282,7 +296,7 @@ public class GuiUtil {
 	    final ItemListener checkItemListener = event -> {
 
 		final var checkEvent = (JCheckBox) event.getSource();
-		final var option = substringBefore(remove(checkEvent.getText(), "<html>"), ")");
+		final var option = substringBefore(remove(checkEvent.getText(), TAG_OPEN_HTML), ")");
 
 		if (checkEvent.isSelected()) {
 		    question.selectAnswer(option);
@@ -324,16 +338,16 @@ public class GuiUtil {
 
 	return joined;
     }
-    
-    private static JTextArea createTextToShow(final String text) {
-	
+
+    private static JComponent createTextToShow(final String text) {
+
 	var textTemp = replace(text, "```", "");
 	textTemp = replace(textTemp, "´´´", "");
-	
-	final var textComponent = new JTextArea(textTemp);
+
+	final var textComponent = new JLabel(textTemp);
+	textComponent.setUI(MultiLineLabelUI.labelUI);
 	textComponent.setBorder(new EmptyBorder(0, 0, 0, 0));
 	textComponent.setOpaque(false);
-	textComponent.setEditable(false);
 	textComponent.setFont(DEFAULT_FONT);
 	return textComponent;
     }

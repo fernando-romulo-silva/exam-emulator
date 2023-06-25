@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.examemulator.domain.cerfication.Certification;
 import org.examemulator.domain.questionnaire.question.Question;
@@ -29,7 +30,7 @@ import jakarta.persistence.UniqueConstraint;
 	name = "QUESTIONNARIE", // 
 	uniqueConstraints = { 
 		@UniqueConstraint(columnNames = { "NAME", "CERTIFICATION_ID" }),
-		@UniqueConstraint(columnNames = { "SEQUENCE", "CERTIFICATION_ID" })
+		@UniqueConstraint(columnNames = { "NUM_ORDER", "CERTIFICATION_ID" })
 	}
 )
 public class Questionnaire {
@@ -45,7 +46,7 @@ public class Questionnaire {
     @Column(name = "DESCRIPTION")
     private String description;
     
-    @Column(name = "SEQUENCE")
+    @Column(name = "NUM_ORDER")
     private Integer order;
 
     @ManyToOne
@@ -89,7 +90,38 @@ public class Questionnaire {
 	this.order = order;
 	this.certification = set.getCertification();
 	
+	removeOptions(questions);
+	
 	questions.stream().forEach(this::updateQuestion);
+    }
+    
+    private void removeOptions(final List<Question> questionsUpdated) {
+	
+	if (this.questions.size() > questionsUpdated.size()) { // one or more options was removed
+		
+	    final var currentOrders = questions.stream().map(Question::getOrder).toList();
+	    
+	    final var newOrders = questionsUpdated.stream().map(Question::getOrder).toList();
+	    
+	    final var differences = CollectionUtils.removeAll(currentOrders, newOrders);
+	    
+	    final var toRemove = new ArrayList<Question>();
+	    
+	    for (final var difference : differences) {
+		
+		final var optionalQuestion = this.questions.stream() //
+			.filter(o -> Objects.equals(o.getOrder(), difference)) //
+			.findFirst();
+		
+		if (optionalQuestion.isPresent()) {
+		    toRemove.add(optionalQuestion.get());
+		}
+	    }
+	    
+	    if (!toRemove.isEmpty()) {
+		questions.removeAll(toRemove);
+	    }
+	}
     }
     
     private void updateQuestion(final Question updatedQuestion) {
@@ -153,7 +185,7 @@ public class Questionnaire {
 	if (this == obj) {
 	    result = true;
 
-	} else if (obj instanceof Questionnaire other) {
+	} else if (obj instanceof final Questionnaire other) {
 	    result = Objects.equals(id, other.id);
 
 	} else {

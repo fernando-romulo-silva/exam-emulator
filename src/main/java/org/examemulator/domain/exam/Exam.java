@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 import java.util.function.Consumer;
 
@@ -52,8 +53,8 @@ public class Exam {
     @Column(name = "RANDOM_ORDER")
     private boolean randomOrder;
 
-    @Column(name = "MODE")
-    private boolean practiceMode;
+    @Column(name = "TYPE")
+    private ExamType type;
 
     @Column(name = "SHUFFLE_QUESTIONS")
     private boolean shuffleQuestions;
@@ -76,12 +77,12 @@ public class Exam {
     private Exam() {
 	super();
     }
-    
+
     private Exam(final Builder builder) {
 	super();
 	this.name = builder.name;
 	this.randomOrder = builder.randomOrder;
-	this.practiceMode = builder.practiceMode;
+	this.type = Optional.ofNullable(builder.type).orElse(ExamType.PRACTICE);
 	this.minScorePercent = builder.minScorePercent;
 	this.discretPercent = builder.discretPercent;
 	this.shuffleQuestions = builder.shuffleQuestions;
@@ -132,6 +133,27 @@ public class Exam {
 	status = ExamStatus.RUNNING;
     }
 
+    public boolean allQuestionsAnswered() {
+	return questions.stream() //
+			.filter(q -> !q.isAnswered()) //
+			.findFirst() //
+			.isEmpty();
+    }
+    
+    public List<String> questionsAnswered() {
+	return questions.stream() //
+			.filter(q -> q.isAnswered()) //
+			.map(q -> q.getOrder().toString()) //
+			.toList();
+    }
+
+    public List<String> questionsNoAnswered() {
+	return questions.stream() //
+			.filter(q -> !q.isAnswered()) //
+			.map(q -> q.getOrder().toString()) //
+			.toList();
+    }
+
     // -----------------------------------------------------------------------------------------------------------------
 
     public Long getId() {
@@ -150,8 +172,8 @@ public class Exam {
 	return randomOrder;
     }
 
-    public boolean isPracticeMode() {
-	return practiceMode;
+    public ExamType getType() {
+	return type;
     }
 
     public List<ExamQuestion> getQuestions() {
@@ -208,7 +230,7 @@ public class Exam {
 	return new ToStringBuilder(this) //
 			.append("id", id) //
 			.append("name", name) //
-			.append("practiceMode", practiceMode) //
+			.append("type", type) //
 			.toString();
     }
 
@@ -224,7 +246,7 @@ public class Exam {
 
 	public boolean randomOrder;
 
-	public boolean practiceMode;
+	public ExamType type;
 
 	public boolean shuffleQuestions = false;
 

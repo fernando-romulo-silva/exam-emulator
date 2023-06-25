@@ -20,7 +20,7 @@ import jakarta.persistence.UniqueConstraint;
 	name = "QUESTIONNARIE_SET", //
 	uniqueConstraints = { //
 		@UniqueConstraint(columnNames = { "NAME", "CERTIFICATION_ID" }), //
-		@UniqueConstraint(columnNames = { "SEQUENCE", "CERTIFICATION_ID" }) //
+		@UniqueConstraint(columnNames = { "NUM_ORDER", "CERTIFICATION_ID" }) //
 	} //
 )
 public class QuestionnaireSet {
@@ -36,7 +36,7 @@ public class QuestionnaireSet {
     @Column(name = "DESCRIPTION")
     private String description;
 
-    @Column(name = "SEQUENCE")
+    @Column(name = "NUM_ORDER")
     private Integer order;
 
     @ManyToOne
@@ -108,6 +108,10 @@ public class QuestionnaireSet {
 
     @Override
     public String toString() {
-	return ToStringBuilder.reflectionToString(this);
+	return new ToStringBuilder(this)
+			.append(id)
+			.append(order)
+			.append(name)
+			.build();
     }
 }

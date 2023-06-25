@@ -58,32 +58,12 @@ public class QuestionnaireService {
 			    questionsFromFile //
 	    ); //
 
-//	    final var conceptsMap = questionFiles.stream() //
-//			    .filter(fn -> !containsNone(fn, '(', ')')) //
-//			    .map(fn -> substringBetween(fn, "(", ")")) //
-//			    .distinct() //
-//			    .map(fn -> new SimpleEntry<>(fn, new QuestionConcept(fn))) //
-//			    .collect(toMap(Entry::getKey, Entry::getValue));
-//
-//	    for (final var questionFile : questionFiles) {
-//
-//		final var questionPath = Paths.get(dir + File.separator + questionFile);
-//
-//		try (final var lines = Files.lines(questionPath)) {
-//
-//		    questionnaireTemp.addQuestion(loadQuestion(questionFile, lines.collect(joining("\n")), conceptsMap));
-//
-//		} catch (final IOException ex) {
-//		    throw new IllegalStateException(ex);
-//		}
-//	    }
-
 	    return questionnaireRepository.save(questionnaireTemp);
 	}
 	
 	final var questionnaire = optionalQuestionnaire.get();
 	questionnaire.update(data.questionnaireOrder(), questionnaireSet, questionsFromFile);
-	return  questionnaireRepository.update(questionnaire);
+	return questionnaireRepository.update(questionnaire);
     }
 
     @Transactional(value = REQUIRED)
@@ -114,5 +94,9 @@ public class QuestionnaireService {
     
     public Stream<Questionnaire> findByCertificationAndQuestionnaireSet(final Certification certification,  final QuestionnaireSet questionnaireSet) {
 	return questionnaireRepository.findByCertificationAndQuestionnaireSet(certification, questionnaireSet);
+    }
+
+    public Stream<Question> findByCertification(Certification selectedCertification) {
+	return questionnaireRepository.findByCertification(selectedCertification);
     }
 }

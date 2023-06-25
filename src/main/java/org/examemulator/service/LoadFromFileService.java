@@ -80,12 +80,14 @@ public class LoadFromFileService {
 	final var questionnaireTemp = splitedDir[splitedDir.length - 1];
 	final var questionnaireOrder = substringBefore(questionnaireTemp, "-").trim();
 	final var questionnaireName = substringAfter(substringBefore(questionnaireTemp, "("), "-").trim();
-	final var questionnaireDesc = substringBetween(questionnaireTemp, "(", ")").trim();
+	final var questionnaierDescTemp = substringBetween(questionnaireTemp, "(", ")");
+	final var questionnaireDesc =  StringUtils.isBlank(questionnaierDescTemp) ? null : questionnaierDescTemp.trim();
 
 	final var setTemp = splitedDir[splitedDir.length - 2];
 	final var setOrder = substringBefore(setTemp, "-").trim();
 	final var setName = substringAfter(substringBefore(setTemp, "("), "-").trim();
-	final var setDesc = substringBetween(setTemp, "(", ")");
+	final var setDescTemp = substringBetween(setTemp, "(", ")");
+	final var setDesc = StringUtils.isBlank(setDescTemp) ? null : setDescTemp.trim();
 
 	final var certificationName = substringBefore(splitedDir[splitedDir.length - 4], "(");
 

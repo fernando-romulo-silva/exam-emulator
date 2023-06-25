@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.examemulator.domain.cerfication.Certification;
+import org.examemulator.domain.questionnaire.question.Question;
 import org.examemulator.domain.questionnaire.set.QuestionnaireSet;
 import org.examemulator.util.domain.GenericRepository;
 
@@ -51,5 +52,22 @@ public class QuestionnaireRepository extends GenericRepository<Questionnaire, Lo
 	query.setParameter("certification", certification);
 	
 	return query.getResultStream();
+    }
+    
+    // TODO Not implemented yet
+    public Stream<Question> findByCertification(final Certification certification) {
+	
+	final var qlString = """
+				select q 
+				  from Question q 
+				 where q.questionnaire 
+				   and q.certification = :certification
+					""";
+	
+//	final var query = entityManager.createQuery(qlString, Question.class);
+//	query.setParameter("certification", certification);
+
+	    
+	return Stream.of();
     }
 }

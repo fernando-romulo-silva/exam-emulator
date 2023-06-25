@@ -5,7 +5,7 @@ import static java.awt.BorderLayout.NORTH;
 import static java.awt.BorderLayout.SOUTH;
 import static java.awt.Color.BLACK;
 import static java.awt.Color.BLUE;
-import static java.awt.Color.ORANGE;
+import static java.awt.Color.GRAY;
 import static java.awt.Dialog.ModalityType.DOCUMENT_MODAL;
 import static java.awt.event.MouseEvent.BUTTON1;
 import static java.util.Objects.nonNull;
@@ -17,6 +17,8 @@ import static org.apache.commons.lang3.StringUtils.LF;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static org.apache.commons.lang3.StringUtils.leftPad;
 import static org.examemulator.domain.exam.ExamStatus.RUNNING;
+import static org.examemulator.domain.exam.ExamType.EXAM;
+import static org.examemulator.domain.exam.ExamType.PRACTICE;
 import static org.examemulator.gui.GuiUtil.MILLISECOND;
 import static org.examemulator.gui.GuiUtil.createDiscreteOptions;
 import static org.examemulator.gui.GuiUtil.createIndiscreteOptions;
@@ -41,7 +43,6 @@ import java.util.stream.Stream;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -175,7 +176,7 @@ public class ExamController {
 
 	    exam = new Exam.Builder().with($ -> {
 		$.name = this.name;
-		$.practiceMode = practiceMode;
+		$.type = practiceMode ? PRACTICE : EXAM;
 		$.discretPercent = discretPercent;
 		$.minScorePercent = minScorePercent;
 		$.randomOrder = false;
@@ -196,7 +197,6 @@ public class ExamController {
 	    view.chckbxShuffleOptions.setEnabled(false);
 
 	    view.btnPauseProceed.setEnabled(true);
-	    view.chckbxMark.setEnabled(true);
 	    view.btnFinish.setEnabled(true);
 	    view.btnNext.setEnabled(true);
 	    view.btnCheckAnswer.setEnabled(true);
@@ -209,7 +209,7 @@ public class ExamController {
 
 	    timer = null;
 
-	    if (exam.isPracticeMode()) {
+	    if (Objects.equals(exam.getType(), PRACTICE)) {
 		view.btnCheckAnswer.setVisible(true);
 		view.lblDuration.setVisible(false);
 		view.spinnerTimeDuration.setVisible(false);
@@ -242,7 +242,6 @@ public class ExamController {
 		view.lblClock.setText(StringUtils.EMPTY);
 
 		view.btnPrevious.setEnabled(false);
-		view.chckbxMark.setEnabled(false);
 		view.btnPauseProceed.setEnabled(true);
 		view.chckbxShuffleQuestions.setEnabled(false);
 		view.chckbxShuffleOptions.setEnabled(false);
@@ -269,7 +268,6 @@ public class ExamController {
 		view.chckbxShuffleOptions.setEnabled(false);
 
 		view.btnPauseProceed.setEnabled(true);
-		view.chckbxMark.setEnabled(true);
 		view.btnFinish.setEnabled(true);
 		view.btnNext.setEnabled(true);
 		view.btnCheckAnswer.setEnabled(true);
@@ -301,7 +299,6 @@ public class ExamController {
 	    view.btnFinish.setEnabled(false);
 	    view.btnPrevious.setEnabled(false);
 	    view.btnNext.setEnabled(false);
-	    view.chckbxMark.setEnabled(false);
 	    view.btnPauseProceed.setEnabled(false);
 	    view.chckbxShuffleQuestions.setEnabled(false);
 	    view.chckbxShuffleOptions.setEnabled(false);
@@ -374,11 +371,6 @@ public class ExamController {
 	    dialogContainer.add(panel, SOUTH);
 	    answerDialog.setVisible(true);
 	});
-
-	view.chckbxMark.addItemListener(event -> {
-	    final var checkEvent = (JCheckBox) event.getSource();
-	    selectedQuestion.mark(checkEvent.isSelected());
-	});
     }
 
     private void selectQuestion(int order) {
@@ -396,23 +388,6 @@ public class ExamController {
 
 	view.btnPrevious.setEnabled(hasPreviousQuestion(exam.getQuestions(), selectedQuestion));
 	view.btnNext.setEnabled(hasNextQuestion(exam.getQuestions(), selectedQuestion));
-    }
-
-    private void updateQuestionLabel() {
-	final var component = Stream.of(view.pQuestions.getComponents()) //
-			.filter(comp -> Objects.equals(comp.getName(), selectedQuestion.getOrder().toString())) //
-			.findFirst();
-
-	if (component.isPresent() && component.get() instanceof JLabel label) {
-
-	    if (selectedQuestion.isMarked()) {
-		label.setForeground(ORANGE);
-	    } else if (selectedQuestion.isAnswered()) {
-		label.setForeground(BLUE);
-	    } else {
-		label.setForeground(BLACK);
-	    }
-	}
     }
 
     private void loadPanelQuestion() {
@@ -443,8 +418,6 @@ public class ExamController {
 	    groupOptionsQuestionPanel.add(createIndiscreteOptions(selectedQuestion), CENTER);
 	}
 
-	view.chckbxMark.setSelected(selectedQuestion.isMarked());
-
 	view.btnPrevious.setEnabled(hasPreviousQuestion(exam.getQuestions(), selectedQuestion));
 	view.btnNext.setEnabled(hasNextQuestion(exam.getQuestions(), selectedQuestion));
 
@@ -460,26 +433,61 @@ public class ExamController {
 	view.pQuestions.revalidate();
 	view.pQuestions.repaint();
 
-	final MouseAdapter questionLabelListener = new MouseAdapter() {
+	final var questionLabelListener = new MouseAdapter() {
 
 	    @Override
 	    public void mouseClicked(final MouseEvent event) {
-		final var labelEvent = (JLabel) event.getSource();
-		final var text = labelEvent.getText();
+		final var label = (JLabel) event.getSource();
+		final var text = label.getText();
 
-		if (event.getButton() == BUTTON1 && nonNull(exam) && exam.getStatus() == RUNNING) {
+		if (event.getClickCount() == 1 && event.getButton() == BUTTON1 && nonNull(exam) && exam.getStatus() == RUNNING) {
 		    selectQuestion(Integer.valueOf(text));
 		    loadPanelQuestion();
+		    
+		} else if (event.getClickCount() == 2 && !event.isConsumed() && event.getButton() == MouseEvent.BUTTON1 && Objects.nonNull(exam) && exam.getStatus() == RUNNING) {
+		    selectQuestion(Integer.valueOf(text));
+		    loadPanelQuestion();
+		    selectedQuestion.mark(!selectedQuestion.isMarked());
+		} 
+
+		if (selectedQuestion.isMarked()) {
+		    label.setForeground(BLUE);
+		} else if (selectedQuestion.isAnswered()) {
+		    label.setForeground(GRAY);
+		} else {
+		    label.setForeground(BLACK);
 		}
+		    
+		label.repaint();
 	    }
 	};
 
 	for (final var question : exam.getQuestions()) {
 
 	    final var label = new JLabel(leftPad(question.getOrder().toString(), 2, '0'));
+	    label.setForeground(BLACK);
 	    label.setName(question.getOrder().toString());
 	    view.pQuestions.add(label);
 	    label.addMouseListener(questionLabelListener);
+	}
+    }
+    
+    private void updateQuestionLabel() {
+	final var component = Stream.of(view.pQuestions.getComponents()) //
+			.filter(comp -> Objects.equals(comp.getName(), selectedQuestion.getOrder().toString())) //
+			.findFirst();
+	
+	if (component.isPresent() && component.get() instanceof final JLabel label) {
+	    
+	    if (selectedQuestion.isMarked()) {
+		label.setForeground(BLUE);
+	    } else if (selectedQuestion.isAnswered()) {
+		label.setForeground(GRAY);
+	    } else {
+		label.setForeground(BLACK);
+	    }
+	    
+	    label.repaint();
 	}
     }
 }

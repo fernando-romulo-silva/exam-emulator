@@ -58,13 +58,14 @@ class MainView extends JFrame {
 
     JLabel lblCertificationStatistics, lblQuestionnaireSetStatistics;
     
-    JXTable certificantionTable, questionnaireSetTable, questionnaireTable, examTable;
+    JXTable certificantionTable, questionnaireSetTable, questionnaireTable, examTable, questionsTable;
     
     JTabbedPane tabbedPane;
     
-    JScrollPane spQuestionnaire, spExams;
+    JScrollPane spQuestionnaire, spExams, spQuestions;
     
     JPopupMenu popupMenuCertification;
+    
     JMenuItem menuItemLoadCertification, menuItemStatiticsCertification;
 
     MainView() {
@@ -147,9 +148,21 @@ class MainView extends JFrame {
 	spQuestionnaire = new JScrollPane(questionnaireTable);
 	tabbedPane.addTab("Questionnaires", null, spQuestionnaire, null);
 	
+        Object[] columnNamesQuestion = { "id", "value", "Correct Answers" };
+        Object[][] rowDataQuestion = { 
+                { "1", "What your name?", "04" },
+        };
+	
+	questionsTable = new ExtendedJTable(new DefaultTableModel(rowDataQuestion, columnNamesQuestion));
+	questionsTable.setCellSelectionEnabled(false);
+	questionsTable.setRowSelectionAllowed(true);
+	
+	spQuestions = new JScrollPane(questionsTable);
+	tabbedPane.addTab("Questions", null, spQuestions, null);	
+	
         Object[] columnNamesExam = { "id", "name", "status" };
         Object[][] rowDataExam = { 
-                { "1", "Questionnaire 01", "passed" },
+                { "1", "Questionnaire 01 - Attempt 1", "passed" },
         };
 	
 	examTable = new ExtendedJTable(new DefaultTableModel(rowDataExam, columnNamesExam));

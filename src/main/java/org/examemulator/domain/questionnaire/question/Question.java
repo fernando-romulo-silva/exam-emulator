@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.examemulator.domain.inquiry.InquiryInterface;
 
 import jakarta.persistence.Column;
@@ -23,9 +24,10 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "QUESTION")
+@Table(name = "QUESTION", uniqueConstraints = { @UniqueConstraint(columnNames = { "NUM_ORDER", "QUESTIONNAIRE_ID" }) })
 public class Question implements Comparable<Question>, InquiryInterface {
 
     @Id
@@ -42,7 +44,7 @@ public class Question implements Comparable<Question>, InquiryInterface {
     @Lob
     @Column(name = "EXPLANATION")
     private String explanation;
-    
+
     @ManyToOne
     @JoinColumn(name = "CONCEPT_ID", referencedColumnName = "ID")
     private QuestionConcept concept;
@@ -67,20 +69,53 @@ public class Question implements Comparable<Question>, InquiryInterface {
 	this.concept = builder.concept;
 	this.options.addAll(builder.options);
     }
-    
+
     // ------------------------------------------------------------------------------
     public void update(final Question updatedQuestion) {
-	
+
 	this.name = updatedQuestion.name;
 	this.value = updatedQuestion.value;
 	this.explanation = updatedQuestion.explanation;
 	this.order = updatedQuestion.order;
 	this.concept = updatedQuestion.concept;
-	
+
+	removeOptions(updatedQuestion.options);
+
 	updatedQuestion.options.stream().forEach(this::updateOption);
+
     }
-    
+
+    private void removeOptions(final List<Option> optionsUpdated) {
+
+	if (this.options.size() > optionsUpdated.size()) { // one or more options was removed
+
+	    final var currentLetters = options.stream().map(Option::getLetter).toList();
+
+	    final var newLetters = optionsUpdated.stream().map(Option::getLetter).toList();
+
+	    final var differences = CollectionUtils.removeAll(currentLetters, newLetters);
+
+	    final var toRemove = new ArrayList<Option>();
+
+	    for (final var didfference : differences) {
+
+		final var optionalOption = this.options.stream() //
+				.filter(o -> Objects.equals(o.getLetter(), didfference)) //
+				.findFirst();
+
+		if (optionalOption.isPresent()) {
+		    toRemove.add(optionalOption.get());
+		}
+	    }
+
+	    if (!toRemove.isEmpty()) {
+		options.removeAll(toRemove);
+	    }
+	}
+    }
+
     private void updateOption(final Option updatedOption) {
+
 	final var optinalOption = this.options.stream() //
 			.filter(option -> Objects.equals(option.getLetter(), updatedOption.getLetter())) //
 			.findFirst();
@@ -92,7 +127,7 @@ public class Question implements Comparable<Question>, InquiryInterface {
 	    this.options.add(updatedOption);
 	}
     }
-    
+
     // ------------------------------------------------------------------------------
 
     public String getValue() {
@@ -130,11 +165,11 @@ public class Question implements Comparable<Question>, InquiryInterface {
     public int getOptionsAmount() {
 	return options.size();
     }
-    
+
     public Optional<QuestionConcept> getConcept() {
 	return ofNullable(concept);
     }
-    
+
     // ------------------------------------------------------------------------------
 
     @Override
@@ -187,7 +222,7 @@ public class Question implements Comparable<Question>, InquiryInterface {
 	public String explanation;
 
 	public Integer order;
-	
+
 	public QuestionConcept concept;
 
 	public List<Option> options;
@@ -196,7 +231,7 @@ public class Question implements Comparable<Question>, InquiryInterface {
 	    function.accept(this);
 	    return this;
 	}
-	
+
 	public Question build() {
 
 	    if (!checkParams()) {
