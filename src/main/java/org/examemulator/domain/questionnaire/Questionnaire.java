@@ -82,11 +82,13 @@ public class Questionnaire {
     
     // ------------------------------------------
     public void update( //
-		    final Integer order,
+		    final Integer order, //
+		    final String name, //
 		    final QuestionnaireSet set, //
 		    final List<Question> questions) {
 	
 	this.set = set;
+	this.name = name;
 	this.order = order;
 	this.certification = set.getCertification();
 	

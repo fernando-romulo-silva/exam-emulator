@@ -38,6 +38,28 @@ public class QuestionnaireRepository extends GenericRepository<Questionnaire, Lo
 	}
     }
     
+    public Optional<Questionnaire> findByOrderAndCertification(final Integer order, final Certification certification) {
+	
+	final var qlString = """
+				select q 
+				  from Questionnaire q 
+				 where q.order = :order
+				   and q.certification = :certification
+					""";
+	
+	final var query = entityManager.createQuery(qlString, Questionnaire.class);
+	query.setParameter("order", order);
+	query.setParameter("certification", certification);
+
+	try {
+	    
+	    return Optional.of(query.getSingleResult());
+
+	} catch (final NoResultException ex) {
+	    return Optional.empty();
+	}
+    }    
+    
     public Stream<Questionnaire> findByCertificationAndQuestionnaireSet(final Certification certification, final QuestionnaireSet questionnaireSet) {
 	
 	final var qlString = """

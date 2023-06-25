@@ -13,6 +13,7 @@ import static org.apache.commons.lang3.StringUtils.trim;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,7 +29,7 @@ import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class FileUtil {
-
+    
     public static final String ANSWER_MSG = "Answer(s)";
 
     public static final List<String> WORDS_ALL = List.of( //
@@ -61,12 +62,38 @@ public class FileUtil {
 		    "None of the preceding sentences are right", //
 		    "None of the preceding options are true" //
     );
+    
+    private FileUtil() {
+	throw new IllegalStateException("You can't instanciate this class!");
+    }
 
     public static List<String> readQuestionsFiles(final String dir) {
+	
+	final var matcher = FileSystems.getDefault().getPathMatcher("glob:**question*.txt");
+	
 	final var questionFiles = new ArrayList<String>();
 
 	try (final var stream = Files.list(Paths.get(dir))) {
 	    questionFiles.addAll(stream.filter(file -> !Files.isDirectory(file)) //
+			    .filter(matcher::matches) //
+			    .map(Path::getFileName) //
+			    .map(Path::toString) //
+			    .sorted(Comparable::compareTo) //
+			    .toList());
+
+	} catch (final IOException ex) {
+	    throw new IllegalStateException(ex);
+	}
+
+	return questionFiles;
+    }
+    
+    public static List<String> readQuestionnairesFolder(final String dir) {
+	
+	final var questionFiles = new ArrayList<String>();
+
+	try (final var stream = Files.list(Paths.get(dir))) {
+	    questionFiles.addAll(stream.filter(Files::isDirectory) //
 			    .map(Path::getFileName) //
 			    .map(Path::toString) //
 			    .sorted(Comparable::compareTo) //
@@ -80,11 +107,14 @@ public class FileUtil {
     }
 
     public static int getQtyFiles(final String dir) {
+	
+	final var matcher = FileSystems.getDefault().getPathMatcher("glob:**question*.txt");
 
 	var result = 0;
 
 	try (final var stream = Files.list(Paths.get(dir))) {
 	    result = (int) stream.filter(file -> !Files.isDirectory(file)) //
+			    .filter(matcher::matches) //
 			    .map(Path::getFileName) //
 			    .count();
 

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Objects;
 
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -306,7 +307,7 @@ public class MainController {
 	}
 	
 	view.questionsTable.setModel(createTableModel(Question.class, questions, List.of(fieldOf("order", LABEL_TABLE_ORDER), fieldOf("name"))));
-	view.questionsTable.getSelectionModel().setSelectionMode(SINGLE_SELECTION);
+	view.questionsTable.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 	
 	alignColumns(view.questionsTable, List.of(0), CENTER);
     }

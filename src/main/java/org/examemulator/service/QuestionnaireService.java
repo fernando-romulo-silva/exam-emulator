@@ -46,7 +46,7 @@ public class QuestionnaireService {
 		    final QuestionnaireSet questionnaireSet, // 
 		    final List<Question> questionsFromFile) {
 
-	final var optionalQuestionnaire = questionnaireRepository.findByNameAndCertification(data.questionnaireName(), questionnaireSet.getCertification());
+	final var optionalQuestionnaire = questionnaireRepository.findByOrderAndCertification(data.questionnaireOrder(), questionnaireSet.getCertification());
 
 	if (optionalQuestionnaire.isEmpty()) {
 	    
@@ -62,21 +62,23 @@ public class QuestionnaireService {
 	}
 	
 	final var questionnaire = optionalQuestionnaire.get();
-	questionnaire.update(data.questionnaireOrder(), questionnaireSet, questionsFromFile);
+	questionnaire.update(data.questionnaireOrder(), data.questionnaireName(), questionnaireSet, questionsFromFile);
 	return questionnaireRepository.update(questionnaire);
     }
 
     @Transactional(value = REQUIRED)
     public QuestionnaireSet readOrSaveQuestionnaireSet(final FolderStruc data, final Certification certification) {
 
-	final var optionalQuestionnaireSet = questionnaireSetRespository.findByNameAndCertification(data.setName(), certification);
+	final var optionalQuestionnaireSet = questionnaireSetRespository.findByOrderAndCertification(data.setOrder(), certification);
 
 	if (optionalQuestionnaireSet.isEmpty()) {
 	    final var questionnaireSetTemp = new QuestionnaireSet(data.setName(), data.setDesc(), data.setOrder(), certification);
 	    return questionnaireSetRespository.save(questionnaireSetTemp);
 	}
 
-	return optionalQuestionnaireSet.get();
+	final var questionnaireSet = optionalQuestionnaireSet.get();
+	questionnaireSet.update(data.setName(), data.setDesc(), data.setOrder());
+	return questionnaireSetRespository.update(questionnaireSet);
     }
 
     @Transactional(value = REQUIRED)

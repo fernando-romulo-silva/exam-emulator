@@ -60,6 +60,13 @@ public class QuestionnaireSet {
     }
 
     // ------------------------------------------
+    
+    public void update(final String name, final String description, final Integer order) {
+	this.name = name;
+	this.description = description;
+	this.order = order;
+    }
+    // ------------------------------------------
 
     public Long getId() {
 	return id;

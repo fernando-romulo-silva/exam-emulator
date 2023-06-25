@@ -2,6 +2,7 @@ package org.examemulator.service;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toMap;
+import static org.apache.commons.lang3.StringUtils.containsAny;
 import static org.apache.commons.lang3.StringUtils.substringAfter;
 import static org.apache.commons.lang3.StringUtils.substringBefore;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
@@ -50,23 +51,21 @@ public class LoadFromFileService {
 	this.questionnaireService = questionnaireService;
     }
 
-    public Questionnaire loadQuestionnaire(final String dir) {
+    public Questionnaire loadQuestionnaire(final String questionnaireDir) {
 
-	final var questionFiles = readQuestionsFiles(dir);
+	final var questionFiles = readQuestionsFiles(questionnaireDir);
 
-	final var data = loadData(dir);
+	final var data = loadData(questionnaireDir);
 
 	final var certification = certificationService.readOrSaveCertification(data);
-	
-	final var questionnaireSet = questionnaireService.readOrSaveQuestionnaireSet(data, certification);
-	
-	final var concepts = loadConcepts(questionFiles, certification);
-	
-	final var questions = loadQuestions(dir, questionFiles, concepts);
-	
-	final var questionnaire = questionnaireService.saveOrUpdateQuestionnaire(data, questionnaireSet, questions);
 
-	return questionnaire;
+	final var questionnaireSet = questionnaireService.readOrSaveQuestionnaireSet(data, certification);
+
+	final var concepts = loadConcepts(questionFiles, certification);
+
+	final var questions = loadQuestions(questionnaireDir, questionFiles, concepts);
+
+	return questionnaireService.saveOrUpdateQuestionnaire(data, questionnaireSet, questions);
     }
 
     private FolderStruc loadData(final String dir) {
@@ -81,7 +80,7 @@ public class LoadFromFileService {
 	final var questionnaireOrder = substringBefore(questionnaireTemp, "-").trim();
 	final var questionnaireName = substringAfter(substringBefore(questionnaireTemp, "("), "-").trim();
 	final var questionnaierDescTemp = substringBetween(questionnaireTemp, "(", ")");
-	final var questionnaireDesc =  StringUtils.isBlank(questionnaierDescTemp) ? null : questionnaierDescTemp.trim();
+	final var questionnaireDesc = StringUtils.isBlank(questionnaierDescTemp) ? null : questionnaierDescTemp.trim();
 
 	final var setTemp = splitedDir[splitedDir.length - 2];
 	final var setOrder = substringBefore(setTemp, "-").trim();
@@ -93,12 +92,10 @@ public class LoadFromFileService {
 
 	return new FolderStruc( //
 			questionnaireName, //
-			questionnaireDesc, // 
-			NumberUtils.toInt(questionnaireOrder),
-			setName, //
+			questionnaireDesc, //
+			NumberUtils.toInt(questionnaireOrder), setName, //
 			setDesc, //
-			NumberUtils.toInt(setOrder),
-			certificationName //
+			NumberUtils.toInt(setOrder), certificationName //
 	);
     }
 
@@ -110,14 +107,14 @@ public class LoadFromFileService {
 			.distinct() //
 			.map(fn -> new SimpleEntry<>(fn, new QuestionConcept(fn, certification))) //
 			.collect(toMap(Entry::getKey, Entry::getValue));
-	
+
 	final var result = new HashMap<String, QuestionConcept>();
-	
+
 	for (final var conceptEntry : concepts.entrySet()) {
 
 	    final var conceptFileName = conceptEntry.getKey();
 	    final var conceptFile = conceptEntry.getValue();
-	    
+
 	    final var concept = questionnaireService.readOrSaveQuestionConcept(conceptFile.getName(), certification);
 
 	    result.put(conceptFileName, concept);
@@ -148,11 +145,11 @@ public class LoadFromFileService {
 
     private Question loadQuestion(final String questionFileName, final String data, final Map<String, QuestionConcept> conceptsMap) {
 
-	final var questionName = substringBefore(questionFileName, "(");
+	final var questionName = containsAny(questionFileName, "(") ? substringBefore(questionFileName, "(") : substringBefore(questionFileName, ".txt");
 
 	// read concepts
 	final var conceptName = substringBetween(questionFileName, "(", ")");
-	final var concept = Objects.nonNull(conceptName) // 
+	final var concept = Objects.nonNull(conceptName) //
 			? conceptsMap.get(conceptName) //
 			: null;
 
