@@ -1,5 +1,6 @@
 package org.examemulator.service;
 
+import static jakarta.transaction.Transactional.TxType.REQUIRED;
 import static jakarta.transaction.Transactional.TxType.SUPPORTS;
 
 import java.util.stream.Stream;
@@ -13,7 +14,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
-@Transactional(value = SUPPORTS)
+@Transactional(SUPPORTS)
 public class QuestionnaireSetService {
 
     private final QuestionnaireSetRespository repository;
@@ -22,6 +23,23 @@ public class QuestionnaireSetService {
     QuestionnaireSetService(final QuestionnaireSetRespository repository) {
 	super();
 	this.repository = repository;
+    }
+    
+    public record QuestionnaireSetDTO(Integer order, String name, String description) {}
+
+    @Transactional(REQUIRED)
+    public QuestionnaireSet readOrSaveQuestionnaireSet(final QuestionnaireSetDTO data, final Certification certification) {
+
+	final var optionalQuestionnaireSet = repository.findByOrderAndCertification(data.order(), certification);
+
+	if (optionalQuestionnaireSet.isEmpty()) {
+	    final var questionnaireSetTemp = new QuestionnaireSet(data.name(), data.description(), data.order(), certification);
+	    return repository.save(questionnaireSetTemp);
+	}
+
+	final var questionnaireSet = optionalQuestionnaireSet.get();
+	questionnaireSet.update(data.name(), data.description(), data.order());
+	return repository.update(questionnaireSet);
     }
     
     public Stream<QuestionnaireSet> findByCertification(final Certification certification) {

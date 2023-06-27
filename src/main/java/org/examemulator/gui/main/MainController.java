@@ -2,12 +2,19 @@ package org.examemulator.gui.main;
 
 import static javax.swing.ListSelectionModel.SINGLE_SELECTION;
 import static javax.swing.SwingConstants.CENTER;
+import static org.apache.commons.lang3.StringUtils.substringAfter;
+import static org.apache.commons.lang3.StringUtils.substringBefore;
+import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.examemulator.util.ControllerUtil.alignColumns;
 import static org.examemulator.util.ControllerUtil.createTableModel;
 import static org.examemulator.util.ControllerUtil.TableModelField.fieldOf;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -17,6 +24,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.examemulator.domain.cerfication.Certification;
 import org.examemulator.domain.exam.Exam;
 import org.examemulator.domain.questionnaire.Questionnaire;
@@ -25,8 +34,13 @@ import org.examemulator.domain.questionnaire.set.QuestionnaireSet;
 import org.examemulator.gui.main.MainView.MainGui;
 import org.examemulator.service.CertificationService;
 import org.examemulator.service.ExamService;
+import org.examemulator.service.LoadFromFileService;
 import org.examemulator.service.QuestionnaireService;
+import org.examemulator.service.QuestionnaireService.QuestionnaireDTO;
 import org.examemulator.service.QuestionnaireSetService;
+import org.examemulator.service.QuestionnaireSetService.QuestionnaireSetDTO;
+import org.examemulator.util.FileUtil;
+import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.slf4j.Logger;
 
 import jakarta.annotation.PostConstruct;
@@ -63,6 +77,8 @@ public class MainController {
     private final List<Exam> exams = new ArrayList<>();
     
     private final List<Question> questions = new ArrayList<>();
+    
+    private final LoadFromFileService loadFromFileService;
 
     @Inject
     MainController( //
@@ -71,12 +87,14 @@ public class MainController {
 		    final QuestionnaireSetService questionnaireSetService, //
 		    final QuestionnaireService questionnaireService, //
 		    final ExamService examService, //
+		    final LoadFromFileService loadFromFileService,//
 		    final Logger logger) {
 	super();
 	this.certificationService = certificationService;
 	this.questionnaireSetService = questionnaireSetService;
 	this.questionnaireService = questionnaireService;
 	this.examService = examService;
+	this.loadFromFileService = loadFromFileService;
 	this.logger = logger;
 	this.view = mainGui.getView();
     }
@@ -311,5 +329,70 @@ public class MainController {
 	
 	alignColumns(view.questionsTable, List.of(0), CENTER);
     }
+    
+    public void loadCertificationFromFolder(final String certificationDir) {
 
+	final var certificationPath = Paths.get(certificationDir);
+	
+	if (Files.notExists(certificationPath)) {
+	    throw new IllegalArgumentException(MessageFormat.format("Certification folder ''{0}'' does not exist",certificationPath));
+	}
+	
+	final var questionnairesSetPath = certificationPath.resolve("Questionnaires");
+	if (Files.notExists(certificationPath) || !Files.isDirectory(certificationPath)) {
+	    throw new IllegalArgumentException("Certification folder 'Questionnaires' does not exist!");
+	}
+	
+	final var certification = loadFromFileService.loadCertification(certificationPath);
+	
+	final var questionnaireSetFolders = FileUtil.readFolders(questionnairesSetPath);
+	if (questionnaireSetFolders.isEmpty()) {
+	    throw new IllegalArgumentException("The 'Questionnaires' does not have any folders, questionnaires set!");
+	}
+	
+	final var regexQuestionnaireSetName = "\\d{1,2} - [a-zA-Z0-9-_() ]+";
+	final var regexQuestionnaireName = "\\d{1,2} - Questionnaire \\d{1,2}[a-zA-Z0-9-_() ]+";
+	
+	for (final var quetionnaireSetFolder : questionnaireSetFolders) {
+	    
+	    if (!quetionnaireSetFolder.getFileName().toString().matches(regexQuestionnaireSetName)) {
+		
+	    }
+	    
+	    final var questionnaireSet = loadFromFileService.loadQuestionnaireSet(getQuestionnaireSetDTO(quetionnaireSetFolder), certification); 
+	    
+	    final var questionnairesPath = questionnairesSetPath.resolve(quetionnaireSetFolder);
+	    final var questionnairesPaths = FileUtil.readFolders(questionnairesPath);
+	    
+	    for (final var questionnairePath : questionnairesPaths) {
+		
+		if (!questionnairePath.getFileName().toString().matches(regexQuestionnaireName)) {
+		    
+		}
+		
+		final var questions = loadFromFileService.loadQuestions(questionnairePath, certification);
+		loadFromFileService.loadQuestionnaire(getQuestionnaireDTO(questionnairePath), questions, questionnaireSet);
+	    }
+	}
+    }
+    
+    private QuestionnaireSetDTO getQuestionnaireSetDTO(final Path questionnaireSetPath) {
+	final var temp = questionnaireSetPath.getFileName().toString();
+	final var order = substringBefore(temp, "-").trim();
+	final var name = substringAfter(substringBefore(temp, "("), "-").trim();
+	final var descTemp = substringBetween(temp, "(", ")");
+	final var desc = StringUtils.isBlank(descTemp) ? null : descTemp.trim();
+	
+	return new QuestionnaireSetDTO(NumberUtils.toInt(order), name, desc);
+    }
+    
+    private QuestionnaireDTO getQuestionnaireDTO(final Path questionnairePath) {
+	final var temp = questionnairePath.getFileName().toString();
+	final var order = substringBefore(temp, "-").trim();
+	final var name = substringAfter(substringBefore(temp, "("), "-").trim();
+	final var descTemp = substringBetween(temp, "(", ")");
+	final var desc = StringUtils.isBlank(descTemp) ? null : descTemp.trim();
+	
+	return new QuestionnaireDTO(NumberUtils.toInt(order), name, desc);
+    }
 }

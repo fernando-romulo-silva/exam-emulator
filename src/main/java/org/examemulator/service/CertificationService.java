@@ -1,5 +1,6 @@
 package org.examemulator.service;
 
+import static jakarta.transaction.Transactional.TxType.REQUIRED;
 import static jakarta.transaction.Transactional.TxType.SUPPORTS;
 
 import java.util.stream.Stream;
@@ -22,20 +23,20 @@ public class CertificationService {
 	this.certificationRepository = certificationRepository;
     }
 
-    @Transactional
-    public Certification readOrSaveCertification(final FolderStruc data) {
+    @Transactional(REQUIRED)
+    public Certification readOrSaveCertification(final String name) {
 
-	final var optionalCertification = certificationRepository.findByName(data.certificationName());
+	final var optionalCertification = certificationRepository.findByName(name);
 
 	if (optionalCertification.isEmpty()) {
-	    final var certificationTemp = new Certification(data.certificationName());
+	    final var certificationTemp = new Certification(name);
 	    return certificationRepository.save(certificationTemp);
 	}
 	
 	return optionalCertification.get();
     }
     
-    @Transactional(value = SUPPORTS)
+    @Transactional(SUPPORTS)
     public Stream<Certification> findAll() {
 	return certificationRepository.findAll();
     }

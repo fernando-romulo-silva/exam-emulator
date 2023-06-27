@@ -67,13 +67,13 @@ public class FileUtil {
 	throw new IllegalStateException("You can't instanciate this class!");
     }
 
-    public static List<String> readQuestionsFiles(final String dir) {
+    public static List<String> readQuestionsFiles(final Path dir) {
 	
 	final var matcher = FileSystems.getDefault().getPathMatcher("glob:**question*.txt");
 	
 	final var questionFiles = new ArrayList<String>();
 
-	try (final var stream = Files.list(Paths.get(dir))) {
+	try (final var stream = Files.list(dir)) {
 	    questionFiles.addAll(stream.filter(file -> !Files.isDirectory(file)) //
 			    .filter(matcher::matches) //
 			    .map(Path::getFileName) //
@@ -88,14 +88,14 @@ public class FileUtil {
 	return questionFiles;
     }
     
-    public static List<String> readQuestionnairesFolder(final String dir) {
+    public static List<Path> readFolders(final Path dir) {
 	
-	final var questionFiles = new ArrayList<String>();
+	final var questionFiles = new ArrayList<Path>();
 
-	try (final var stream = Files.list(Paths.get(dir))) {
+	try (final var stream = Files.list(dir)) {
 	    questionFiles.addAll(stream.filter(Files::isDirectory) //
-			    .map(Path::getFileName) //
-			    .map(Path::toString) //
+//			    .map(Path::getFileName) //
+//			    .map(Path::toString) //
 			    .sorted(Comparable::compareTo) //
 			    .toList());
 

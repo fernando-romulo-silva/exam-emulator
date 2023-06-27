@@ -3,7 +3,6 @@ package org.examemulator.service;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.StringUtils.containsAny;
-import static org.apache.commons.lang3.StringUtils.substringAfter;
 import static org.apache.commons.lang3.StringUtils.substringBefore;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.examemulator.util.FileUtil.readCorrectOptions;
@@ -15,6 +14,7 @@ import static org.examemulator.util.FileUtil.readQuestionsFiles;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -24,15 +24,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.examemulator.domain.cerfication.Certification;
 import org.examemulator.domain.questionnaire.Questionnaire;
 import org.examemulator.domain.questionnaire.question.Option;
 import org.examemulator.domain.questionnaire.question.Question;
 import org.examemulator.domain.questionnaire.question.QuestionConcept;
-import org.jboss.weld.exceptions.IllegalArgumentException;
+import org.examemulator.domain.questionnaire.set.QuestionnaireSet;
+import org.examemulator.service.QuestionnaireService.QuestionnaireDTO;
+import org.examemulator.service.QuestionnaireSetService.QuestionnaireSetDTO;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -42,63 +42,44 @@ public class LoadFromFileService {
 
     private final CertificationService certificationService;
 
+    private final QuestionnaireSetService questionnaireSetService;
+    
     private final QuestionnaireService questionnaireService;
 
     @Inject
-    LoadFromFileService(final CertificationService certificationService, final QuestionnaireService questionnaireService) {
+    LoadFromFileService( //
+		    final CertificationService certificationService, // 
+		    final QuestionnaireSetService questionnaireSetService, // 
+		    final QuestionnaireService questionnaireService) {
 	super();
 	this.certificationService = certificationService;
+	this.questionnaireSetService = questionnaireSetService;
 	this.questionnaireService = questionnaireService;
     }
-
-    public Questionnaire loadQuestionnaire(final String questionnaireDir) {
-
-	final var questionFiles = readQuestionsFiles(questionnaireDir);
-
-	final var data = loadData(questionnaireDir);
-
-	final var certification = certificationService.readOrSaveCertification(data);
-
-	final var questionnaireSet = questionnaireService.readOrSaveQuestionnaireSet(data, certification);
-
+    
+    // -------------------------------------------------------------------------------------------------------------------------------
+    
+    public Certification loadCertification(final Path certificationPath) {
+	final var folderName = certificationPath.getFileName().toString();
+	return certificationService.readOrSaveCertification(folderName);
+    }
+    
+    public QuestionnaireSet loadQuestionnaireSet(final QuestionnaireSetDTO data, final Certification certification) {
+	return questionnaireSetService.readOrSaveQuestionnaireSet(data, certification);
+    }
+    
+    public List<Question> loadQuestions(final Path questionnairePath, final Certification certification) {
+	final var questionFiles = readQuestionsFiles(questionnairePath);
 	final var concepts = loadConcepts(questionFiles, certification);
-
-	final var questions = loadQuestions(questionnaireDir, questionFiles, concepts);
-
-	return questionnaireService.saveOrUpdateQuestionnaire(data, questionnaireSet, questions);
+	return loadQuestions(questionnairePath, questionFiles, concepts);
+    }
+    
+    public Questionnaire loadQuestionnaire(final QuestionnaireDTO data, final List<Question> questions, final QuestionnaireSet questionnaireSet ) {
+	return questionnaireService.saveOrUpdateQuestionnaire(data, questions, questionnaireSet);
     }
 
-    private FolderStruc loadData(final String dir) {
-
-	final var splitedDir = StringUtils.split(dir, File.separator);
-
-	if (StringUtils.isBlank(dir) || ArrayUtils.isEmpty(splitedDir) || splitedDir.length < 3) {
-	    throw new IllegalArgumentException("Dirs are out of pattern, please check the documentation");
-	}
-
-	final var questionnaireTemp = splitedDir[splitedDir.length - 1];
-	final var questionnaireOrder = substringBefore(questionnaireTemp, "-").trim();
-	final var questionnaireName = substringAfter(substringBefore(questionnaireTemp, "("), "-").trim();
-	final var questionnaierDescTemp = substringBetween(questionnaireTemp, "(", ")");
-	final var questionnaireDesc = StringUtils.isBlank(questionnaierDescTemp) ? null : questionnaierDescTemp.trim();
-
-	final var setTemp = splitedDir[splitedDir.length - 2];
-	final var setOrder = substringBefore(setTemp, "-").trim();
-	final var setName = substringAfter(substringBefore(setTemp, "("), "-").trim();
-	final var setDescTemp = substringBetween(setTemp, "(", ")");
-	final var setDesc = StringUtils.isBlank(setDescTemp) ? null : setDescTemp.trim();
-
-	final var certificationName = substringBefore(splitedDir[splitedDir.length - 4], "(");
-
-	return new FolderStruc( //
-			questionnaireName, //
-			questionnaireDesc, //
-			NumberUtils.toInt(questionnaireOrder), setName, //
-			setDesc, //
-			NumberUtils.toInt(setOrder), certificationName //
-	);
-    }
-
+    // -------------------------------------------------------------------------------------------------------------------------------
+    
     private Map<String, QuestionConcept> loadConcepts(final List<String> questionFiles, final Certification certification) {
 
 	final var concepts = questionFiles.stream() //
@@ -123,7 +104,7 @@ public class LoadFromFileService {
 	return result;
     }
 
-    private List<Question> loadQuestions(final String dir, final List<String> questionFiles, final Map<String, QuestionConcept> conceptsMap) {
+    private List<Question> loadQuestions(final Path dir, final List<String> questionFiles, final Map<String, QuestionConcept> conceptsMap) {
 
 	final var questionsTemp = new ArrayList<Question>();
 

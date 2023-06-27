@@ -101,7 +101,6 @@ public class QuestionnaireController {
 
 	    logger.info("finished swing-event: {}", this.getClass().getSimpleName());
 	});
-
     }
 
     private void initView() {
@@ -157,7 +156,7 @@ public class QuestionnaireController {
 
 	    if (isNotBlank(currentFolder)) {
 
-		questionnaire = loadFromFileService.loadQuestionnaire(currentFolder);
+//		questionnaire = loadFromFileService.loadQuestionnaire(currentFolder);
 		toExamQuestions.addAll(questionnaire.getQuestions());
 
 		view.contentPane.setBorder(createTitledBorder(questionnaire.getName()));
