@@ -20,6 +20,7 @@ import static org.apache.commons.lang3.StringUtils.substringsBetween;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
@@ -143,6 +144,7 @@ public class GuiUtil {
 	textTemp = replace(textTemp, "´´´", "");
 
 	final var textComponent = new JTextArea();
+	textComponent.setMargin(new Insets(2,5,2,2));
 	textComponent.setText(textTemp);
 	textComponent.setEditable(false);
 	textComponent.setLineWrap(true);

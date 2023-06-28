@@ -440,13 +440,12 @@ public class ExamController {
 		final var label = (JLabel) event.getSource();
 		final var text = label.getText();
 
-		if (event.getClickCount() == 1 && event.getButton() == BUTTON1 && nonNull(exam) && exam.getStatus() == RUNNING) {
+		if (event.getClickCount() == 1 && !event.isConsumed() && event.getButton() == BUTTON1 && nonNull(exam) && exam.getStatus() == RUNNING) {
 		    selectQuestion(Integer.valueOf(text));
 		    loadPanelQuestion();
 		    
 		} else if (event.getClickCount() == 2 && !event.isConsumed() && event.getButton() == MouseEvent.BUTTON1 && Objects.nonNull(exam) && exam.getStatus() == RUNNING) {
 		    selectQuestion(Integer.valueOf(text));
-		    loadPanelQuestion();
 		    selectedQuestion.mark(!selectedQuestion.isMarked());
 		} 
 

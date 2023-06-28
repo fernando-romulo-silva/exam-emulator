@@ -130,7 +130,7 @@ class MainView extends JFrame {
 	questionnaireSetTable.setRowSelectionAllowed(true);
 	
 	final var pQuestionnaireSetTable = new JScrollPane(questionnaireSetTable, VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_AS_NEEDED);
-	pQuestionnaireSetTable.setSize(new Dimension(50, 50));
+	pQuestionnaireSetTable.setSize(new Dimension(50, 80));
 	pMain.add(pQuestionnaireSetTable);
 	
 	tabbedPane = new JTabbedPane(TOP);

@@ -38,7 +38,7 @@ class QuestionnaireView extends JFrame {
 
     JPanel questionInternPanel, examPanel, pQuestions, contentPane;
 
-    JButton btnNewExam, btnDelete, btnLoad, btnPrevious, btnNext;
+    JButton btnNewExam, btnPrevious, btnNext;
 
     JLabel lblOrder, lblCertification;
 
@@ -73,23 +73,6 @@ class QuestionnaireView extends JFrame {
 	examPanel.setBorder(new EtchedBorder(LOWERED, null, null));
 	examPanel.setLayout(new BoxLayout(examPanel, Y_AXIS));
 	contentPane.add(examPanel);
-
-	final var examControlPanel1 = new JPanel();
-	examPanel.add(examControlPanel1);
-	examControlPanel1.setPreferredSize(new Dimension(80, 40));
-	examControlPanel1.setBorder(null);
-	examControlPanel1.setLayout(new WrapLayout(LEFT, 5, 5));
-
-	btnLoad = new JButton("Load");
-	examControlPanel1.add(btnLoad);
-
-	btnDelete = new JButton("Delete");
-	btnDelete.setEnabled(false);
-	examControlPanel1.add(btnDelete);
-
-	btnNewExam = new JButton("Exam");
-	btnNewExam.setEnabled(false);
-	examControlPanel1.add(btnNewExam);
 
 	final var examControlPanel2 = new JPanel();
 	examControlPanel2.setLayout(new WrapLayout(LEFT, 5, 5));
@@ -158,6 +141,10 @@ class QuestionnaireView extends JFrame {
 	bgSelection.add(rdbtnAll);
 	bgSelection.add(rdbtnNone);
 	bgSelection.add(rdbtnAny);
+	
+	btnNewExam = new JButton("Exam");
+	examControlPanel4.add(btnNewExam);
+	btnNewExam.setEnabled(false);
 
 	// -------------------------------------------------------------------------------------------
 	// Control Panel

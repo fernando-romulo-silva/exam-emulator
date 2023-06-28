@@ -29,8 +29,8 @@ import jakarta.persistence.UniqueConstraint;
 @Table(
 	name = "QUESTIONNARIE", // 
 	uniqueConstraints = { 
-		@UniqueConstraint(columnNames = { "NAME", "CERTIFICATION_ID" }),
-		@UniqueConstraint(columnNames = { "NUM_ORDER", "CERTIFICATION_ID" })
+		@UniqueConstraint(columnNames = { "NAME", "SET_ID" }),
+		@UniqueConstraint(columnNames = { "NUM_ORDER", "SET_ID" })
 	}
 )
 public class Questionnaire {

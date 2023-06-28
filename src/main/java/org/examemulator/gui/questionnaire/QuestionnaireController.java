@@ -5,8 +5,6 @@ import static java.awt.Color.BLACK;
 import static java.awt.Color.BLUE;
 import static java.util.stream.Collectors.joining;
 import static javax.swing.BorderFactory.createTitledBorder;
-import static javax.swing.JFileChooser.DIRECTORIES_ONLY;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.leftPad;
 import static org.examemulator.gui.GuiUtil.TAG_BR;
 import static org.examemulator.gui.GuiUtil.TAG_BR_BR;
@@ -21,14 +19,13 @@ import static org.examemulator.util.ControllerUtil.nextQuestion;
 import static org.examemulator.util.ControllerUtil.previousQuestion;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -65,8 +62,6 @@ public class QuestionnaireController {
 
     private Question selectedQuestion;
 
-    private String currentFolder;
-
     @Inject
     QuestionnaireController( //
 		    final PreExameGui gui, //
@@ -87,14 +82,18 @@ public class QuestionnaireController {
 	initActions();
     }
 
-    public void show() {
+    public void show(final Component lastView, final Questionnaire questionnaire) {
 
+	this.questionnaire = questionnaire;
+	
 	initView();
 
 	SwingUtilities.invokeLater(() -> {
 
 	    logger.info("starting swing-event: {}", this.getClass().getSimpleName());
 
+	    view.setLocationRelativeTo(lastView);
+	    
 	    view.revalidate();
 	    view.repaint();
 	    view.setVisible(true);
@@ -111,6 +110,32 @@ public class QuestionnaireController {
 	view.pQuestions.removeAll();
 	view.pQuestions.revalidate();
 	view.pQuestions.repaint();
+	
+	toExamQuestions.addAll(questionnaire.getQuestions());
+
+	view.contentPane.setBorder(createTitledBorder(questionnaire.getName()));
+
+	view.rdbtnAll.setEnabled(true);
+	view.rdbtnNone.setEnabled(true);
+	
+	view.btnNewExam.setEnabled(true);
+	view.btnNewExam.setEnabled(true);
+	view.textDescription.setText(questionnaire.getDescription());
+
+	final var set = questionnaire.getSet();
+	view.textSet.setText(set.getName());
+
+	final var certification = questionnaire.getCertification();
+	view.textCertification.setText(certification.getName());
+
+	view.textOrder.setText(StringUtils.leftPad(questionnaire.getOrder().toString(), 2, "0"));
+
+	view.btnNext.setEnabled(false);
+	view.btnPrevious.setEnabled(false);
+
+	loadNumbersPanel();
+	selectFirstQuestion();
+	loadPanelQuestion();
     }
 
     private void initActions() {
@@ -133,61 +158,33 @@ public class QuestionnaireController {
 	    loadPanelQuestion();
 	});
 
-	view.btnLoad.addActionListener(event -> {
+//	view.btnLoad.addActionListener(event -> {
+//
+//	    final var chooser = new JFileChooser();
+//	    chooser.setCurrentDirectory(new File("."));
+//	    chooser.setDialogTitle("select an exam folder");
+//	    chooser.setFileSelectionMode(DIRECTORIES_ONLY);
+//	    chooser.setAcceptAllFileFilterUsed(false);
+//	    chooser.showOpenDialog(view);
+//
+//	    view.questionInternPanel.removeAll();
+//	    view.questionInternPanel.revalidate();
+//	    view.questionInternPanel.repaint();
+//
+//	    view.pQuestions.removeAll();
+//	    view.pQuestions.revalidate();
+//	    view.pQuestions.repaint();
+//
+//	    currentFolder = Objects.nonNull(chooser.getSelectedFile()) //
+//			    ? chooser.getSelectedFile().getAbsolutePath() //
+//			    : StringUtils.EMPTY;
+//
+//	    if (isNotBlank(currentFolder)) {
+//
+////		questionnaire = loadFromFileService.loadQuestionnaire(currentFolder);
 
-	    final var chooser = new JFileChooser();
-	    chooser.setCurrentDirectory(new File("."));
-	    chooser.setDialogTitle("select an exam folder");
-	    chooser.setFileSelectionMode(DIRECTORIES_ONLY);
-	    chooser.setAcceptAllFileFilterUsed(false);
-	    chooser.showOpenDialog(view);
-
-	    view.questionInternPanel.removeAll();
-	    view.questionInternPanel.revalidate();
-	    view.questionInternPanel.repaint();
-
-	    view.pQuestions.removeAll();
-	    view.pQuestions.revalidate();
-	    view.pQuestions.repaint();
-
-	    currentFolder = Objects.nonNull(chooser.getSelectedFile()) //
-			    ? chooser.getSelectedFile().getAbsolutePath() //
-			    : StringUtils.EMPTY;
-
-	    if (isNotBlank(currentFolder)) {
-
-//		questionnaire = loadFromFileService.loadQuestionnaire(currentFolder);
-		toExamQuestions.addAll(questionnaire.getQuestions());
-
-		view.contentPane.setBorder(createTitledBorder(questionnaire.getName()));
-
-		view.rdbtnAll.setEnabled(true);
-		view.rdbtnNone.setEnabled(true);
-		
-		view.btnNewExam.setEnabled(true);
-		view.btnNewExam.setEnabled(true);
-		view.textDescription.setText(questionnaire.getDescription());
-
-		final var set = questionnaire.getSet();
-		view.textSet.setText(set.getName());
-
-		final var certification = questionnaire.getCertification();
-		view.textCertification.setText(certification.getName());
-
-		view.textOrder.setText(StringUtils.leftPad(questionnaire.getOrder().toString(), 2, "0"));
-
-		view.btnNext.setEnabled(false);
-		view.btnPrevious.setEnabled(false);
-
-		view.revalidate();
-		view.repaint();
-		view.setVisible(true);
-
-		loadNumbersPanel();
-		selectFirstQuestion();
-		loadPanelQuestion();
-	    }
-	});
+//	    }
+//	});
 
 	view.btnNewExam.addActionListener(event -> {
 	    view.setVisible(false);

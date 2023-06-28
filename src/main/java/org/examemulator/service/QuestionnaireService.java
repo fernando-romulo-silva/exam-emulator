@@ -19,7 +19,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
-@Transactional(value = SUPPORTS)
+@Transactional(SUPPORTS)
 public class QuestionnaireService {
 
     private final QuestionnaireRepository questionnaireRepository;
@@ -40,7 +40,7 @@ public class QuestionnaireService {
     @Transactional(REQUIRED)
     public Questionnaire saveOrUpdateQuestionnaire(final QuestionnaireDTO data, final List<Question> questionsFromFile, final QuestionnaireSet questionnaireSet) {
 
-	final var optionalQuestionnaire = questionnaireRepository.findByOrderAndCertification(data.order(), questionnaireSet.getCertification());
+	final var optionalQuestionnaire = questionnaireRepository.findByOrderAndQuestionnaireSet(data.order(), questionnaireSet);
 
 	if (optionalQuestionnaire.isEmpty()) {
 

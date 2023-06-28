@@ -3,6 +3,7 @@ package org.examemulator.service;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.StringUtils.containsAny;
+import static org.apache.commons.lang3.StringUtils.substringAfter;
 import static org.apache.commons.lang3.StringUtils.substringBefore;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.examemulator.util.FileUtil.readCorrectOptions;
@@ -25,6 +26,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.examemulator.domain.cerfication.Certification;
 import org.examemulator.domain.questionnaire.Questionnaire;
 import org.examemulator.domain.questionnaire.question.Option;
@@ -43,43 +45,61 @@ public class LoadFromFileService {
     private final CertificationService certificationService;
 
     private final QuestionnaireSetService questionnaireSetService;
-    
+
     private final QuestionnaireService questionnaireService;
 
     @Inject
     LoadFromFileService( //
-		    final CertificationService certificationService, // 
-		    final QuestionnaireSetService questionnaireSetService, // 
+		    final CertificationService certificationService, //
+		    final QuestionnaireSetService questionnaireSetService, //
 		    final QuestionnaireService questionnaireService) {
 	super();
 	this.certificationService = certificationService;
 	this.questionnaireSetService = questionnaireSetService;
 	this.questionnaireService = questionnaireService;
     }
-    
+
     // -------------------------------------------------------------------------------------------------------------------------------
-    
+
     public Certification loadCertification(final Path certificationPath) {
 	final var folderName = certificationPath.getFileName().toString();
 	return certificationService.readOrSaveCertification(folderName);
     }
-    
-    public QuestionnaireSet loadQuestionnaireSet(final QuestionnaireSetDTO data, final Certification certification) {
+
+    public QuestionnaireSet loadQuestionnaireSet(final Path questionnaireSetPath, final Certification certification) {
+
+	final var temp = questionnaireSetPath.getFileName().toString();
+	final var order = substringBefore(temp, "-").trim();
+	final var name = substringAfter(substringBefore(temp, "("), "-").trim();
+	final var descTemp = substringBetween(temp, "(", ")");
+	final var desc = StringUtils.isBlank(descTemp) ? null : descTemp.trim();
+
+	final var data = new QuestionnaireSetDTO(NumberUtils.toInt(order), name, desc);
+
 	return questionnaireSetService.readOrSaveQuestionnaireSet(data, certification);
     }
-    
+
     public List<Question> loadQuestions(final Path questionnairePath, final Certification certification) {
 	final var questionFiles = readQuestionsFiles(questionnairePath);
 	final var concepts = loadConcepts(questionFiles, certification);
 	return loadQuestions(questionnairePath, questionFiles, concepts);
     }
-    
-    public Questionnaire loadQuestionnaire(final QuestionnaireDTO data, final List<Question> questions, final QuestionnaireSet questionnaireSet ) {
+
+    public Questionnaire loadQuestionnaire(final Path questionnairePath, final List<Question> questions, final QuestionnaireSet questionnaireSet) {
+
+	final var temp = questionnairePath.getFileName().toString();
+	final var order = substringBefore(temp, "-").trim();
+	final var name = substringAfter(substringBefore(temp, "("), "-").trim();
+	final var descTemp = substringBetween(temp, "(", ")");
+	final var desc = StringUtils.isBlank(descTemp) ? null : descTemp.trim();
+
+	final var data = new QuestionnaireDTO(NumberUtils.toInt(order), name, desc);
+
 	return questionnaireService.saveOrUpdateQuestionnaire(data, questions, questionnaireSet);
     }
 
     // -------------------------------------------------------------------------------------------------------------------------------
-    
+
     private Map<String, QuestionConcept> loadConcepts(final List<String> questionFiles, final Certification certification) {
 
 	final var concepts = questionFiles.stream() //

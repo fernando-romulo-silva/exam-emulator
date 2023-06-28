@@ -2,9 +2,6 @@ package org.examemulator.gui.main;
 
 import static javax.swing.ListSelectionModel.SINGLE_SELECTION;
 import static javax.swing.SwingConstants.CENTER;
-import static org.apache.commons.lang3.StringUtils.substringAfter;
-import static org.apache.commons.lang3.StringUtils.substringBefore;
-import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.examemulator.util.ControllerUtil.alignColumns;
 import static org.examemulator.util.ControllerUtil.createTableModel;
 import static org.examemulator.util.ControllerUtil.TableModelField.fieldOf;
@@ -12,7 +9,6 @@ import static org.examemulator.util.ControllerUtil.TableModelField.fieldOf;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -24,21 +20,18 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.examemulator.domain.cerfication.Certification;
 import org.examemulator.domain.exam.Exam;
 import org.examemulator.domain.questionnaire.Questionnaire;
 import org.examemulator.domain.questionnaire.question.Question;
 import org.examemulator.domain.questionnaire.set.QuestionnaireSet;
 import org.examemulator.gui.main.MainView.MainGui;
+import org.examemulator.gui.questionnaire.QuestionnaireController;
 import org.examemulator.service.CertificationService;
 import org.examemulator.service.ExamService;
 import org.examemulator.service.LoadFromFileService;
 import org.examemulator.service.QuestionnaireService;
-import org.examemulator.service.QuestionnaireService.QuestionnaireDTO;
 import org.examemulator.service.QuestionnaireSetService;
-import org.examemulator.service.QuestionnaireSetService.QuestionnaireSetDTO;
 import org.examemulator.util.FileUtil;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.slf4j.Logger;
@@ -63,6 +56,8 @@ public class MainController {
     private final Logger logger;
 
     private final MainView view;
+    
+    private final QuestionnaireController questionnaireController;
 
     private Certification selectedCertification;
     private final List<Certification> certifications = new ArrayList<>();
@@ -83,6 +78,7 @@ public class MainController {
     @Inject
     MainController( //
 		    final MainGui mainGui, //
+		    final QuestionnaireController questionnaireController,
 		    final CertificationService certificationService, //
 		    final QuestionnaireSetService questionnaireSetService, //
 		    final QuestionnaireService questionnaireService, //
@@ -97,6 +93,7 @@ public class MainController {
 	this.loadFromFileService = loadFromFileService;
 	this.logger = logger;
 	this.view = mainGui.getView();
+	this.questionnaireController = questionnaireController;
     }
 
     @PostConstruct
@@ -202,6 +199,9 @@ public class MainController {
 			selectQuestionnaire(valueAt.toString());
 			loadQuestionTable();
 		    }
+		} else if (event.getClickCount() == 2 && !event.isConsumed() && currentRow != -1) {
+		    view.setVisible(false);
+		    questionnaireController.show(view, selectedQuestionnaire);
 		}
 	    }
 	});
@@ -265,7 +265,6 @@ public class MainController {
 	view.certificantionTable.getSelectionModel().setSelectionMode(SINGLE_SELECTION);
 
 	alignColumns(view.certificantionTable, List.of(0), CENTER);
-
     }
 
     private void loadQuestionnaireSetTable() {
@@ -359,10 +358,9 @@ public class MainController {
 		
 	    }
 	    
-	    final var questionnaireSet = loadFromFileService.loadQuestionnaireSet(getQuestionnaireSetDTO(quetionnaireSetFolder), certification); 
+	    final var questionnaireSet = loadFromFileService.loadQuestionnaireSet(quetionnaireSetFolder, certification); 
 	    
-	    final var questionnairesPath = questionnairesSetPath.resolve(quetionnaireSetFolder);
-	    final var questionnairesPaths = FileUtil.readFolders(questionnairesPath);
+	    final var questionnairesPaths = FileUtil.readFolders(quetionnaireSetFolder);
 	    
 	    for (final var questionnairePath : questionnairesPaths) {
 		
@@ -371,28 +369,8 @@ public class MainController {
 		}
 		
 		final var questions = loadFromFileService.loadQuestions(questionnairePath, certification);
-		loadFromFileService.loadQuestionnaire(getQuestionnaireDTO(questionnairePath), questions, questionnaireSet);
+		loadFromFileService.loadQuestionnaire(questionnairePath, questions, questionnaireSet);
 	    }
 	}
-    }
-    
-    private QuestionnaireSetDTO getQuestionnaireSetDTO(final Path questionnaireSetPath) {
-	final var temp = questionnaireSetPath.getFileName().toString();
-	final var order = substringBefore(temp, "-").trim();
-	final var name = substringAfter(substringBefore(temp, "("), "-").trim();
-	final var descTemp = substringBetween(temp, "(", ")");
-	final var desc = StringUtils.isBlank(descTemp) ? null : descTemp.trim();
-	
-	return new QuestionnaireSetDTO(NumberUtils.toInt(order), name, desc);
-    }
-    
-    private QuestionnaireDTO getQuestionnaireDTO(final Path questionnairePath) {
-	final var temp = questionnairePath.getFileName().toString();
-	final var order = substringBefore(temp, "-").trim();
-	final var name = substringAfter(substringBefore(temp, "("), "-").trim();
-	final var descTemp = substringBetween(temp, "(", ")");
-	final var desc = StringUtils.isBlank(descTemp) ? null : descTemp.trim();
-	
-	return new QuestionnaireDTO(NumberUtils.toInt(order), name, desc);
     }
 }
