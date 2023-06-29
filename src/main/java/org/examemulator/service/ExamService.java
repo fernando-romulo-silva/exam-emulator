@@ -3,6 +3,7 @@ package org.examemulator.service;
 import static jakarta.transaction.Transactional.TxType.REQUIRED;
 import static jakarta.transaction.Transactional.TxType.SUPPORTS;
 
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.examemulator.domain.cerfication.Certification;
@@ -27,8 +28,16 @@ public class ExamService {
 
     @Transactional(value = REQUIRED)
     public void save(final Exam exam) {
-
-	examRepository.save(exam);
+	
+	if (Objects.isNull(exam)) {
+	    return;
+	}
+	
+	if (Objects.isNull(exam.getId())) {
+	    examRepository.save(exam);
+	} else {
+	    examRepository.update(exam);
+	}
     }
 
     public Stream<Exam> getAll() {

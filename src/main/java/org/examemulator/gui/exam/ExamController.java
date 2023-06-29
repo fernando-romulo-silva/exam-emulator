@@ -135,6 +135,7 @@ public class ExamController {
 
     // =================================================================================================================
     
+    
     private void initView() {
 
 	view.questionInternPanel.removeAll();
@@ -160,7 +161,7 @@ public class ExamController {
 	view.btnStatistics.setEnabled(false);
 	view.btnPauseProceed.setEnabled(false);
     }
-
+    
     private void initActions() {
 
 	view.btnStart.addActionListener(event -> {
@@ -184,6 +185,8 @@ public class ExamController {
 		$.shuffleOptions = shuffleOptions;
 		$.questions = availableQuestions;
 	    }).build();
+	    
+	    service.save(exam);
 
 	    view.btnStart.setEnabled(false);
 	    view.btnStatistics.setEnabled(false);
@@ -226,6 +229,8 @@ public class ExamController {
 	    loadNumbersPanel();
 
 	    loadPanelQuestion();
+	    
+	    service.save(exam);
 	});
 
 	view.btnPauseProceed.addActionListener(event -> {
@@ -282,6 +287,8 @@ public class ExamController {
 		    timer.restart();
 		}
 	    }
+	    
+	    service.save(exam);
 	});
 
 	view.btnFinish.addActionListener(event -> {
@@ -308,6 +315,9 @@ public class ExamController {
 	    view.questionInternPanel.removeAll();
 	    view.questionInternPanel.revalidate();
 	    view.questionInternPanel.repaint();
+	    
+	    
+	    service.save(exam);
 	});
 
 	view.btnStatistics.addActionListener(event -> {
@@ -322,6 +332,8 @@ public class ExamController {
 		selectedQuestion = nextQuestionOptional.get();
 	    }
 	    loadPanelQuestion();
+	    
+	    service.save(exam);
 	});
 
 	view.btnPrevious.addActionListener(event -> {
@@ -331,6 +343,8 @@ public class ExamController {
 		selectedQuestion = previousQuestionOptional.get();
 	    }
 	    loadPanelQuestion();
+	    
+	    service.save(exam);
 	});
 
 	view.btnCheckAnswer.addActionListener(event -> {

@@ -152,6 +152,7 @@ public class MainController {
 			loadQuestionnaireSetTable();
 			loadQuestionnaireTable();
 			loadQuestionTable();
+			loadExamTable();
 		    }
 		    
 		} else if (event.getClickCount() == 1 && !event.isConsumed() && currentRow != -1 && event.getButton() == MouseEvent.BUTTON2) {
@@ -301,12 +302,13 @@ public class MainController {
 
 	exams.clear();
 
-	if (ObjectUtils.anyNotNull(selectedCertification, selectedQuestionnaireSet)) {
+	if (ObjectUtils.anyNotNull(selectedCertification)) {
 	    exams.addAll(examService.findByCertification(selectedCertification).toList());
 	}
 
 	selectedExam = null;
-	view.examTable.setModel(createTableModel(Exam.class, exams, List.of(fieldOf("Id"), fieldOf("Name"))));
+	final var fields = List.of(fieldOf("id"), fieldOf("status"), fieldOf("type"), fieldOf("shuffleQuestions"));
+	view.examTable.setModel(createTableModel(Exam.class, exams, fields));
 	view.examTable.getSelectionModel().setSelectionMode(SINGLE_SELECTION);
 	
 	alignColumns(view.examTable, List.of(0), CENTER);
@@ -323,7 +325,7 @@ public class MainController {
 	    questions.addAll(questionnaireService.findByCertification(selectedCertification).toList());
 	}
 	
-	view.questionsTable.setModel(createTableModel(Question.class, questions, List.of(fieldOf("order", LABEL_TABLE_ORDER), fieldOf("name"))));
+	view.questionsTable.setModel(createTableModel(Question.class, questions, List.of(fieldOf("order", LABEL_TABLE_ORDER), fieldOf("name"), fieldOf("value"))));
 	view.questionsTable.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 	
 	alignColumns(view.questionsTable, List.of(0), CENTER);

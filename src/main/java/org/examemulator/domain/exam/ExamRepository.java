@@ -20,12 +20,12 @@ public class ExamRepository extends GenericRepository<Exam, Long> {
 			  FROM EXAM ex
 		         INNER JOIN EXAM_QUESTION exq on exq.EXAM_QUESTION_ID = ex.ID
 		         INNER JOIN QUESTION q on q.id = exq.QUESTION_ID
-		         INNER JOIN QUESTIONNAIRE qre on qre.id = q.QUESTIONNAIRE_ID
-		         WHERE qre.CERTIFICATION_ID = :certification
+		         INNER JOIN QUESTIONNARIE qre on qre.id = q.QUESTIONNAIRE_ID
+		         WHERE qre.CERTIFICATION_ID = ?
 				""";
 
 	final var query = entityManager.createNativeQuery(qlString, Exam.class);
-	query.setParameter("certification", certification.getId());
+	query.setParameter(1, certification.getId());
 
 	return query.getResultStream();
     }
