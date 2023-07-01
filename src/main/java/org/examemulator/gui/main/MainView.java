@@ -69,7 +69,7 @@ class MainView extends JFrame {
     JMenuItem menuItemLoadCertification, menuItemStatiticsCertification;
 
     MainView() {
-	setDefaultCloseOperation(EXIT_ON_CLOSE);
+	setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 	setBounds(100, 100, 871, 723);
 
 	setTitle(APP_NAME);

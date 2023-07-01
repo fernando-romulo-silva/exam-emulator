@@ -43,8 +43,8 @@ public final class HsqldbServer {
 
 	try (final var serverSocket = new ServerSocket(HSQLDB_PORT)) {
 	    serverSocket.setReuseAddress(true);
-	} catch (final IOException e) {
-	    throw new IllegalArgumentException("Server port isn't open!");
+	} catch (final IOException ex) {
+	    throw new IllegalArgumentException("Server port isn't open!", ex);
 	}
 
 	SERVER.setSilent(true);

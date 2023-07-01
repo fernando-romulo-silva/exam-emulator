@@ -74,7 +74,7 @@ class ExamView extends JFrame {
     JComboBox<String> cbMode;
 
     ExamView() {
-	setDefaultCloseOperation(EXIT_ON_CLOSE);
+	setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 	setBounds(100, 100, 871, 723);
 
 	// -------------------------------------------------------------------------------------------

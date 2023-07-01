@@ -38,21 +38,21 @@ class QuestionnaireView extends JFrame {
 
     JPanel questionInternPanel, examPanel, pQuestions, contentPane;
 
-    JButton btnNewExam, btnPrevious, btnNext;
+    JButton btnNewExam, btnPrevious, btnNext, btnMain;
 
     JLabel lblOrder, lblCertification;
 
     JTextField textDescription, textSet, textCertification, textOrder;
-    
+
     ButtonGroup bgSelection;
-    
+
     JRadioButton rdbtnAll, rdbtnNone, rdbtnAny;
 
     QuestionnaireView() {
-	
+
 	super();
-	
-	setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+	setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 	setBounds(100, 100, 871, 723);
 
 	// -------------------------------------------------------------------------------------------
@@ -121,28 +121,31 @@ class QuestionnaireView extends JFrame {
 
 	final var lblRange = new JLabel("Selection");
 	examControlPanel4.add(lblRange);
-	
+
 	rdbtnAll = new JRadioButton("All");
 	rdbtnAll.setSelected(true);
 	rdbtnAll.setEnabled(false);
 	examControlPanel4.add(rdbtnAll);
-	
+
 	rdbtnNone = new JRadioButton("None");
 	rdbtnNone.setSelected(false);
 	rdbtnNone.setEnabled(false);
 	examControlPanel4.add(rdbtnNone);
-	
+
 	rdbtnAny = new JRadioButton("Any");
 	rdbtnAny.setSelected(false);
 	rdbtnAny.setEnabled(false);
 	examControlPanel4.add(rdbtnAny);
-	
+
 	bgSelection = new ButtonGroup();
 	bgSelection.add(rdbtnAll);
 	bgSelection.add(rdbtnNone);
 	bgSelection.add(rdbtnAny);
-	
-	btnNewExam = new JButton("Exam");
+
+	btnMain = new JButton("Go Back");
+	examControlPanel4.add(btnMain);
+
+	btnNewExam = new JButton("Do Exam");
 	examControlPanel4.add(btnNewExam);
 	btnNewExam.setEnabled(false);
 

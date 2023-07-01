@@ -16,7 +16,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "QUESTION_CONCEPT", uniqueConstraints = { @UniqueConstraint(columnNames = { "NAME", "CERTIFICATION_ID" }) })
+@Table(name = "QUESTION_CONCEPT", uniqueConstraints = @UniqueConstraint(name = "QUESTION_CONCEPT_UC_NAM_CERID", columnNames = { "NAME", "CERTIFICATION_ID" }) )
 public class QuestionConcept {
 
     @Id

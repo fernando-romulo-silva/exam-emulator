@@ -15,7 +15,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
-@Transactional(value = SUPPORTS)
+@Transactional(SUPPORTS)
 public class ExamService {
 
     private final ExamRepository examRepository;
@@ -26,7 +26,7 @@ public class ExamService {
 	this.examRepository = examRepository;
     }
 
-    @Transactional(value = REQUIRED)
+    @Transactional(REQUIRED)
     public void save(final Exam exam) {
 	
 	if (Objects.isNull(exam)) {

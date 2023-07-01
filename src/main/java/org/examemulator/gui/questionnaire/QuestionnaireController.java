@@ -5,6 +5,10 @@ import static java.awt.Color.BLACK;
 import static java.awt.Color.BLUE;
 import static java.util.stream.Collectors.joining;
 import static javax.swing.BorderFactory.createTitledBorder;
+import static javax.swing.JOptionPane.QUESTION_MESSAGE;
+import static javax.swing.JOptionPane.YES_NO_OPTION;
+import static javax.swing.JOptionPane.YES_OPTION;
+import static javax.swing.JOptionPane.showConfirmDialog;
 import static org.apache.commons.lang3.StringUtils.leftPad;
 import static org.examemulator.gui.GuiUtil.TAG_BR;
 import static org.examemulator.gui.GuiUtil.TAG_BR_BR;
@@ -22,6 +26,8 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -34,6 +40,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.examemulator.domain.questionnaire.Questionnaire;
 import org.examemulator.domain.questionnaire.question.Question;
 import org.examemulator.gui.exam.ExamController;
+import org.examemulator.gui.main.MainController;
 import org.examemulator.gui.questionnaire.QuestionnaireView.PreExameGui;
 import org.examemulator.service.LoadFromFileService;
 import org.examemulator.service.QuestionnaireService;
@@ -48,11 +55,9 @@ public class QuestionnaireController {
 
     private final QuestionnaireView view;
 
-    private final QuestionnaireService service;
-
-    private final LoadFromFileService loadFromFileService;
-
     private final ExamController examController;
+    
+    private final MainController mainController;
 
     private final Logger logger;
 
@@ -68,12 +73,12 @@ public class QuestionnaireController {
 		    final QuestionnaireService service, //
 		    final LoadFromFileService loadFromFileService, //
 		    final ExamController examController, //
+		    final MainController mainController,//
 		    final Logger logger) {
 	super();
 	this.view = gui.getView();
-	this.service = service;
-	this.loadFromFileService = loadFromFileService;
 	this.examController = examController;
+	this.mainController = mainController;
 	this.logger = logger;
     }
 
@@ -204,6 +209,25 @@ public class QuestionnaireController {
 	view.rdbtnNone.addActionListener(event -> {
 	    toExamQuestions.clear();
 	    loadNumbersPanel();
+	});
+	
+	view.btnMain.addActionListener(event -> {
+	    view.setVisible(false);
+	    mainController.show(view);
+	});
+
+	view.addWindowListener(new WindowAdapter() {
+	    @Override
+	    public void windowClosing(final WindowEvent windowEvent) {
+		
+		if (showConfirmDialog(view, //
+				"Are you sure you want to leave this window?", "Close Window", //
+				YES_NO_OPTION, //
+				QUESTION_MESSAGE) == YES_OPTION) {
+		    
+		    view.btnMain.doClick();
+		}
+	    }
 	});
 
     }

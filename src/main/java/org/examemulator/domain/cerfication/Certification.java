@@ -10,9 +10,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "CERTIFICATION")
+@Table(name = "CERTIFICATION", uniqueConstraints = { @UniqueConstraint(name = "CERTIFICATION_UC_NAME", columnNames = "NAME") })
 public class Certification {
 
     @Id
@@ -20,7 +21,7 @@ public class Certification {
     @Column(name = "ID", nullable = false)
     private Long id;
 
-    @Column(name = "NAME", unique = true, nullable = false)
+    @Column(name = "NAME", nullable = false)
     private String name;
 
     @Column(name = "MAX_MINUTES")
@@ -72,7 +73,7 @@ public class Certification {
 	if (this == obj) {
 	    result = true;
 
-	} else if (obj instanceof Certification other) {
+	} else if (obj instanceof final Certification other) {
 	    result = Objects.equals(id, other.id);
 
 	} else {

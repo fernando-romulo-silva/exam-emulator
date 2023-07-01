@@ -26,12 +26,12 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(
+@Table( //
 	name = "QUESTIONNARIE", // 
-	uniqueConstraints = { 
-		@UniqueConstraint(columnNames = { "NAME", "SET_ID" }),
-		@UniqueConstraint(columnNames = { "NUM_ORDER", "SET_ID" })
-	}
+	uniqueConstraints = {  //
+		@UniqueConstraint(name = "QUESTIONNARIE_UC_NAM_SETID", columnNames = { "NAME", "SET_ID" }), //
+		@UniqueConstraint(name = "QUESTIONNARIE_UC_NOR_SETID", columnNames = { "NUM_ORDER", "SET_ID" }) //
+	} //
 )
 public class Questionnaire {
 

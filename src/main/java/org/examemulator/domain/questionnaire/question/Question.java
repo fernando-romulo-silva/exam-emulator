@@ -27,7 +27,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "QUESTION", uniqueConstraints = { @UniqueConstraint(columnNames = { "NUM_ORDER", "QUESTIONNAIRE_ID" }) })
+@Table(name = "QUESTION", uniqueConstraints = { @UniqueConstraint(name = "QUESTION_UC_NUOR_QUID", columnNames = { "NUM_ORDER", "QUESTIONNAIRE_ID" }) })
 public class Question implements Comparable<Question>, InquiryInterface {
 
     @Id

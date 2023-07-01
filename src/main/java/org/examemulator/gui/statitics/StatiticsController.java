@@ -8,6 +8,11 @@ import static java.awt.Color.RED;
 import static java.math.RoundingMode.HALF_UP;
 import static java.util.stream.Collectors.joining;
 import static javax.swing.BorderFactory.createTitledBorder;
+import static javax.swing.JOptionPane.QUESTION_MESSAGE;
+import static javax.swing.JOptionPane.YES_NO_OPTION;
+import static javax.swing.JOptionPane.YES_OPTION;
+import static javax.swing.JOptionPane.showConfirmDialog;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.leftPad;
 import static org.examemulator.gui.GuiUtil.TAG_BR;
 import static org.examemulator.gui.GuiUtil.TAG_BR_BR;
@@ -25,6 +30,8 @@ import java.awt.Component;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.text.MessageFormat;
@@ -36,9 +43,11 @@ import java.util.TreeSet;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.examemulator.domain.exam.Exam;
 import org.examemulator.domain.exam.ExamQuestion;
 import org.examemulator.gui.exam.ExamController;
+import org.examemulator.gui.main.MainController;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -50,27 +59,12 @@ public class StatiticsController {
     private final StatiticsView view;
 
     private final List<ExamQuestion> questions = new ArrayList<>();
-    
+
     private final ExamController examController;
 
+    private final MainController mainController;
+
     private final MouseAdapter questionLabelListener = new MouseAdapter() {
-	
-	private void selectQuestion(int order) {
-
-	    final var questionOptional = exam.getQuestions() //
-			    .stream() //
-			    .filter(question -> Objects.equals(question.getOrder(), order)) //
-			    .findFirst();
-
-	    if (questionOptional.isEmpty()) {
-		return;
-	    }
-
-	    selectedQuestion = questionOptional.get();
-
-	    view.btnPrevious.setEnabled(hasPreviousQuestion(questions, selectedQuestion));
-	    view.btnNext.setEnabled(hasNextQuestion(questions, selectedQuestion));
-	}
 
 	@Override
 	public void mouseClicked(final MouseEvent event) {
@@ -78,7 +72,20 @@ public class StatiticsController {
 	    final var text = labelEvent.getText();
 
 	    if (Objects.nonNull(exam)) {
-		selectQuestion(Integer.valueOf(text));
+
+		selectedQuestion = exam.getQuestions() //
+				.stream() //
+				.filter(question -> Objects.equals(question.getOrder(), NumberUtils.toInt(text))) //
+				.findFirst() //
+				.orElse(null);
+
+		if (Objects.isNull(selectedQuestion)) {
+		    return;
+		}
+
+		view.btnPrevious.setEnabled(hasPreviousQuestion(questions, selectedQuestion));
+		view.btnNext.setEnabled(hasNextQuestion(questions, selectedQuestion));
+
 		loadPanelQuestion();
 	    }
 	}
@@ -94,14 +101,18 @@ public class StatiticsController {
     private ExamQuestion selectedQuestion;
 
     @Inject
-    StatiticsController(final StatiticsView.StatiticsGui gui, final ExamController examController) {
+    StatiticsController(final StatiticsView.StatiticsGui gui, //
+		    final ExamController examController, //
+		    final MainController mainController) {
+
 	this.view = gui.getView();
 	this.examController = examController;
+	this.mainController = mainController;
     }
 
     @PostConstruct
     void init() {
-	
+
 	view.btnNext.addActionListener(event -> {
 	    final var nextQuestionOptional = nextQuestion(questions, selectedQuestion);
 	    if (nextQuestionOptional.isPresent()) {
@@ -117,32 +128,51 @@ public class StatiticsController {
 	    }
 	    loadPanelQuestion();
 	});
-	
-	view.newExamButton.addActionListener(event -> {
+
+	view.btnNewExam.addActionListener(event -> {
 	    view.setVisible(false);
 	    examController.show(exam.getName() + " new attempt", view, questions);
+	});
+
+	view.btnMain.addActionListener(event -> {
+	    view.setVisible(false);
+	    mainController.show(view);
+	});
+
+	view.addWindowListener(new WindowAdapter() {
+	    @Override
+	    public void windowClosing(final WindowEvent windowEvent) {
+		
+		if (showConfirmDialog(view, //
+				"Are you sure you want to leave this window?", "Close Window", //
+				YES_NO_OPTION, //
+				QUESTION_MESSAGE) == YES_OPTION) {
+		    
+		    view.btnMain.doClick();
+		}
+	    }
 	});
 
 	view.chckbxCorrects.addItemListener(itemListener);
 	view.chckbxIncorrects.addItemListener(itemListener);
 	view.chckbxMarked.addItemListener(itemListener);
     }
-    
+
     public void show(final Exam exam, final Component lastView) {
 	this.exam = exam;
-	
+
 	view.contentPane.setBorder(createTitledBorder(exam.getName()));
 	view.lblStatistic.setText(getStatistic(exam));
-	
+
 	questions.clear();
 	questions.addAll(exam.getQuestions());
 
 	if (questions.isEmpty()) {
 	    return;
 	}
-	
+
 	selectedQuestion = questions.get(0);
-	
+
 	loadPanelQuestion();
 	loadNumbersPanel();
 
@@ -162,6 +192,7 @@ public class StatiticsController {
 
 	final var options = selectedQuestion.getOptions() //
 			.stream() //
+			.sorted((o1, o2) -> o1.getLetter().compareTo(o2.getLetter())) //
 			.map(option -> TAG_OPEN_B.concat(option.getLetter()).concat(") ").concat(TAG_CLOSE_B).concat(TAG_BR).concat(convertTextToHtml(option.getValue()))) //
 			.collect(joining(TAG_BR_BR));
 
@@ -179,7 +210,10 @@ public class StatiticsController {
 
 	final var font = selectedQuestion.isCorrect() ? "<font color='green'>" : "<font color='red'>";
 
-	final var pQuestionLabel = "<html> ".concat(font).concat("Question ").concat(leftPad(selectedQuestion.getOrder().toString(), 2, '0')).concat("</font></html>");
+	final var currentOrder = leftPad(selectedQuestion.getOrder().toString(), 2, '0');
+	final var originalOrder = selectedQuestion.isSameOrderQuestion() ? EMPTY : " (".concat(leftPad(selectedQuestion.getQuestion().getOrder().toString(), 2, '0')).concat(")");
+
+	final var pQuestionLabel = "<html> ".concat(font).concat("Question ").concat(currentOrder).concat(originalOrder).concat("</font></html>");
 
 	view.btnPrevious.setEnabled(hasPreviousQuestion(questions, selectedQuestion));
 	view.btnNext.setEnabled(hasNextQuestion(questions, selectedQuestion));
@@ -220,7 +254,7 @@ public class StatiticsController {
 	    questionsTemp.clear();
 	    questionsTemp.addAll(questionsMarked);
 	}
-	
+
 	if (showIncorrect) {
 	    final var questionsIncorrects = exam.getQuestions() //
 			    .stream() //
@@ -239,9 +273,9 @@ public class StatiticsController {
 	for (final var question : questionsTemp) {
 
 	    final var label = new JLabel(leftPad(question.getOrder().toString(), 2, '0'));
-	    
+
 	    label.setForeground(BLACK);
-	    
+
 	    if (question.isCorrect()) {
 		label.setForeground(GREEN);
 	    }
@@ -253,7 +287,7 @@ public class StatiticsController {
 	    if (!question.isCorrect()) {
 		label.setForeground(RED);
 	    }
-	    
+
 	    view.pQuestions.add(label);
 	    label.addMouseListener(questionLabelListener);
 	}
@@ -261,7 +295,7 @@ public class StatiticsController {
 	view.pQuestions.revalidate();
 	view.pQuestions.repaint();
     }
-    
+
     private static String getStatistic(final Exam exam) {
 
 	final var qtyTotal = exam.getQuestions().stream() //
@@ -315,5 +349,5 @@ public class StatiticsController {
 			duration // 8
 	);
     }
-    
+
 }

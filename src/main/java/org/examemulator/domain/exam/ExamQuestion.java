@@ -153,6 +153,10 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
     }
 
     // ------------------------------------------------------------------------------
+    
+    public boolean isSameOrderQuestion() {
+	return Objects.equals(order, question.getOrder());
+    }
 
     public void selectAnswer(final String answer) {
 
@@ -239,6 +243,7 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
     }
 
     public List<ExamOption> getOptions() {
+	
 	return options;
     }
 
@@ -255,7 +260,10 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
     }
 
     public List<String> getAnswers() {
-	return options.stream().filter(ExamOption::isSelected).map(ExamOption::getLetter).toList();
+	return options.stream() //
+			.filter(ExamOption::isSelected) //
+			.map(ExamOption::getLetter) //
+			.toList();
     }
 
     public boolean isMarked() {

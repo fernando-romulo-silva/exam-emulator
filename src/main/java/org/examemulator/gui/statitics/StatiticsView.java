@@ -40,12 +40,12 @@ class StatiticsView extends JFrame {
 
     JLabel lblStatistic;
 
-    JButton btnNext, btnPrevious, okButton, newExamButton;
+    JButton btnNext, btnPrevious, btnMain, btnNewExam;
 
     StatiticsView() {
 	super();
 	
-	setDefaultCloseOperation(EXIT_ON_CLOSE);
+	setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 	setBounds(100, 100, 871, 723);
 	
 	setTitle(APP_NAME.concat(" - Exam Statitics"));
@@ -102,14 +102,12 @@ class StatiticsView extends JFrame {
 	pQuestion.setLayout(new BorderLayout(0, 0));
 	pMain.add(pQuestion);
 
-	okButton = new JButton("Ok");
-	okButton.addActionListener(okEvent -> setVisible(false));
-	
-	newExamButton = new JButton("New Exam");
+	btnMain = new JButton("Go Back");
+	btnNewExam = new JButton("New Exam");
 	
 	final var panelButtons = new JPanel(new FlowLayout());
-	panelButtons.add(okButton);
-	panelButtons.add(newExamButton);
+	panelButtons.add(btnMain);
+	panelButtons.add(btnNewExam);
 	
 	getContentPane().add(panelButtons, SOUTH);
     }

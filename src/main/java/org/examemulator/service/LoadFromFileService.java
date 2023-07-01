@@ -48,6 +48,10 @@ public class LoadFromFileService {
 
     private final QuestionnaireService questionnaireService;
 
+    private final String regexQuestionnaireSetName = "\\d{1,2} - [a-zA-Z0-9-_() ]+";
+    
+    private final String regexQuestionnaireName = "\\d{1,2} - Questionnaire \\d{1,2}[a-zA-Z0-9-_() ]+";
+
     @Inject
     LoadFromFileService( //
 		    final CertificationService certificationService, //
@@ -67,6 +71,10 @@ public class LoadFromFileService {
     }
 
     public QuestionnaireSet loadQuestionnaireSet(final Path questionnaireSetPath, final Certification certification) {
+	
+	if (!questionnaireSetPath.getFileName().toString().matches(regexQuestionnaireSetName)) {
+
+	}
 
 	final var temp = questionnaireSetPath.getFileName().toString();
 	final var order = substringBefore(temp, "-").trim();
@@ -80,6 +88,11 @@ public class LoadFromFileService {
     }
 
     public List<Question> loadQuestions(final Path questionnairePath, final Certification certification) {
+	
+	if (!questionnairePath.getFileName().toString().matches(regexQuestionnaireName)) {
+
+	}
+	
 	final var questionFiles = readQuestionsFiles(questionnairePath);
 	final var concepts = loadConcepts(questionFiles, certification);
 	return loadQuestions(questionnairePath, questionFiles, concepts);

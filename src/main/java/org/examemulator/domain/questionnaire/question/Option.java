@@ -14,7 +14,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "OPTION", uniqueConstraints = @UniqueConstraint(columnNames = { "LETTER", "QUESTION_ID" }))
+@Table(name = "OPTION", uniqueConstraints = @UniqueConstraint(name = "OPTION_UC_LET_QUEID", columnNames = { "LETTER", "QUESTION_ID" }))
 public class Option {
 
     @Id

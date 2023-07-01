@@ -12,6 +12,10 @@ import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
 import static javax.swing.BorderFactory.createTitledBorder;
 import static javax.swing.BoxLayout.Y_AXIS;
+import static javax.swing.JOptionPane.QUESTION_MESSAGE;
+import static javax.swing.JOptionPane.YES_NO_OPTION;
+import static javax.swing.JOptionPane.YES_OPTION;
+import static javax.swing.JOptionPane.showConfirmDialog;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.LF;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
@@ -36,6 +40,8 @@ import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
@@ -56,6 +62,7 @@ import org.examemulator.domain.exam.ExamQuestion;
 import org.examemulator.domain.exam.ExamStatus;
 import org.examemulator.domain.inquiry.InquiryInterface;
 import org.examemulator.gui.exam.ExamView.ExamGui;
+import org.examemulator.gui.main.MainController;
 import org.examemulator.gui.statitics.StatiticsController;
 import org.examemulator.service.ExamService;
 import org.slf4j.Logger;
@@ -74,6 +81,8 @@ public class ExamController {
     private final Logger logger;
 
     private final StatiticsController statiticsController;
+    
+    private final MainController mainController;
 
     private List<? extends InquiryInterface> availableQuestions;
 
@@ -90,11 +99,13 @@ public class ExamController {
 		    final ExamGui gui, //
 		    final ExamService service, //
 		    final StatiticsController statiticsController, //
+		    final MainController mainController, //
 		    final Logger logger) {
 	super();
 	this.view = gui.getView();
 	this.service = service;
 	this.statiticsController = statiticsController;
+	this.mainController = mainController;
 	this.logger = logger;
     }
 
@@ -385,6 +396,24 @@ public class ExamController {
 	    dialogContainer.add(panel, SOUTH);
 	    answerDialog.setVisible(true);
 	});
+	
+	view.addWindowListener(new WindowAdapter() {
+	    @Override
+	    public void windowClosing(final WindowEvent windowEvent) {
+		
+		if (showConfirmDialog(view, //
+				"Are you sure you want to leave this window?", "Close Window", //
+				YES_NO_OPTION, //
+				QUESTION_MESSAGE) == YES_OPTION) {
+		    
+		    service.save(exam);
+		    
+		    view.setVisible(false);
+		    mainController.show(view);
+		    
+		}
+	    }
+	});
     }
 
     private void selectQuestion(int order) {
@@ -415,9 +444,12 @@ public class ExamController {
 
 	final var questionText = LF.concat(selectedQuestion.getValue()).concat(LF);
 	
+	final var currentOrder = leftPad(selectedQuestion.getOrder().toString(), 2, '0');
+	final var originalOrder = selectedQuestion.isSameOrderQuestion() ? EMPTY : " (".concat(leftPad(selectedQuestion.getQuestion().getOrder().toString(), 2, '0')).concat(")");
+
 	final var panelQuestionPanel = new JPanel();
 	panelQuestionPanel.setLayout(new BoxLayout(panelQuestionPanel, Y_AXIS));
-	panelQuestionPanel.setBorder(createTitledBorder("Question ".concat(leftPad(selectedQuestion.getOrder().toString(), 2, '0').concat(conceptName))));
+	panelQuestionPanel.setBorder(createTitledBorder("Question ".concat(currentOrder).concat(originalOrder).concat(conceptName)));
 	panelQuestionPanel.add(createScrollTextToShow(questionText));
 	panelQuestionPanel.revalidate();
 	panelQuestionPanel.repaint();

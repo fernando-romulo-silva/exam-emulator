@@ -2,7 +2,7 @@ package org.examemulator.domain.exam;
 
 public enum ExamOrigin {
     
-    FROM_PRETEST,
+    FROM_QUESTIONNAIRE,
     
     FROM_RETAKE,
     

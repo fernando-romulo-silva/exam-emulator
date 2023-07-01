@@ -24,7 +24,7 @@
             <!-- https://stackoverflow.com/questions/58762706/how-to-reference-a-custom-connectionprovider-in-eclipselink -->
             	
             <property name="jakarta.persistence.jdbc.password" value=""/>
-			<property name="eclipselink.ddl-generation" value="create-or-extend-tables" />            	
+			<property name="eclipselink.ddl-generation" value="create-or-extend-tables" />
 			<!-- <property name="eclipselink.logging.level" value="FINEST" />  -->
 			
 			<!-- 
