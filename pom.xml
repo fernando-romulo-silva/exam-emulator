@@ -78,11 +78,65 @@
 
 	<dependencies>
 	
+		<!-- Data Base -->
 		<dependency>
 		    <groupId>org.hsqldb</groupId>
 		    <artifactId>hsqldb</artifactId>
 		    <version>2.7.1</version>
 		</dependency>
+	
+		<!-- CDI -->
+		<dependency>
+			<groupId>jakarta.enterprise</groupId>
+			<artifactId>jakarta.enterprise.cdi-api</artifactId>
+			<version>4.0.1</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>jakarta.transaction</groupId>
+		    <artifactId>jakarta.transaction-api</artifactId>
+		    <version>2.0.1</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.jboss.weld.se</groupId>
+		    <artifactId>weld-se-core</artifactId>
+		    <version>5.1.0.Final</version>
+		</dependency>
+		
+		<!-- 
+		<dependency>
+		    <groupId>org.jboss.weld.module</groupId>
+		    <artifactId>weld-jta</artifactId>
+		    <version>5.1.0.Final</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.jboss.narayana.jta</groupId>
+		    <artifactId>narayana-jta</artifactId>
+		    <version>6.0.0.Final</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.jboss.narayana.jta</groupId>
+			<artifactId>cdi</artifactId>
+			<version>6.0.0.Final</version>
+		</dependency>
+		-->		
+         
+		<dependency>
+		    <groupId>org.eclipse.persistence</groupId>
+		    <artifactId>eclipselink</artifactId>
+		    <version>4.0.1</version>
+		</dependency>
+		
+		<dependency>
+		  <artifactId>jakarta-data-api</artifactId>
+		  <groupId>jakarta.data</groupId>
+		  <version>1.0.0-SNAPSHOT</version>
+		</dependency>	
+		
+		<!-- utils -->
 	
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -103,108 +157,38 @@
 		</dependency>
 
 		<dependency>
-			<groupId>jakarta.enterprise</groupId>
-			<artifactId>jakarta.enterprise.cdi-api</artifactId>
-			<version>4.0.1</version>
+		    <groupId>org.swinglabs.swingx</groupId>
+		    <artifactId>swingx-all</artifactId>
+		    <version>1.6.5-1</version>
+		</dependency>	
+	
+		<dependency>
+		    <groupId>org.apache.logging.log4j</groupId>
+		    <artifactId>log4j-api</artifactId>
+		    <version>2.7</version>
 		</dependency>
 		
 		<dependency>
-		    <groupId>jakarta.transaction</groupId>
-		    <artifactId>jakarta.transaction-api</artifactId>
-		    <version>2.0.1</version>
+		    <groupId>org.apache.logging.log4j</groupId>
+		    <artifactId>log4j-core</artifactId>
+		    <version>2.7</version>
 		</dependency>
 		
-		<!-- https://mvnrepository.com/artifact/org.swinglabs.swingx/swingx-all -->
-<dependency>
-    <groupId>org.swinglabs.swingx</groupId>
-    <artifactId>swingx-all</artifactId>
-    <version>1.6.5-1</version>
-</dependency>
-
+		<dependency>
+		    <groupId>org.apache.logging.log4j</groupId>
+		    <artifactId>log4j-slf4j-impl</artifactId>
+		    <version>2.7</version>
+		</dependency>
 		
-<!-- 
-
-<dependency>
-    <groupId>org.jboss.narayana.jta</groupId>
-    <artifactId>narayana-jta</artifactId>
-    <version>6.0.0.Final</version>
-</dependency>
-
-<dependency>
-	<groupId>org.jboss.narayana.jta</groupId>
-	<artifactId>cdi</artifactId>
-	<version>6.0.0.Final</version>
-</dependency>
-
-<dependency>
-    <groupId>org.jboss.weld.module</groupId>
-    <artifactId>weld-jta</artifactId>
-    <version>5.1.0.Final</version>
-</dependency>
-
--->
-
-<!--
+		<!--
 		<dependency>
 		    <groupId>org.jboss.weld</groupId>
 		    <artifactId>weld-core-test</artifactId>
 		    <version>5.1.0.Final</version>
 		    <scope>test</scope>
 		</dependency>
-		
-<dependency>
-    <groupId>jakarta.data</groupId>
-    <artifactId>jakarta-data-api</artifactId>
-    <version>1.0.0-b1</version>
-</dependency>
-
-		<dependency>
-			<artifactId>jakarta-data-api</artifactId>
-			<groupId>jakarta.data</groupId>
-			<version>1.0.0</version>
-		</dependency>
--->
-
-
-
-<dependency>
-    <groupId>org.jboss.weld.se</groupId>
-    <artifactId>weld-se-core</artifactId>
-    <version>5.1.0.Final</version>
-</dependency>
-
-<dependency>
-    <groupId>org.eclipse.persistence</groupId>
-    <artifactId>eclipselink</artifactId>
-    <version>4.0.1</version>
-</dependency>
-
-
-<dependency>
-    <groupId>org.apache.logging.log4j</groupId>
-    <artifactId>log4j-api</artifactId>
-    <version>2.7</version>
-</dependency>
-
-<dependency>
-    <groupId>org.apache.logging.log4j</groupId>
-    <artifactId>log4j-core</artifactId>
-    <version>2.7</version>
-</dependency>
-
-<dependency>
-    <groupId>org.apache.logging.log4j</groupId>
-    <artifactId>log4j-slf4j-impl</artifactId>
-    <version>2.7</version>
-</dependency>
-
-<dependency>
-  <artifactId>jakarta-data-api</artifactId>
-  <groupId>jakarta.data</groupId>
-  <version>1.0.0-SNAPSHOT</version>
-</dependency>
-
-
+		-->		
+	
 	</dependencies>
 
 </project>
