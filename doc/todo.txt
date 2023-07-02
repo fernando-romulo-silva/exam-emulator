@@ -1,7 +1,13 @@
 ---------------------------------------------------------
-** select specific questions
+* Show questions statitics on main view
 
-* Learning mode (question and correct answer)
+* Create exams with correct names (from questionnaiere, retest, dynamic)
+
+* Create exam with specific questions on main view
+
+* Using jtree for certification, Set and Questionnaire
+
+  --> https://www.logicbig.com/tutorials/java-swing/jtree-filtering.html
 
 * Shortcuts
 
@@ -11,30 +17,7 @@
 
 * Stop and continue exam for another day
 
-* Exam Historical
----> Reports (Graphs)
----> Wrong Answers
----> Marked Answers
-
-* Retake
----> After finish a exam, a retake with wrong/marked answered questions (revenge![wrongs]) (Let me assure![wrongs&markets])
-
-
 * Create an exam with most dificult questions, based on historical
 
-
----------------------------------------------------------
-
-Certification -> Exam Group -> Exam(origin) ------------> Question ----> Options
-                                |                            |
-                                |                            |----------> Concepts
-                                |
-                                |---> Exam Historical                              
-                                                      
-                            
---------------------------------------------------------
-
-Fix the resize on discrete questions
-Fix space on first option
 
                                                   

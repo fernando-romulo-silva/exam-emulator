@@ -311,7 +311,7 @@ public class StatiticsController {
 
 	final var minScoreValue = new BigDecimal(qtyTotal) //
 			.multiply(exam.getMinScorePercent()) //
-			.divide(BigDecimal.valueOf(100l), matchContext);
+			.divide(BigDecimal.valueOf(100l), new MathContext(1, HALF_UP));
 
 	final var percCorrect = new BigDecimal(qtyCorrect) //
 			.divide(BigDecimal.valueOf(qtyTotal), matchContext) //
@@ -321,9 +321,9 @@ public class StatiticsController {
 			.divide(BigDecimal.valueOf(qtyTotal), matchContext) //
 			.multiply(BigDecimal.valueOf(100l));
 
-	final var result = BigDecimal.valueOf(qtyCorrect).compareTo(minScoreValue) >= 0 ? //
-			"<font color='green'>PASSED</font>" : //
-			"<font color='red'>FAILED</font>";
+	final var result = BigDecimal.valueOf(qtyCorrect).compareTo(minScoreValue) >= 0 // 
+			? "<font color='green'>PASSED</font>" // 
+			: "<font color='red'>FAILED</font>";
 
 	final var duration = exam.getDuration();
 

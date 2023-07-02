@@ -54,6 +54,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import javax.swing.border.TitledBorder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.examemulator.domain.exam.Exam;
@@ -416,23 +417,6 @@ public class ExamController {
 	});
     }
 
-    private void selectQuestion(int order) {
-
-	final var questionOptional = exam.getQuestions() //
-			.stream() //
-			.filter(question -> Objects.equals(question.getOrder(), order)) //
-			.findFirst();
-
-	if (questionOptional.isEmpty()) {
-	    return;
-	}
-
-	selectedQuestion = questionOptional.get();
-
-	view.btnPrevious.setEnabled(hasPreviousQuestion(exam.getQuestions(), selectedQuestion));
-	view.btnNext.setEnabled(hasNextQuestion(exam.getQuestions(), selectedQuestion));
-    }
-
     private void loadPanelQuestion() {
 
 	view.questionInternPanel.removeAll();
@@ -448,8 +432,39 @@ public class ExamController {
 	final var originalOrder = selectedQuestion.isSameOrderQuestion() ? EMPTY : " (".concat(leftPad(selectedQuestion.getQuestion().getOrder().toString(), 2, '0')).concat(")");
 
 	final var panelQuestionPanel = new JPanel();
+	panelQuestionPanel.addMouseListener(new MouseAdapter() {
+	   
+	    @Override
+	    public void mouseClicked(final MouseEvent event) {
+		selectedQuestion.mark(!selectedQuestion.isMarked());
+		updateQuestionLabel();
+
+		final var tempPanel = (JPanel) event.getComponent();
+		final var titleBorder = (TitledBorder) tempPanel.getBorder();
+		
+		if (selectedQuestion.isMarked()) {
+		    titleBorder.setTitleColor(BLUE);
+		} else if (selectedQuestion.isAnswered()) {
+		    titleBorder.setTitleColor(GRAY);
+		} else {
+		    titleBorder.setTitleColor(BLACK);
+		}
+		
+		tempPanel.repaint();
+	    }
+	});
+	
 	panelQuestionPanel.setLayout(new BoxLayout(panelQuestionPanel, Y_AXIS));
-	panelQuestionPanel.setBorder(createTitledBorder("Question ".concat(currentOrder).concat(originalOrder).concat(conceptName)));
+	final var titleBorder = new TitledBorder("Question ".concat(currentOrder).concat(originalOrder).concat(conceptName));
+	if (selectedQuestion.isMarked()) {
+	    titleBorder.setTitleColor(BLUE);
+	} else if (selectedQuestion.isAnswered()) {
+	    titleBorder.setTitleColor(GRAY);
+	} else {
+	    titleBorder.setTitleColor(BLACK);
+	}
+	
+	panelQuestionPanel.setBorder(titleBorder);
 	panelQuestionPanel.add(createScrollTextToShow(questionText));
 	panelQuestionPanel.revalidate();
 	panelQuestionPanel.repaint();
@@ -479,33 +494,7 @@ public class ExamController {
 	view.pQuestions.revalidate();
 	view.pQuestions.repaint();
 
-	final var questionLabelListener = new MouseAdapter() {
-
-	    @Override
-	    public void mouseClicked(final MouseEvent event) {
-		final var label = (JLabel) event.getSource();
-		final var text = label.getText();
-
-		if (event.getClickCount() == 1 && !event.isConsumed() && event.getButton() == BUTTON1 && nonNull(exam) && exam.getStatus() == RUNNING) {
-		    selectQuestion(Integer.valueOf(text));
-		    loadPanelQuestion();
-		    
-		} else if (event.getClickCount() == 2 && !event.isConsumed() && event.getButton() == MouseEvent.BUTTON1 && Objects.nonNull(exam) && exam.getStatus() == RUNNING) {
-		    selectQuestion(Integer.valueOf(text));
-		    selectedQuestion.mark(!selectedQuestion.isMarked());
-		} 
-
-		if (selectedQuestion.isMarked()) {
-		    label.setForeground(BLUE);
-		} else if (selectedQuestion.isAnswered()) {
-		    label.setForeground(GRAY);
-		} else {
-		    label.setForeground(BLACK);
-		}
-		    
-		label.repaint();
-	    }
-	};
+	final var questionLabelListener = new QuestionLabelListener();
 
 	for (final var question : exam.getQuestions()) {
 
@@ -533,6 +522,53 @@ public class ExamController {
 	    }
 	    
 	    label.repaint();
+	}
+    }
+    
+    private final class QuestionLabelListener extends MouseAdapter {
+	
+	@Override
+	public void mouseClicked(final MouseEvent event) {
+	    final var label = (JLabel) event.getSource();
+	    final var text = label.getText();
+
+	    if (event.getClickCount() == 1 && !event.isConsumed() && event.getButton() == BUTTON1 && nonNull(exam) && exam.getStatus() == RUNNING) {
+		selectQuestion(Integer.valueOf(text));
+		loadPanelQuestion();
+
+	    }
+//		else if (event.getClickCount() == 2 && !event.isConsumed() && event.getButton() == MouseEvent.BUTTON3 && Objects.nonNull(exam) && exam.getStatus() == RUNNING) {
+//		    selectQuestion(Integer.valueOf(text));
+//		    selectedQuestion.mark(!selectedQuestion.isMarked());
+//		    loadPanelQuestion(); // bug reset the question
+//		} 
+
+	    if (selectedQuestion.isMarked()) {
+		label.setForeground(BLUE);
+	    } else if (selectedQuestion.isAnswered()) {
+		label.setForeground(GRAY);
+	    } else {
+		label.setForeground(BLACK);
+	    }
+
+	    label.repaint();
+	}
+
+	private void selectQuestion(int order) {
+
+	    final var questionOptional = exam.getQuestions() //
+			    .stream() //
+			    .filter(question -> Objects.equals(question.getOrder(), order)) //
+			    .findFirst();
+
+	    if (questionOptional.isEmpty()) {
+		return;
+	    }
+
+	    selectedQuestion = questionOptional.get();
+
+	    view.btnPrevious.setEnabled(hasPreviousQuestion(exam.getQuestions(), selectedQuestion));
+	    view.btnNext.setEnabled(hasNextQuestion(exam.getQuestions(), selectedQuestion));
 	}
     }
 }

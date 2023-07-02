@@ -16,13 +16,6 @@ public class BeansProducer {
     }
 
 //    @Produces
-//    @ApplicationScoped
-//    public EntityManagerFactory produceEntityManagerFactory() {
-//
-//	return Persistence.createEntityManagerFactory("defaultPU");
-//    }
-//
-//    @Produces
 //    private TransactionManager tmProducer() throws Exception {
 //
 //	TransactionManager transactionManager = new TransactionManagerImple();

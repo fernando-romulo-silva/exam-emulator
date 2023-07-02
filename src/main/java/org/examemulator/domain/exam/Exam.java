@@ -175,9 +175,41 @@ public class Exam {
     public ExamType getType() {
 	return type;
     }
+    
+    public boolean isSameQuestionnaire() {
+//	questions.stream()
+//		.collect(Collectors.groupingBy(q -> q.get))
+	
+	return false;
+    }
+    
+    public String getResult() {
+	
+	if (status != ExamStatus.FINISHED) {
+	    return "DOING";
+	}
+	
+	final var qtyTotal = questions.size();
+
+	final var qtyCorrect = questions.stream() //
+			.filter(q -> q.isCorrect()) //
+			.count();
+
+//	final var qtyIncorrect = qtyTotal - qtyCorrect;
+	
+	final var minScoreValue = new BigDecimal(qtyTotal) //
+			.multiply(minScorePercent) //
+			.divide(BigDecimal.valueOf(100l), new MathContext(1, HALF_UP));
+	
+	return BigDecimal.valueOf(qtyCorrect).compareTo(minScoreValue) >= 0 ? "PASSED" : "FAILED";
+    }
 
     public List<ExamQuestion> getQuestions() {
-	return Collections.unmodifiableList(questions);
+	return Collections.unmodifiableList( //
+			questions.stream() //
+					.sorted((q1, q2) -> q1.getOrder().compareTo(q2.getOrder())) //
+					.toList() //
+	);
     }
 
     public long getDuration() {

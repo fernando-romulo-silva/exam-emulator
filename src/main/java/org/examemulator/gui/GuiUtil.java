@@ -134,6 +134,9 @@ public class GuiUtil {
 	textComponent.setMinimumSize(new Dimension(100, 100));
 	textComponent.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
 	textComponent.setFont(DEFAULT_FONT);
+	
+	textComponent.setSelectionStart(0);
+	textComponent.setSelectionEnd(0); 
 
 	return new JScrollPane(textComponent, VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_NEVER);
     }
@@ -150,6 +153,8 @@ public class GuiUtil {
 	textComponent.setLineWrap(true);
 	textComponent.setWrapStyleWord(true);
 	textComponent.setFont(DEFAULT_FONT);
+	textComponent.setSelectionStart(0);
+	textComponent.setSelectionEnd(0); 
 
 	return new JScrollPane(textComponent, VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_NEVER);
     }
@@ -195,7 +200,6 @@ public class GuiUtil {
 	final var optionsLabels = new ArrayList<String>();
 
 	final var optionPanel = new JPanel(new WrapLayout(LEFT, 5, 5));
-//	final var optionPanel = new JPanel(new BorderLayout());
 
 	for (final var option : question.getOptions()) {
 	    final var letter = option.getLetter();

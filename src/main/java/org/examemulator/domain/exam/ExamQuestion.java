@@ -243,8 +243,9 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
     }
 
     public List<ExamOption> getOptions() {
-	
-	return options;
+	return options.stream() //
+			.sorted((o1, o2) -> o1.getLetter().compareTo(o2.getLetter())) //
+			.toList();
     }
 
     @Override
@@ -256,6 +257,7 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
 	return options.stream() //
 			.filter(ExamOption::isCorrect) //
 			.map(ExamOption::getLetter) //
+			.sorted(Comparable::compareTo)
 			.toList();
     }
 
@@ -263,6 +265,7 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
 	return options.stream() //
 			.filter(ExamOption::isSelected) //
 			.map(ExamOption::getLetter) //
+			.sorted(Comparable::compareTo)
 			.toList();
     }
 

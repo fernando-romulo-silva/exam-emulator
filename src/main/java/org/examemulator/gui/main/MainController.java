@@ -333,7 +333,7 @@ public class MainController {
 	}
 
 	selectedExam = null;
-	final var fields = List.of(fieldOf("id"), fieldOf("status"), fieldOf("type"), fieldOf("shuffleQuestions"));
+	final var fields = List.of(fieldOf("id"), fieldOf("status"), fieldOf("type"), fieldOf("shuffleQuestions"), fieldOf("result"));
 	view.examTable.setModel(createTableModel(Exam.class, exams, fields));
 	view.examTable.getSelectionModel().setSelectionMode(SINGLE_SELECTION);
 

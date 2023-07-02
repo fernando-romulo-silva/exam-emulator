@@ -18,6 +18,7 @@ public class EntityManagerFactoryProducer {
     }
 
     @Produces
+    @ApplicationScoped
     public EntityManagerFactory createEntityManagerFactory() {
         return entityManagerFactory;
     }

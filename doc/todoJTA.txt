@@ -1,0 +1,63 @@
+create transaction manager with CDI and JTA
+
+jndi server -> Data Source -> trantasction manager
+
+
+* JNDI *
+
+https://github.com/jbosstm/quickstart/blob/main/jta-1_2-standalone/src/test/java/org/jboss/narayana/quickstarts/jta/JNDIBindingTestCase.java
+
+https://developer.jboss.org/thread/280909
+
+https://github.com/luiz158/usertransaction-in-java-se/blob/master/src/main/java/br/eti/augusto/transactional/UserTransactionProducer.java
+
+https://stackoverflow.com/questions/5861874/easy-way-to-start-a-standalone-jndi-server-and-register-some-resources
+
+
+* Data Source *
+
+https://github.com/vmj/jta-jpa-se-example/blob/master/src/main/java/fi/linuxbox/jta/Main.java
+
+https://www.google.com/search?q=register+datasource+jndi+java+se&oq=register+datasource+jndi+java+se&aqs=chrome..69i57j0i546l2.17849j0j7&sourceid=chrome&ie=UTF-8
+
+https://www.google.com/search?q=datasource+jta+jndi&sxsrf=AB5stBjx2dmLI6FodpJ-XM7y-D602LOA8Q%3A1688242464480&ei=IImgZLDzHJmgkdUPp82mmAk&ved=0ahUKEwiwg4-jqe7_AhUZUKQEHaemCZMQ4dUDCBA&uact=5&oq=datasource+jta+jndi&gs_lcp=Cgxnd3Mtd2l6LXNlcnAQAzIGCAAQFhAeOgYIABAHEB46CAgAEIAEEMsBOgQIABAeSgQIQRgAUABY8htgqx9oAHABeACAAWmIAf4EkgEDNi4xmAEAoAEBwAEB&sclient=gws-wiz-serp
+
+
+* JTA *
+
+https://stackoverflow.com/questions/840694/what-do-i-need-to-do-to-integrate-jta-into-a-java-se-application
+
+https://aboullaite.me/cdi-20-java-se/
+
+https://jbossts.blogspot.com/2019/04/jta-and-cdi-integration.html
+
+https://github.com/jbosstm/quickstart/blob/main/jta-1_2-standalone/src/test/java/org/jboss/narayana/quickstarts/jta/cdi/CDITransactionServices.java
+
+https://www.google.com/search?q=jta+java+se&oq=jta+java+se&aqs=chrome..69i57j0i13i19i512j0i19i22i30j0i8i13i19i30l2j69i60l3.3690j0j7&sourceid=chrome&ie=UTF-8
+
+https://stackoverflow.com/questions/777636/what-is-a-good-open-source-java-se-jta-transactionmanager-implementation
+
+
+
+* Weld Transaction *
+
+https://www.google.com/search?q=microbean-narayana-jta-weld-se&oq=microbean-narayana-jta-weld-se&aqs=chrome..69i57j69i60l3.1591j0j7&sourceid=chrome&ie=UTF-8#imgrc=21Znr8JO1KWrEM&ip=1
+
+https://www.atomikos.com/Main/TransactionsEssentials
+
+https://www.google.com/search?q=weld+transaction+java+se&sxsrf=AJOqlzUFxKdqS-oa2BMK27HL4f_doziISA%3A1675537706426&ei=Kq3eY8TSGfmgkdUPpZ6y8AM&ved=0ahUKEwjEj7KuyPz8AhV5UKQEHSWPDD4Q4dUDCA8&uact=5&oq=weld+transaction+java+se&gs_lcp=Cgxnd3Mtd2l6LXNlcnAQAzoLCC4QgAQQxwEQ0QM6CAguENQCEIAEOgUIABCABDoLCC4QgAQQxwEQrwE6BAgjECc6BAgAEEM6BQguEIAEOgcIABCABBAKOg0ILhCABBDHARCvARAKOgoIABCABBAKEMsBOggIABCABBDLAToHCCMQsAIQJzoHCAAQDRCABDoJCAAQDRCABBATOgkILhANEIAEEBM6DgguEIAEEMcBEK8BEMsBOggILhCABBDLAToICAAQFhAeEAo6BggAEBYQHjoLCAAQFhAeEPEEEApKBAhBGABKBAhGGABQAFjzS2DZTGgEcAF4AIAB9QGIAbcckgEGMS4yNC4ymAEAoAEBwAEB&sclient=gws-wiz-serp
+
+https://www.google.com/search?q=weld+transaction+java+se&oq=we&aqs=chrome.1.69i60j69i59j69i57j35i39l2j69i60l2j69i65.1270j0j7&sourceid=chrome&ie=UTF-8
+
+https://developer.jboss.org/thread/280419
+
+https://www.google.com/search?client=firefox-b-d&q=narayana+weld+jpa
+
+https://www.google.com/search?q=weld+se+jta&rlz=1C1GCEJ_enFR1003FR1003&ei=iMORZNCFCO6qkdUPi5y7QA&start=20&sa=N&ved=2ahUKEwjQ6c_uktL_AhVuVaQEHQvODgg4ChDy0wN6BAgFEAc&biw=1422&bih=668&dpr=1.35
+
+https://github.com/microbean/microbean-narayana-jta-weld-se/
+
+
+* JpaRepository *
+
+https://vladmihalcea.com/best-spring-data-jparepository/

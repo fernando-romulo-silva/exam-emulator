@@ -56,7 +56,7 @@ public class QuestionnaireService {
 	}
 
 	final var questionnaire = optionalQuestionnaire.get();
-	questionnaire.update(data.order(), data.name(), questionnaireSet, questionsFromFile);
+	questionnaire.update(data.order(), data.name(), data.description(), questionnaireSet, questionsFromFile);
 	return questionnaireRepository.update(questionnaire);
     }
 

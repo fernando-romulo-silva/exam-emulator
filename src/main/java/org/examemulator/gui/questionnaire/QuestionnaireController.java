@@ -31,10 +31,12 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.border.TitledBorder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.examemulator.domain.questionnaire.Questionnaire;
@@ -204,11 +206,13 @@ public class QuestionnaireController {
 	view.rdbtnAll.addActionListener(event -> {
 	    toExamQuestions.addAll(questionnaire.getQuestions());
 	    loadNumbersPanel();
+	    loadPanelQuestion();
 	});
 	
 	view.rdbtnNone.addActionListener(event -> {
 	    toExamQuestions.clear();
 	    loadNumbersPanel();
+	    loadPanelQuestion();
 	});
 	
 	view.btnMain.addActionListener(event -> {
@@ -257,8 +261,39 @@ public class QuestionnaireController {
 			: "";
 
 	final var panelQuestionPanel = new JPanel();
+	
+	panelQuestionPanel.addMouseListener(new MouseAdapter() {
+	    @Override
+	    public void mouseClicked(final MouseEvent event) {
+		
+		final var tempPanel = (JPanel) event.getComponent();
+		final var titleBorder = (TitledBorder) tempPanel.getBorder();
+		
+		if (toExamQuestions.contains(selectedQuestion)) {
+		    toExamQuestions.remove(selectedQuestion);
+		    titleBorder.setTitleColor(BLACK);
+		} else {
+		    toExamQuestions.add(selectedQuestion);
+		    titleBorder.setTitleColor(BLUE);
+		}
+		
+		updateQuestionLabel();
+		tempPanel.repaint();
+		
+		updateRadioButtonsSelection();
+	    }
+	});	
+	
+	
 	panelQuestionPanel.setLayout(new BorderLayout());
-	panelQuestionPanel.setBorder(createTitledBorder("Question " + leftPad(selectedQuestion.getOrder().toString(), 2, '0').concat(conceptName)));
+	final var titledBorder = createTitledBorder("Question " + leftPad(selectedQuestion.getOrder().toString(), 2, '0').concat(conceptName));
+	if (toExamQuestions.contains(selectedQuestion)) {
+	    titledBorder.setTitleColor(BLUE);
+	} else {
+	    titledBorder.setTitleColor(BLACK);
+	}
+	
+	panelQuestionPanel.setBorder(titledBorder);
 	panelQuestionPanel.add(createScrollHtmlTextToShow(txt), CENTER);
 	panelQuestionPanel.revalidate();
 	panelQuestionPanel.repaint();
@@ -306,6 +341,39 @@ public class QuestionnaireController {
 	view.btnNext.setEnabled(hasNextQuestion(questionnaire.getQuestions(), selectedQuestion));
     }
 
+    private void updateQuestionLabel() {
+	final var component = Stream.of(view.pQuestions.getComponents()) //
+			.filter(comp -> Objects.equals(comp.getName(), selectedQuestion.getOrder().toString())) //
+			.findFirst();
+	
+	if (component.isPresent() && component.get() instanceof final JLabel label) {
+	    
+	    if (toExamQuestions.contains(selectedQuestion)) {
+		label.setForeground(BLUE);
+	    } else {
+		label.setForeground(BLACK);
+	    }
+
+	    label.repaint();
+	}
+    }
+    
+
+    private void updateRadioButtonsSelection() {
+	if (toExamQuestions.isEmpty()) {
+	    view.rdbtnNone.setSelected(true);
+	} else {
+
+	    final var questionnaireQuestionSize = Objects.nonNull(questionnaire) ? questionnaire.getQuestions().size() : 0;
+
+	    if (toExamQuestions.size() < questionnaireQuestionSize) {
+		view.rdbtnAny.setSelected(true);
+	    } else {
+		view.rdbtnAll.setSelected(true);
+	    }
+	}
+    }
+    
     private class QuestionLabelListener extends MouseAdapter {
 
 	@Override
@@ -313,13 +381,22 @@ public class QuestionnaireController {
 	    final var label = (JLabel) event.getSource();
 	    final var text = label.getText();
 
-	    if (event.getClickCount() == 1 && event.getButton() == MouseEvent.BUTTON1 && Objects.nonNull(questionnaire)) {
+	    if (event.getButton() == MouseEvent.BUTTON1 && Objects.nonNull(questionnaire)) {
 
 		selectQuestion(Integer.valueOf(text));
+		
+		if (toExamQuestions.contains(selectedQuestion)) {
+		    label.setForeground(BLUE);
+		} else {
+		    label.setForeground(BLACK);
+		}
+		
 		loadPanelQuestion();
-
-	    } else if (event.getClickCount() == 2 && !event.isConsumed() && event.getButton() == MouseEvent.BUTTON1 && Objects.nonNull(questionnaire)) {
-
+		
+		label.repaint();
+		
+	    } else if (event.getButton() == MouseEvent.BUTTON3 && Objects.nonNull(questionnaire)) {
+		
 		selectQuestion(Integer.valueOf(text));
 
 		if (toExamQuestions.contains(selectedQuestion)) {
@@ -329,21 +406,12 @@ public class QuestionnaireController {
 		    toExamQuestions.add(selectedQuestion);
 		    label.setForeground(BLUE);
 		}
-
+		
+		updateRadioButtonsSelection();
+		
+		loadPanelQuestion();
+		
 		label.repaint();
-	    }
-
-	    if (toExamQuestions.isEmpty()) {
-		view.rdbtnNone.setSelected(true);
-	    } else {
-
-		final var questionnaireQuestionSize = Objects.nonNull(questionnaire) ? questionnaire.getQuestions().size() : 0;
-
-		if (toExamQuestions.size() < questionnaireQuestionSize) {
-		    view.rdbtnAny.setSelected(true);
-		} else {
-		    view.rdbtnAll.setSelected(true);
-		}
 	    }
 	}
 

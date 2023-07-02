@@ -5,9 +5,9 @@
         bean-discovery-mode="annotated">
         
     <!-- @session don't work on bean-discovery-mode annoted  -->   
-        
+     
 	<interceptors>
-        <class>org.examemulator.util.interceptor.InterceptorTransactional</class>
+        <class>org.examemulator.util.transaction.nonjta.TransactionInterceptor</class>
     </interceptors>
     
 </beans>

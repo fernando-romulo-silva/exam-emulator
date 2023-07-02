@@ -84,12 +84,14 @@ public class Questionnaire {
     public void update( //
 		    final Integer order, //
 		    final String name, //
+		    final String description,
 		    final QuestionnaireSet set, //
 		    final List<Question> questions) {
 	
-	this.set = set;
-	this.name = name;
 	this.order = order;
+	this.name = name;
+	this.description = description;
+	this.set = set;
 	this.certification = set.getCertification();
 	
 	removeOptions(questions);

@@ -49,7 +49,7 @@ class QuestionnaireView extends JFrame {
     JRadioButton rdbtnAll, rdbtnNone, rdbtnAny;
 
     QuestionnaireView() {
-
+	
 	super();
 
 	setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -58,6 +58,7 @@ class QuestionnaireView extends JFrame {
 	// -------------------------------------------------------------------------------------------
 	// Main Panel
 	// -------------------------------------------------------------------------------------------
+	
 	setTitle(APP_NAME.concat(" - Questionnaire"));
 
 	contentPane = new JPanel();
