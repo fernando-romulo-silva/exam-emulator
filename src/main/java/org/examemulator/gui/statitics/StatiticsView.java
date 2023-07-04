@@ -9,6 +9,7 @@ import static org.examemulator.gui.GuiUtil.APP_NAME;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.event.KeyEvent;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -78,21 +79,26 @@ class StatiticsView extends JFrame {
 	pGroup.add(panelControl);
 
 	btnPrevious = new JButton("Previous");
+	btnPrevious.setMnemonic(KeyEvent.VK_LEFT);
 	btnPrevious.setEnabled(false);
 	panelControl.add(btnPrevious);
 
 	btnNext = new JButton("Next");
+	btnNext.setMnemonic(KeyEvent.VK_RIGHT);
 	panelControl.add(btnNext);
 
 	chckbxCorrects = new JCheckBox("Corrects");
 	chckbxCorrects.setSelected(true);
+	chckbxCorrects.setMnemonic(KeyEvent.VK_C);
 	panelControl.add(chckbxCorrects);
 
 	chckbxIncorrects = new JCheckBox("Incorrects");
 	chckbxIncorrects.setSelected(true);
+	chckbxIncorrects.setMnemonic(KeyEvent.VK_I);
 	panelControl.add(chckbxIncorrects);
 
 	chckbxMarked = new JCheckBox("Marked");
+	chckbxMarked.setMnemonic(KeyEvent.VK_A);
 	panelControl.add(chckbxMarked);
 
 	pQuestions = new JPanel(new WrapLayout(LEFT, 5, 5));
@@ -102,8 +108,11 @@ class StatiticsView extends JFrame {
 	pQuestion.setLayout(new BorderLayout(0, 0));
 	pMain.add(pQuestion);
 
-	btnMain = new JButton("Go Back");
+	btnMain = new JButton("Go Main");
+	btnMain.setMnemonic(KeyEvent.VK_M);
+	
 	btnNewExam = new JButton("New Exam");
+	btnNewExam.setMnemonic(KeyEvent.VK_E);
 	
 	final var panelButtons = new JPanel(new FlowLayout());
 	panelButtons.add(btnMain);

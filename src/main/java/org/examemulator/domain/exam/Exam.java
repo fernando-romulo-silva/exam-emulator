@@ -2,6 +2,7 @@ package org.examemulator.domain.exam;
 
 import static java.math.RoundingMode.HALF_UP;
 import static java.time.temporal.ChronoUnit.MINUTES;
+import static java.util.Collections.unmodifiableList;
 import static java.util.Optional.ofNullable;
 
 import java.math.BigDecimal;
@@ -139,7 +140,7 @@ public class Exam {
 			.findFirst() //
 			.isEmpty();
     }
-    
+
     public List<String> questionsAnswered() {
 	return questions.stream() //
 			.filter(q -> q.isAnswered()) //
@@ -175,40 +176,50 @@ public class Exam {
     public ExamType getType() {
 	return type;
     }
-    
+
     public boolean isSameQuestionnaire() {
 //	questions.stream()
 //		.collect(Collectors.groupingBy(q -> q.get))
-	
+
 	return false;
     }
-    
+
     public String getResult() {
-	
+
 	if (status != ExamStatus.FINISHED) {
 	    return "DOING";
 	}
-	
+
 	final var qtyTotal = questions.size();
 
-	final var qtyCorrect = questions.stream() //
-			.filter(q -> q.isCorrect()) //
-			.count();
+	final var qtyCorrect = getQtyCorrect();
 
 //	final var qtyIncorrect = qtyTotal - qtyCorrect;
-	
+
 	final var minScoreValue = new BigDecimal(qtyTotal) //
 			.multiply(minScorePercent) //
 			.divide(BigDecimal.valueOf(100l), new MathContext(1, HALF_UP));
-	
+
 	return BigDecimal.valueOf(qtyCorrect).compareTo(minScoreValue) >= 0 ? "PASSED" : "FAILED";
+    }
+    
+    public Long getQtyCorrect() {
+	return questions.stream() //
+			.filter(q -> q.isCorrect()) //
+			.count();
+    }
+    
+    public Long getQtyIncorrect() {
+	return questions.stream() //
+			.filter(q -> !q.isCorrect()) //
+			.count();
     }
 
     public List<ExamQuestion> getQuestions() {
-	return Collections.unmodifiableList( //
+	return unmodifiableList( //
 			questions.stream() //
-					.sorted((q1, q2) -> q1.getOrder().compareTo(q2.getOrder())) //
-					.toList() //
+				.sorted((q1, q2) -> q1.getOrder().compareTo(q2.getOrder())) //
+				.toList() //
 	);
     }
 
@@ -247,7 +258,7 @@ public class Exam {
 	if (this == obj) {
 	    result = true;
 
-	} else if (obj instanceof Exam other) {
+	} else if (obj instanceof final Exam other) {
 	    result = Objects.equals(id, other.id);
 
 	} else {

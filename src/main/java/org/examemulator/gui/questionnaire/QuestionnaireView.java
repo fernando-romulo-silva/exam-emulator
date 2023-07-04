@@ -9,6 +9,7 @@ import static org.examemulator.gui.GuiUtil.APP_NAME;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.KeyEvent;
 
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -126,9 +127,11 @@ class QuestionnaireView extends JFrame {
 	rdbtnAll = new JRadioButton("All");
 	rdbtnAll.setSelected(true);
 	rdbtnAll.setEnabled(false);
+	rdbtnAll.setMnemonic(KeyEvent.VK_A);
 	examControlPanel4.add(rdbtnAll);
 
 	rdbtnNone = new JRadioButton("None");
+	rdbtnNone.setMnemonic(KeyEvent.VK_N);
 	rdbtnNone.setSelected(false);
 	rdbtnNone.setEnabled(false);
 	examControlPanel4.add(rdbtnNone);
@@ -143,10 +146,12 @@ class QuestionnaireView extends JFrame {
 	bgSelection.add(rdbtnNone);
 	bgSelection.add(rdbtnAny);
 
-	btnMain = new JButton("Go Back");
+	btnMain = new JButton("Go Main");
+	btnMain.setMnemonic(KeyEvent.VK_M);
 	examControlPanel4.add(btnMain);
 
 	btnNewExam = new JButton("Do Exam");
+	btnNewExam.setMnemonic(KeyEvent.VK_E);
 	examControlPanel4.add(btnNewExam);
 	btnNewExam.setEnabled(false);
 
@@ -165,10 +170,12 @@ class QuestionnaireView extends JFrame {
 
 	btnPrevious = new JButton("Previous");
 	btnPrevious.setEnabled(false);
+	btnPrevious.setMnemonic(KeyEvent.VK_LEFT);
 	quesitonControlPanel.add(btnPrevious);
 
 	btnNext = new JButton("Next");
 	btnNext.setEnabled(false);
+	btnNext.setMnemonic(KeyEvent.VK_RIGHT);
 	quesitonControlPanel.add(btnNext);
 
 	// -------------------------------------------------------------------------------------------

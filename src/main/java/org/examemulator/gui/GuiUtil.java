@@ -24,6 +24,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -191,7 +192,9 @@ public class GuiUtil {
 	optionsQuestionPanel.setLayout(new BorderLayout());
 
 	final var yesButton = new JButton("Yes");
+	yesButton.setMnemonic(KeyEvent.VK_Y);
 	final var noButton = new JButton("No");
+	noButton.setMnemonic(KeyEvent.VK_N);
 
 	final var buttonPanel = new JPanel(new WrapLayout(LEFT, 5, 5));
 	buttonPanel.add(yesButton);
@@ -281,6 +284,7 @@ public class GuiUtil {
 
 		final var radio = new JRadioButton(treatOptionText(questionOption.getLetter(), questionOption.getValue()));
 		radio.setFont(DEFAULT_FONT);
+		radio.setMnemonic(getShort(questionOption.getLetter()));
 
 		if (question.getAnswers().contains(questionOption.getLetter())) {
 		    radio.setSelected(true);
@@ -314,6 +318,7 @@ public class GuiUtil {
 	    for (final var questionOption : question.getOptions()) {
 
 		final var check = new JCheckBox(treatOptionText(questionOption.getLetter(), questionOption.getValue()));
+		check.setMnemonic(getShort(questionOption.getLetter()));
 		check.setFont(DEFAULT_FONT);
 
 		if (question.getAnswers().contains(questionOption.getLetter())) {
@@ -328,6 +333,19 @@ public class GuiUtil {
 	    optionsQuestionPanel.add(box);
 	    return optionsQuestionPanel;
 	}
+    }
+    
+    private static int getShort(final String letter) {
+	
+	return switch (letter) {
+        	case "A" -> KeyEvent.VK_A;
+        	case "B" -> KeyEvent.VK_B;
+        	case "C" -> KeyEvent.VK_C;
+        	case "D" -> KeyEvent.VK_D;
+        	case "E" -> KeyEvent.VK_E;
+        	case "F" -> KeyEvent.VK_F;
+        	default -> throw new IllegalArgumentException("Unexpected value: " + letter);
+	};
     }
 
     public static String extractedOptions(final List<String> list) {

@@ -3,12 +3,14 @@ package org.examemulator.gui.questionnaire;
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.Color.BLACK;
 import static java.awt.Color.BLUE;
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
 import static javax.swing.BorderFactory.createTitledBorder;
 import static javax.swing.JOptionPane.QUESTION_MESSAGE;
 import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.leftPad;
 import static org.examemulator.gui.GuiUtil.TAG_BR;
 import static org.examemulator.gui.GuiUtil.TAG_BR_BR;
@@ -24,6 +26,7 @@ import static org.examemulator.util.ControllerUtil.previousQuestion;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -33,6 +36,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -261,30 +265,21 @@ public class QuestionnaireController {
 			: "";
 
 	final var panelQuestionPanel = new JPanel();
-	
 	panelQuestionPanel.addMouseListener(new MouseAdapter() {
 	    @Override
 	    public void mouseClicked(final MouseEvent event) {
-		
-		final var tempPanel = (JPanel) event.getComponent();
-		final var titleBorder = (TitledBorder) tempPanel.getBorder();
-		
-		if (toExamQuestions.contains(selectedQuestion)) {
-		    toExamQuestions.remove(selectedQuestion);
-		    titleBorder.setTitleColor(BLACK);
-		} else {
-		    toExamQuestions.add(selectedQuestion);
-		    titleBorder.setTitleColor(BLUE);
-		}
-		
-		updateQuestionLabel();
-		tempPanel.repaint();
-		
-		updateRadioButtonsSelection();
+		markQuestion(panelQuestionPanel);
 	    }
 	});	
 	
-	
+	final var btnFake = new JButton(EMPTY);
+	btnFake.addActionListener(event ->  markQuestion(panelQuestionPanel));
+	btnFake.setOpaque(false);
+	btnFake.setContentAreaFilled(false);
+	btnFake.setBorderPainted(false);
+	btnFake.setMnemonic(KeyEvent.VK_T);
+	panelQuestionPanel.add(btnFake);
+
 	panelQuestionPanel.setLayout(new BorderLayout());
 	final var titledBorder = createTitledBorder("Question " + leftPad(selectedQuestion.getOrder().toString(), 2, '0').concat(conceptName));
 	if (toExamQuestions.contains(selectedQuestion)) {
@@ -302,9 +297,26 @@ public class QuestionnaireController {
 	view.btnNext.setEnabled(hasNextQuestion(questionnaire.getQuestions(), selectedQuestion));
 
 	view.questionInternPanel.add(panelQuestionPanel);
-
 	view.questionInternPanel.revalidate();
 	view.questionInternPanel.repaint();
+    }
+    
+    private void markQuestion(final JPanel tempPanel) {
+	
+	final var titleBorder = (TitledBorder) tempPanel.getBorder();
+	
+	if (toExamQuestions.contains(selectedQuestion)) {
+	    toExamQuestions.remove(selectedQuestion);
+	    titleBorder.setTitleColor(BLACK);
+	} else {
+	    toExamQuestions.add(selectedQuestion);
+	    titleBorder.setTitleColor(BLUE);
+	}
+	
+	updateQuestionLabel();
+	tempPanel.repaint();
+	
+	updateRadioButtonsSelection();
     }
 
     private void loadNumbersPanel() {
@@ -360,11 +372,12 @@ public class QuestionnaireController {
     
 
     private void updateRadioButtonsSelection() {
+	
 	if (toExamQuestions.isEmpty()) {
 	    view.rdbtnNone.setSelected(true);
 	} else {
 
-	    final var questionnaireQuestionSize = Objects.nonNull(questionnaire) ? questionnaire.getQuestions().size() : 0;
+	    final var questionnaireQuestionSize = nonNull(questionnaire) ? questionnaire.getQuestions().size() : 0;
 
 	    if (toExamQuestions.size() < questionnaireQuestionSize) {
 		view.rdbtnAny.setSelected(true);
@@ -378,10 +391,11 @@ public class QuestionnaireController {
 
 	@Override
 	public void mouseClicked(final MouseEvent event) {
+	    
 	    final var label = (JLabel) event.getSource();
 	    final var text = label.getText();
 
-	    if (event.getButton() == MouseEvent.BUTTON1 && Objects.nonNull(questionnaire)) {
+	    if (event.getButton() == MouseEvent.BUTTON1 && nonNull(questionnaire)) {
 
 		selectQuestion(Integer.valueOf(text));
 		
@@ -395,7 +409,7 @@ public class QuestionnaireController {
 		
 		label.repaint();
 		
-	    } else if (event.getButton() == MouseEvent.BUTTON3 && Objects.nonNull(questionnaire)) {
+	    } else if (event.getButton() == MouseEvent.BUTTON3 && nonNull(questionnaire)) {
 		
 		selectQuestion(Integer.valueOf(text));
 

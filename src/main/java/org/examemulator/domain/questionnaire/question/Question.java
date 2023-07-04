@@ -2,11 +2,11 @@ package org.examemulator.domain.questionnaire.question;
 
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.FetchType.EAGER;
+import static java.util.Collections.unmodifiableList;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -143,7 +143,10 @@ public class Question implements Comparable<Question>, InquiryInterface {
     }
 
     public List<Option> getOptions() {
-	return Collections.unmodifiableList(options);
+	return unmodifiableList(options)
+			.stream()
+			.sorted((o1, o2) -> o1.getLetter().compareTo(o2.getLetter()))
+			.toList();
     }
 
     public String getId() {
@@ -158,6 +161,7 @@ public class Question implements Comparable<Question>, InquiryInterface {
 	return options.stream() //
 			.filter(Option::isCorrect) //
 			.map(Option::getLetter) //
+			.sorted() //
 			.toList();
     }
 

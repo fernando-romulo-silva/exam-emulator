@@ -9,6 +9,7 @@ import static org.examemulator.gui.GuiUtil.APP_NAME;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.KeyEvent;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -28,14 +29,14 @@ import jakarta.enterprise.context.ApplicationScoped;
 class ExamView extends JFrame {
 
     private static final long serialVersionUID = 1L;
-    
+
     @ApplicationScoped
     static class ExamGui {
-	
+
 	ExamView getView() {
 	    return new ExamView();
 	}
-	
+
 //	    public void showMainWindow() {
 //		exec("show main window", () -> examView.setVisible(true));
 //	    }
@@ -57,7 +58,7 @@ class ExamView extends JFrame {
 //		showMainWindow();
 //		log.info("finished cdi-event: boot");
 //	    }
-	//    
+	//
 //	    public static interface BootEvent {}	
     }
 
@@ -104,29 +105,33 @@ class ExamView extends JFrame {
 
 	btnStart = new JButton("Start");
 	btnStart.setEnabled(false);
+	btnStart.setMnemonic(KeyEvent.VK_S);
 	examControlPanel1.add(btnStart);
-	
+
 	btnPauseProceed = new JButton("Pause");
 	btnPauseProceed.setEnabled(false);
+	btnPauseProceed.setMnemonic(KeyEvent.VK_P);
 	examControlPanel1.add(btnPauseProceed);
 
 	btnFinish = new JButton("Finish");
 	btnFinish.setEnabled(false);
+	btnFinish.setMnemonic(KeyEvent.VK_F);
 	examControlPanel1.add(btnFinish);
 
 	btnStatistics = new JButton("Statistics");
 	btnStatistics.setEnabled(false);
+	btnStatistics.setMnemonic(KeyEvent.VK_T);
 	examControlPanel1.add(btnStatistics);
 
 	final var examControlPanel2 = new JPanel();
 	examControlPanel2.setLayout(new WrapLayout(LEFT, 5, 5));
 	examPanel.add(examControlPanel2);
-	
+
 	chckbxShuffleQuestions = new JCheckBox("Shuffle Questions");
 	chckbxShuffleQuestions.setEnabled(false);
 	chckbxShuffleQuestions.setSelected(false);
 	examControlPanel2.add(chckbxShuffleQuestions);
-	
+
 	chckbxShuffleOptions = new JCheckBox("Shuffle Options");
 	chckbxShuffleOptions.setEnabled(false);
 	chckbxShuffleOptions.setSelected(true);
@@ -162,7 +167,7 @@ class ExamView extends JFrame {
 	textMinScore = new JSpinner(new SpinnerNumberModel(90, 50, 100, 10));
 	textMinScore.setEnabled(false);
 	examControlPane3.add(textMinScore);
-	
+
 	lblDuration = new JLabel("Duration (Min)");
 	examControlPane3.add(lblDuration);
 
@@ -186,15 +191,18 @@ class ExamView extends JFrame {
 
 	btnPrevious = new JButton("Previous");
 	btnPrevious.setEnabled(false);
+	btnPrevious.setMnemonic(KeyEvent.VK_LEFT);
 	quesitonControlPanel.add(btnPrevious);
 
 	btnNext = new JButton("Next");
 	btnNext.setEnabled(false);
+	btnNext.setMnemonic(KeyEvent.VK_RIGHT);
 	quesitonControlPanel.add(btnNext);
 
-	btnCheckAnswer = new JButton("Check Answer");
+	btnCheckAnswer = new JButton("Answer");
 	btnCheckAnswer.setEnabled(false);
 	btnCheckAnswer.setVisible(false);
+	btnCheckAnswer.setMnemonic(KeyEvent.VK_W);
 	quesitonControlPanel.add(btnCheckAnswer);
 
 	pQuestions = new JPanel(new WrapLayout(LEFT, 5, 5));

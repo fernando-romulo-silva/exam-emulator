@@ -38,6 +38,7 @@ import static org.examemulator.util.domain.DomainUtil.DISCRET_LIST;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -436,21 +437,7 @@ public class ExamController {
 	   
 	    @Override
 	    public void mouseClicked(final MouseEvent event) {
-		selectedQuestion.mark(!selectedQuestion.isMarked());
-		updateQuestionLabel();
-
-		final var tempPanel = (JPanel) event.getComponent();
-		final var titleBorder = (TitledBorder) tempPanel.getBorder();
-		
-		if (selectedQuestion.isMarked()) {
-		    titleBorder.setTitleColor(BLUE);
-		} else if (selectedQuestion.isAnswered()) {
-		    titleBorder.setTitleColor(GRAY);
-		} else {
-		    titleBorder.setTitleColor(BLACK);
-		}
-		
-		tempPanel.repaint();
+		markQuestion(panelQuestionPanel);
 	    }
 	});
 	
@@ -463,6 +450,14 @@ public class ExamController {
 	} else {
 	    titleBorder.setTitleColor(BLACK);
 	}
+	
+	final var btnFake = new JButton(EMPTY);
+	btnFake.addActionListener(event ->  markQuestion(panelQuestionPanel));
+	btnFake.setOpaque(false);
+	btnFake.setContentAreaFilled(false);
+	btnFake.setBorderPainted(false);
+	btnFake.setMnemonic(KeyEvent.VK_T);
+	panelQuestionPanel.add(btnFake);
 	
 	panelQuestionPanel.setBorder(titleBorder);
 	panelQuestionPanel.add(createScrollTextToShow(questionText));
@@ -524,6 +519,26 @@ public class ExamController {
 	    label.repaint();
 	}
     }
+    
+
+    private void markQuestion(final JPanel tempPanel) {
+	
+	selectedQuestion.mark(!selectedQuestion.isMarked());
+	updateQuestionLabel();
+
+	final var titleBorder = (TitledBorder) tempPanel.getBorder();
+	
+	if (selectedQuestion.isMarked()) {
+	    titleBorder.setTitleColor(BLUE);
+	} else if (selectedQuestion.isAnswered()) {
+	    titleBorder.setTitleColor(GRAY);
+	} else {
+	    titleBorder.setTitleColor(BLACK);
+	}
+	
+	tempPanel.repaint();
+    }
+
     
     private final class QuestionLabelListener extends MouseAdapter {
 	
