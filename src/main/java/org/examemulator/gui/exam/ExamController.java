@@ -339,6 +339,7 @@ public class ExamController {
 	});
 
 	view.btnNext.addActionListener(event -> {
+	    
 	    updateQuestionLabel();
 	    final var nextQuestionOptional = nextQuestion(exam.getQuestions(), selectedQuestion);
 	    if (nextQuestionOptional.isPresent()) {
@@ -350,6 +351,7 @@ public class ExamController {
 	});
 
 	view.btnPrevious.addActionListener(event -> {
+	    
 	    updateQuestionLabel();
 	    final var previousQuestionOptional = previousQuestion(exam.getQuestions(), selectedQuestion);
 	    if (previousQuestionOptional.isPresent()) {
@@ -400,6 +402,7 @@ public class ExamController {
 	});
 	
 	view.addWindowListener(new WindowAdapter() {
+	    
 	    @Override
 	    public void windowClosing(final WindowEvent windowEvent) {
 		
@@ -412,7 +415,6 @@ public class ExamController {
 		    
 		    view.setVisible(false);
 		    mainController.show(view);
-		    
 		}
 	    }
 	});
