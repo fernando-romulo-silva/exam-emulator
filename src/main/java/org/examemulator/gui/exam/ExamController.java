@@ -7,7 +7,6 @@ import static java.awt.Color.BLACK;
 import static java.awt.Color.BLUE;
 import static java.awt.Color.GRAY;
 import static java.awt.Dialog.ModalityType.DOCUMENT_MODAL;
-import static java.awt.event.MouseEvent.BUTTON1;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
 import static javax.swing.BorderFactory.createTitledBorder;
@@ -16,6 +15,7 @@ import static javax.swing.JOptionPane.QUESTION_MESSAGE;
 import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
+import static javax.swing.SwingUtilities.isLeftMouseButton;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.LF;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
@@ -549,7 +549,7 @@ public class ExamController {
 	    final var label = (JLabel) event.getSource();
 	    final var text = label.getText();
 
-	    if (event.getClickCount() == 1 && !event.isConsumed() && event.getButton() == BUTTON1 && nonNull(exam) && exam.getStatus() == RUNNING) {
+	    if (isLeftMouseButton(event) && event.getClickCount() == 1 && !event.isConsumed() && nonNull(exam) && exam.getStatus() == RUNNING) {
 		selectQuestion(Integer.valueOf(text));
 		loadPanelQuestion();
 

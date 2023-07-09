@@ -3,6 +3,7 @@ package org.examemulator.service;
 import static jakarta.transaction.Transactional.TxType.REQUIRED;
 import static jakarta.transaction.Transactional.TxType.SUPPORTS;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.examemulator.domain.cerfication.Certification;
@@ -39,5 +40,9 @@ public class CertificationService {
     @Transactional(SUPPORTS)
     public Stream<Certification> findAll() {
 	return certificationRepository.findAll();
+    }
+    
+    public Optional<Certification> findById(final Long id) {
+	return certificationRepository.findById(id);
     }
 }

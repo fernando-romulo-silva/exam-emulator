@@ -36,7 +36,7 @@ public class QuestionnaireSetRespository extends GenericRepository<Questionnaire
 	}
     }
     
-    public Optional<QuestionnaireSet> findByOrderAndCertification(final Integer order, final Certification certification) {
+    public Optional<QuestionnaireSet> findByCertificationAndOrder(final Certification certification, final Integer order) {
 
 	final var qlString = """
 			select q

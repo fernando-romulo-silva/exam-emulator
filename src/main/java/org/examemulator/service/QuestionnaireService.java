@@ -4,6 +4,7 @@ import static jakarta.transaction.Transactional.TxType.REQUIRED;
 import static jakarta.transaction.Transactional.TxType.SUPPORTS;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.examemulator.domain.cerfication.Certification;
@@ -40,7 +41,7 @@ public class QuestionnaireService {
     @Transactional(REQUIRED)
     public Questionnaire saveOrUpdateQuestionnaire(final QuestionnaireDTO data, final List<Question> questionsFromFile, final QuestionnaireSet questionnaireSet) {
 
-	final var optionalQuestionnaire = questionnaireRepository.findByOrderAndQuestionnaireSet(data.order(), questionnaireSet);
+	final var optionalQuestionnaire = questionnaireRepository.findByQuestionnaireSetAndOrder(questionnaireSet, data.order());
 
 	if (optionalQuestionnaire.isEmpty()) {
 
@@ -63,7 +64,7 @@ public class QuestionnaireService {
     @Transactional(REQUIRED)
     public QuestionConcept readOrSaveQuestionConcept(final String questionConceptName, final Certification certification) {
 
-	final var optionalQuestionConcept = questionConceptRepository.findByNameAndCertification(questionConceptName, certification);
+	final var optionalQuestionConcept = questionConceptRepository.findByCertificationAndName(certification, questionConceptName);
 
 	if (optionalQuestionConcept.isEmpty()) {
 	    final var questionnaireSetTemp = new QuestionConcept(questionConceptName, certification);
@@ -73,11 +74,15 @@ public class QuestionnaireService {
 	return optionalQuestionConcept.get();
     }
 
-    public Stream<Questionnaire> findByCertificationAndQuestionnaireSet(final Certification certification, final QuestionnaireSet questionnaireSet) {
-	return questionnaireRepository.findByCertificationAndQuestionnaireSet(certification, questionnaireSet);
+    public Stream<Questionnaire> findByQuestionnaireSet(final QuestionnaireSet questionnaireSet) {
+	return questionnaireRepository.findByQuestionnaireSet(questionnaireSet);
     }
 
-    public Stream<Question> findByCertification(Certification selectedCertification) {
+    public Stream<Question> findByCertification(final Certification selectedCertification) {
 	return questionnaireRepository.findByCertification(selectedCertification);
+    }
+    
+    public Optional<Questionnaire> findByQuestionnaireSetAndOrder(final QuestionnaireSet questionnaireSet,final Integer order) {
+	return questionnaireRepository.findByQuestionnaireSetAndOrder(questionnaireSet, order);
     }
 }

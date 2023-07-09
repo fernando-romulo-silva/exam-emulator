@@ -16,7 +16,7 @@ import jakarta.persistence.NoResultException;
 @ApplicationScoped
 public class QuestionnaireRepository extends GenericRepository<Questionnaire, Long> {
     
-    public Optional<Questionnaire> findByOrderAndQuestionnaireSet(final Integer order, final QuestionnaireSet questionnaireSet) {
+    public Optional<Questionnaire> findByQuestionnaireSetAndOrder(final QuestionnaireSet questionnaireSet, final Integer order) {
 	
 	final var qlString = """
 				select q 
@@ -38,7 +38,7 @@ public class QuestionnaireRepository extends GenericRepository<Questionnaire, Lo
 	}
     }    
     
-    public Stream<Questionnaire> findByCertificationAndQuestionnaireSet(final Certification certification, final QuestionnaireSet questionnaireSet) {
+    public Stream<Questionnaire> findByQuestionnaireSet(final QuestionnaireSet questionnaireSet) {
 	
 	final var qlString = """
 				select q 
@@ -49,7 +49,7 @@ public class QuestionnaireRepository extends GenericRepository<Questionnaire, Lo
 	
 	final var query = entityManager.createQuery(qlString, Questionnaire.class);
 	query.setParameter("set", questionnaireSet);
-	query.setParameter("certification", certification);
+	query.setParameter("certification", questionnaireSet.getCertification());
 	
 	return query.getResultStream();
     }

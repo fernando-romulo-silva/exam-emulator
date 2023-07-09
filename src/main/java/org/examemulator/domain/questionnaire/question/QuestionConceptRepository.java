@@ -13,7 +13,7 @@ import jakarta.persistence.NoResultException;
 @ApplicationScoped
 public class QuestionConceptRepository extends GenericRepository<QuestionConcept, Long> {
     
-    public Optional<QuestionConcept> findByNameAndCertification(final String name, final Certification certification) {
+    public Optional<QuestionConcept> findByCertificationAndName(final Certification certification, final String name) {
 	
 	final var qlString = """
 				select q 

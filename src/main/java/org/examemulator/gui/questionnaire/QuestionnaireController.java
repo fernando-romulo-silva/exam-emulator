@@ -10,8 +10,11 @@ import static javax.swing.JOptionPane.QUESTION_MESSAGE;
 import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
+import static javax.swing.SwingUtilities.isLeftMouseButton;
+import static javax.swing.SwingUtilities.isRightMouseButton;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.leftPad;
+import static org.apache.commons.lang3.math.NumberUtils.toInt;
 import static org.examemulator.gui.GuiUtil.TAG_BR;
 import static org.examemulator.gui.GuiUtil.TAG_BR_BR;
 import static org.examemulator.gui.GuiUtil.TAG_CLOSE_B;
@@ -394,10 +397,10 @@ public class QuestionnaireController {
 	    
 	    final var label = (JLabel) event.getSource();
 	    final var text = label.getText();
-
-	    if (event.getButton() == MouseEvent.BUTTON1 && nonNull(questionnaire)) {
-
-		selectQuestion(Integer.valueOf(text));
+	    
+	    if (isLeftMouseButton(event) && event.getClickCount() == 1 && nonNull(questionnaire)) {
+		
+		selectQuestion(toInt(text));
 		
 		if (toExamQuestions.contains(selectedQuestion)) {
 		    label.setForeground(BLUE);
@@ -409,9 +412,8 @@ public class QuestionnaireController {
 		
 		label.repaint();
 		
-	    } else if (event.getButton() == MouseEvent.BUTTON3 && nonNull(questionnaire)) {
-		
-		selectQuestion(Integer.valueOf(text));
+	    } else if (isRightMouseButton(event) && event.getClickCount() == 1 && nonNull(questionnaire)) {	
+		selectQuestion(toInt(text));
 
 		if (toExamQuestions.contains(selectedQuestion)) {
 		    toExamQuestions.remove(selectedQuestion);

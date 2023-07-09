@@ -3,6 +3,7 @@ package org.examemulator.service;
 import static jakarta.transaction.Transactional.TxType.REQUIRED;
 import static jakarta.transaction.Transactional.TxType.SUPPORTS;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.examemulator.domain.cerfication.Certification;
@@ -30,7 +31,7 @@ public class QuestionnaireSetService {
     @Transactional(REQUIRED)
     public QuestionnaireSet readOrSaveQuestionnaireSet(final QuestionnaireSetDTO data, final Certification certification) {
 
-	final var optionalQuestionnaireSet = repository.findByOrderAndCertification(data.order(), certification);
+	final var optionalQuestionnaireSet = repository.findByCertificationAndOrder(certification, data.order());
 
 	if (optionalQuestionnaireSet.isEmpty()) {
 	    final var questionnaireSetTemp = new QuestionnaireSet(data.name(), data.description(), data.order(), certification);
@@ -48,5 +49,9 @@ public class QuestionnaireSetService {
     
     public Stream<QuestionnaireSet> findAll() {
 	return repository.findAll();
+    }
+    
+    public Optional<QuestionnaireSet> findByCertificationAndOrder(final Certification certification, final Integer order) {
+	return repository.findByCertificationAndOrder(certification, order);
     }
 }
