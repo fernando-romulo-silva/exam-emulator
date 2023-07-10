@@ -4,6 +4,8 @@ import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.collections4.CollectionUtils.containsAny;
 import static org.apache.commons.collections4.CollectionUtils.isEqualCollection;
+import static org.examemulator.domain.exam.ExamQuestionStatus.ANSWERED;
+import static org.examemulator.domain.exam.ExamQuestionStatus.FINALIZED;
 import static org.examemulator.util.FileUtil.WORDS_ALL;
 import static org.examemulator.util.FileUtil.WORDS_NONE;
 import static org.examemulator.util.domain.DomainUtil.DISCRET_LIST;
@@ -62,7 +64,13 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
     private Integer order;
 
     @Column(name = "MARKED")
-    private boolean marked;
+    private boolean marked = Boolean.FALSE;
+    
+    @Column(name = "CORRECT")
+    private boolean correct = Boolean.FALSE;
+    
+    @Column(name = "STATUS")
+    private ExamQuestionStatus status = ExamQuestionStatus.UNANSWERED;
 
     ExamQuestion() {
 	super();
@@ -120,18 +128,6 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
 	}
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public Question getQuestion() {
-        return question;
-    }
-
-    public boolean isShuffleOptions() {
-        return shuffleOptions;
-    }
-
     private void defineType(final boolean discrete) {
 
 	final var correctOptions = getCorrectOptions();
@@ -154,12 +150,32 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
 
     // ------------------------------------------------------------------------------
     
+    public String getId() {
+        return id;
+    }
+
+    public Question getQuestion() {
+        return question;
+    }
+
+    public boolean isShuffleOptions() {
+        return shuffleOptions;
+    }
+    
+    public ExamQuestionStatus getStatus() {
+        return status;
+    }
+    
     public boolean isSameOrderQuestion() {
 	return Objects.equals(order, question.getOrder());
     }
 
     public void selectAnswer(final String answer) {
 
+	if (status == FINALIZED) {
+	    throw new IllegalStateException("You can't select an answer to finalized exam question!");
+	}
+	
 	if (StringUtils.isEmpty(answer)) {
 	    throw new IllegalArgumentException("Empty answer is not allowed!");
 	}
@@ -187,11 +203,16 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
 
 	if (optionSelected.isPresent()) {
 	    optionSelected.get().select();
+	    status = ANSWERED;
 	}
     }
 
     public void deselectAnswer(final String answer) {
 
+	if (status == FINALIZED) {
+	    throw new IllegalStateException("You can't deselect an answer to finalized exam question!");
+	}	
+	
 	if (StringUtils.isEmpty(answer)) {
 	    throw new IllegalArgumentException("Empty answer is not allowed!");
 	}
@@ -208,7 +229,16 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
     }
 
     public void mark(final boolean value) {
+	
+	if (status == FINALIZED) {
+	    throw new IllegalStateException("You can't mark an answer to finalized exam question!");
+	}	
+	
 	this.marked = value;
+    }
+    
+    void finalizeExamQuestion() {
+	status = FINALIZED;
     }
 
     // ------------------------------------------------------------------------------
@@ -280,7 +310,8 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
     public boolean isCorrect() {
 
 	if (!isAnswered()) {
-	    return false;
+	    correct = false;
+	    return correct;
 	}
 
 	final var answers = getAnswers();
@@ -288,7 +319,8 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
 	final var correctOptions = getCorrectOptions();
 
 	if (isEqualCollection(answers, correctOptions)) {
-	    return true;
+	    correct = true;
+	    return correct;
 	}
 
 	final var answersText = options.stream() //
@@ -298,7 +330,8 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
 	if (CollectionUtils.containsAny(answersText, WORDS_ALL)) {
 
 	    if (options.size() == answers.size()) {
-		return true;
+		correct = true;
+		return correct;
 	    }
 
 	    final var remainderOptions = options.stream() //
@@ -306,10 +339,15 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
 			    .map(ExamOption::getLetter) //
 			    .toList();
 
-	    return isEqualCollection(answers, remainderOptions);
+	    correct = isEqualCollection(answers, remainderOptions);
+	    
+	} else {
+	    
+	    correct = false; 
 	}
+	    
 
-	return false;
+	return correct;
     }
 
     // ------------------------------------------------------------------------------

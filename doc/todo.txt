@@ -1,15 +1,10 @@
 ---------------------------------------------------------
-* Show questions statitics on main view
 
 * Create exams with correct names (from questionnaiere, retest, dynamic)
 
+* Show questions statitics on main view
+
 * Create exam with specific questions on main view
-
-* Using jtree for certification, Set and Questionnaire
-
-  --> https://www.logicbig.com/tutorials/java-swing/jtree-filtering.html
-
-* Shortcuts
 
 * Automated Tests
 
@@ -18,6 +13,4 @@
 * Stop and continue exam for another day
 
 * Create an exam with most dificult questions, based on historical
-
-
                                                   

@@ -15,7 +15,7 @@ import com.arjuna.ats.jta.common.JTAEnvironmentBean;
 
 import org.jboss.weld.transaction.spi.TransactionServices;
 
-//@ApplicationScoped
+@ApplicationScoped
 public class NarayanaTransactionServices implements TransactionServices {
 
     /**

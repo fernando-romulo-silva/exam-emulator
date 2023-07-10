@@ -68,14 +68,21 @@ public class Exam {
     @Enumerated(EnumType.STRING)
     private ExamOrigin origin;
 
+    @Column(name = "TIME_SPENT_MINUTES")
+    private Integer timeSpentMinutes;
+    
+    @Column(name = "START")
     private LocalDateTime start;
 
+    @Column(name = "FINISH")
     private LocalDateTime finish;
 
+    @Column(name = "STATUS")
+    @Enumerated(EnumType.STRING)
     private ExamStatus status = ExamStatus.INITIAL;
 
     // -----------------------------------------------------------------
-    private Exam() {
+    Exam() {
 	super();
     }
 
@@ -114,6 +121,8 @@ public class Exam {
 
 	finish = LocalDateTime.now();
 	status = ExamStatus.FINISHED;
+	
+	questions.forEach(ExamQuestion::finalizeExamQuestion);
     }
 
     public void pause() {
