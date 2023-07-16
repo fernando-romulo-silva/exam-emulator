@@ -13,7 +13,9 @@ import org.examemulator.domain.questionnaire.QuestionnaireRepository;
 import org.examemulator.domain.questionnaire.question.Question;
 import org.examemulator.domain.questionnaire.question.QuestionConcept;
 import org.examemulator.domain.questionnaire.question.QuestionConceptRepository;
+import org.examemulator.domain.questionnaire.question.QuestionRepository;
 import org.examemulator.domain.questionnaire.set.QuestionnaireSet;
+import org.examemulator.util.dto.QuestionDTO;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -24,15 +26,19 @@ import jakarta.transaction.Transactional;
 public class QuestionnaireService {
 
     private final QuestionnaireRepository questionnaireRepository;
+    
+    private final QuestionRepository questionRepository;
 
     private final QuestionConceptRepository questionConceptRepository;
 
     @Inject
     QuestionnaireService( //
 		    final QuestionnaireRepository questionnaireRepository, //
+		    final QuestionRepository questionRepository, //
 		    final QuestionConceptRepository questionConceptRepository) {
 	super();
 	this.questionnaireRepository = questionnaireRepository;
+	this.questionRepository = questionRepository;
 	this.questionConceptRepository = questionConceptRepository;
     }
 
@@ -78,11 +84,19 @@ public class QuestionnaireService {
 	return questionnaireRepository.findByQuestionnaireSet(questionnaireSet);
     }
 
-    public Stream<Question> findByCertification(final Certification selectedCertification) {
-	return questionnaireRepository.findByCertification(selectedCertification);
-    }
-    
     public Optional<Questionnaire> findByQuestionnaireSetAndOrder(final QuestionnaireSet questionnaireSet,final Integer order) {
 	return questionnaireRepository.findByQuestionnaireSetAndOrder(questionnaireSet, order);
+    }
+    
+    public Stream<QuestionDTO> findByCertificationAndQuestionnaireSetAndQuestionnaire(final Certification certification, final QuestionnaireSet questionnaireSet, final Questionnaire questionnaire) {
+	return questionRepository.findByCertificationAndQuestionnaireSetAndQuestionnaire(certification, questionnaireSet, questionnaire);
+    }
+    
+    public Stream<QuestionDTO> findByCertificationAndQuestionnaireSet(final Certification certification, final QuestionnaireSet questionnaireSet) {
+	return questionRepository.findByCertificationAndQuestionnaireSet(certification, questionnaireSet);
+    }
+    
+    public Stream<QuestionDTO> findByCertification(final Certification certification) {
+	return questionRepository.findByCertification(certification);
     }
 }

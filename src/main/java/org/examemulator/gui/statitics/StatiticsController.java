@@ -5,6 +5,7 @@ import static java.awt.Color.BLACK;
 import static java.awt.Color.BLUE;
 import static java.awt.Color.GREEN;
 import static java.awt.Color.RED;
+import static java.math.BigDecimal.valueOf;
 import static java.math.RoundingMode.HALF_UP;
 import static java.util.stream.Collectors.joining;
 import static javax.swing.BorderFactory.createTitledBorder;
@@ -14,17 +15,19 @@ import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.leftPad;
-import static org.examemulator.gui.GuiUtil.TAG_BR;
-import static org.examemulator.gui.GuiUtil.TAG_BR_BR;
-import static org.examemulator.gui.GuiUtil.TAG_CLOSE_B;
-import static org.examemulator.gui.GuiUtil.TAG_OPEN_B;
-import static org.examemulator.gui.GuiUtil.convertTextToHtml;
-import static org.examemulator.gui.GuiUtil.createScrollHtmlTextToShow;
-import static org.examemulator.gui.GuiUtil.extractedOptions;
-import static org.examemulator.util.ControllerUtil.hasNextQuestion;
-import static org.examemulator.util.ControllerUtil.hasPreviousQuestion;
-import static org.examemulator.util.ControllerUtil.nextQuestion;
-import static org.examemulator.util.ControllerUtil.previousQuestion;
+import static org.examemulator.util.domain.DomainUtil.MATH_CONTEXT;
+import static org.examemulator.util.domain.DomainUtil.VALUE_100;
+import static org.examemulator.util.gui.ControllerUtil.hasNextQuestion;
+import static org.examemulator.util.gui.ControllerUtil.hasPreviousQuestion;
+import static org.examemulator.util.gui.ControllerUtil.nextQuestion;
+import static org.examemulator.util.gui.ControllerUtil.previousQuestion;
+import static org.examemulator.util.gui.GuiUtil.TAG_BR;
+import static org.examemulator.util.gui.GuiUtil.TAG_BR_BR;
+import static org.examemulator.util.gui.GuiUtil.TAG_CLOSE_B;
+import static org.examemulator.util.gui.GuiUtil.TAG_OPEN_B;
+import static org.examemulator.util.gui.GuiUtil.convertTextToHtml;
+import static org.examemulator.util.gui.GuiUtil.createScrollHtmlTextToShow;
+import static org.examemulator.util.gui.GuiUtil.extractedOptions;
 
 import java.awt.Component;
 import java.awt.event.ItemListener;
@@ -307,19 +310,17 @@ public class StatiticsController {
 
 	final var qtyIncorrect = qtyTotal - qtyCorrect;
 
-	final var matchContext = new MathContext(2, HALF_UP); // 2 precision
-
 	final var minScoreValue = new BigDecimal(qtyTotal) //
 			.multiply(exam.getMinScorePercent()) //
-			.divide(BigDecimal.valueOf(100l), new MathContext(1, HALF_UP));
+			.divide(VALUE_100, new MathContext(1, HALF_UP));
 
 	final var percCorrect = new BigDecimal(qtyCorrect) //
-			.divide(BigDecimal.valueOf(qtyTotal), matchContext) //
-			.multiply(BigDecimal.valueOf(100l));
+			.divide(valueOf(qtyTotal), MATH_CONTEXT) //
+			.multiply(VALUE_100);
 
 	final var percIncorrect = new BigDecimal(qtyIncorrect) //
-			.divide(BigDecimal.valueOf(qtyTotal), matchContext) //
-			.multiply(BigDecimal.valueOf(100l));
+			.divide(valueOf(qtyTotal), MATH_CONTEXT) //
+			.multiply(VALUE_100);
 
 	final var result = BigDecimal.valueOf(qtyCorrect).compareTo(minScoreValue) >= 0 // 
 			? "<font color='green'>PASSED</font>" // 

@@ -14,6 +14,7 @@ public class ExamRepository extends GenericRepository<Exam, Long> {
 
     @SuppressWarnings("unchecked")
     public Stream<Exam> findByCertification(final Certification certification) {
+
 	
 	final var qlString = """
 			SELECT DISTINCT ex.*
@@ -28,5 +29,5 @@ public class ExamRepository extends GenericRepository<Exam, Long> {
 	query.setParameter(1, certification.getId());
 
 	return query.getResultStream();
-    }
+    }    
 }

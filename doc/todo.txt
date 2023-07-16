@@ -1,16 +1,19 @@
 ---------------------------------------------------------
 
-* Create exams with correct names (from questionnaiere, retest, dynamic)
-
 * Show questions statitics on main view
 
+* Create exams from questions reports
 * Create exam with specific questions on main view
+* Create an exam with most dificult questions, based on historical
+
+* Create exams with correct names (from questionnaiere, retest, dynamic)
+
+* Calculate the time correctly
+
+* Stop and continue exam for another day
 
 * Automated Tests
 
 * Doc
 
-* Stop and continue exam for another day
-
-* Create an exam with most dificult questions, based on historical
                                                   

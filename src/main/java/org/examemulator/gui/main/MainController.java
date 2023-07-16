@@ -8,14 +8,16 @@ import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION;
 import static javax.swing.ListSelectionModel.SINGLE_SELECTION;
 import static javax.swing.SwingConstants.CENTER;
+import static javax.swing.SwingUtilities.isLeftMouseButton;
 import static org.apache.commons.lang3.StringUtils.leftPad;
 import static org.apache.commons.lang3.StringUtils.substringBefore;
 import static org.apache.commons.lang3.StringUtils.trim;
 import static org.apache.commons.lang3.math.NumberUtils.toInt;
 import static org.apache.commons.lang3.math.NumberUtils.toLong;
-import static org.examemulator.util.ControllerUtil.alignColumns;
-import static org.examemulator.util.ControllerUtil.createTableModel;
-import static org.examemulator.util.ControllerUtil.TableModelField.fieldOf;
+import static org.examemulator.domain.exam.ExamStatus.FINISHED;
+import static org.examemulator.util.gui.ControllerUtil.alignColumns;
+import static org.examemulator.util.gui.ControllerUtil.createTableModel;
+import static org.examemulator.util.gui.ControllerUtil.TableModelField.fieldOf;
 
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
@@ -39,9 +41,9 @@ import org.examemulator.domain.cerfication.Certification;
 import org.examemulator.domain.exam.Exam;
 import org.examemulator.domain.exam.ExamStatus;
 import org.examemulator.domain.questionnaire.Questionnaire;
-import org.examemulator.domain.questionnaire.question.Question;
 import org.examemulator.domain.questionnaire.set.QuestionnaireSet;
 import org.examemulator.gui.components.MainJTreeTreeNode;
+import org.examemulator.gui.exam.ExamController;
 import org.examemulator.gui.main.MainView.MainGui;
 import org.examemulator.gui.questionnaire.QuestionnaireController;
 import org.examemulator.gui.statitics.StatiticsController;
@@ -51,6 +53,8 @@ import org.examemulator.service.LoadFromFileService;
 import org.examemulator.service.QuestionnaireService;
 import org.examemulator.service.QuestionnaireSetService;
 import org.examemulator.util.FileUtil;
+import org.examemulator.util.dto.QuestionDTO;
+import org.examemulator.util.gui.ControllerUtil.TableModelField;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.slf4j.Logger;
 
@@ -77,23 +81,29 @@ public class MainController {
 
     private final QuestionnaireController questionnaireController;
 
+    private final ExamController examController;
+    
     private final StatiticsController statiticsController;
-
-    private Certification selectedCertification;
-    private QuestionnaireSet selectedQuestionnaireSet;
-    private Questionnaire selectedQuestionnaire;
-
-    private Exam selectedExam;
+    
     private final List<Exam> exams = new ArrayList<>();
 
-    private final List<Question> questions = new ArrayList<>();
+    private final List<QuestionDTO> questions = new ArrayList<>();
 
     private final LoadFromFileService loadFromFileService;
+    
+    private Certification selectedCertification;
+    
+    private QuestionnaireSet selectedQuestionnaireSet;
+    
+    private Questionnaire selectedQuestionnaire;
+    
+    private Exam selectedExam;
 
     @Inject
     MainController( //
 		    final MainGui mainGui, //
 		    final QuestionnaireController questionnaireController, //
+		    final ExamController examController, //
 		    final StatiticsController statiticsController, // 
 		    final CertificationService certificationService, //
 		    final QuestionnaireSetService questionnaireSetService, //
@@ -111,6 +121,7 @@ public class MainController {
 	this.view = mainGui.getView();
 	this.questionnaireController = questionnaireController;
 	this.statiticsController = statiticsController;
+	this.examController = examController;
     }
 
     @PostConstruct
@@ -149,7 +160,6 @@ public class MainController {
 //	view.pQuestions.removeAll();
 //	view.pQuestions.revalidate();
 //	view.pQuestions.repaint();
-
 	loadTreeData();
 	loadExamData();
 	loadQuestionData();
@@ -174,37 +184,54 @@ public class MainController {
 
 		if (Objects.equals(type, Certification.class)) {
 		    
-		    if (SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 1) {
+		    if (isLeftMouseButton(event) && event.getClickCount() == 1 && !event.isConsumed()) {
 			
 			final var certificationString = (String) selectedNode.getUserObject();
 			final var certificationId = toLong(trim(substringBefore(certificationString, "-")));
 			selectedCertification = certificationService.findById(certificationId).orElse(null);
 
-			 loadExamData();
+			selectedQuestionnaireSet = null;
+			selectedQuestionnaire = null;
+			
+			if (nonNull(selectedCertification)) {
+			    loadExamData();
+			    loadQuestionData();
+			}
 		    }
 		    
 		} else if (Objects.equals(type, QuestionnaireSet.class)) {
 		    
-		    if (SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 1) {
+		    if (isLeftMouseButton(event) && event.getClickCount() == 1 && !event.isConsumed()) {
 			
 			final var questionnaireSetString = (String) selectedNode.getUserObject();
 			final var questionnaireSetOrder = toInt(trim(substringBefore(questionnaireSetString, "-")));
 			selectedQuestionnaireSet = questionnaireSetService.findByCertificationAndOrder(selectedCertification, questionnaireSetOrder).orElse(null);
+			
+			selectedQuestionnaire = null;
+			
+			if (nonNull(selectedQuestionnaireSet)) {
+			    loadQuestionData();
+			}
 		    }		    
 
 		} else if (Objects.equals(type, Questionnaire.class)) {
+		    
+		    final var selectedParentNode = (MainJTreeTreeNode) selectedNode.getParent();
+		    final var questionnaireSetString = (String) selectedParentNode.getUserObject();
+		    final var questionnaireSetOrder = toInt(trim(substringBefore(questionnaireSetString, "-")));
+		    selectedQuestionnaireSet = questionnaireSetService.findByCertificationAndOrder(selectedCertification, questionnaireSetOrder).orElse(null);
 		    
 		    final var questionnaireString = (String) selectedNode.getUserObject();
 		    final var questionnaireOrder = toInt(trim(substringBefore(questionnaireString, "-")));
 		    selectedQuestionnaire = questionnaireService.findByQuestionnaireSetAndOrder(selectedQuestionnaireSet, questionnaireOrder).orElse(null);
 		    
-		    if (SwingUtilities.isLeftMouseButton(event) && !event.isConsumed() && event.getClickCount() == 2 && nonNull(selectedQuestionnaire)) {
+		    if (isLeftMouseButton(event) && !event.isConsumed() && event.getClickCount() == 2 && nonNull(selectedQuestionnaire)) {
 			view.setVisible(false);
 			questionnaireController.show(view, selectedQuestionnaire);
 			return;
 		    }
 
-		    if (SwingUtilities.isLeftMouseButton(event) && !event.isConsumed() && event.getClickCount() == 1 && nonNull(selectedQuestionnaire)) {
+		    if (isLeftMouseButton(event) && !event.isConsumed() && event.getClickCount() == 1 && nonNull(selectedQuestionnaire)) {
 			loadQuestionData();
 		    }
 		    
@@ -230,12 +257,14 @@ public class MainController {
 					.findAny() //
 					.orElse(null);
 
-			if (Objects.nonNull(selectedExam) && ExamStatus.FINISHED.equals(selectedExam.getStatus())) {
+			if (Objects.nonNull(selectedExam) && FINISHED.equals(selectedExam.getStatus())) {
 			    view.setVisible(false);
 			    statiticsController.show(selectedExam, view);
+			} else if (Objects.nonNull(selectedExam) && ExamStatus.RUNNING.equals(selectedExam.getStatus())) {
+			    view.setVisible(false);
+			    examController.show(selectedExam, view);
 			}
 		    }
-
 		}
 	    }
 	});
@@ -290,12 +319,12 @@ public class MainController {
 
 	exams.clear();
 
-	if (ObjectUtils.anyNotNull(selectedCertification)) {
+	if (ObjectUtils.allNotNull(selectedCertification)) {
 	    exams.addAll(examService.findByCertification(selectedCertification).toList());
 	}
 
 	selectedExam = null;
-	final var fields = List.of(fieldOf("id"), fieldOf("status"), fieldOf("type"), fieldOf("shuffleQuestions"), fieldOf("result"));
+	final var fields = List.of(fieldOf("id"), fieldOf("name"), fieldOf("status"), fieldOf("type"), fieldOf("shuffleQuestions"), fieldOf("result"));
 	view.examTable.setModel(createTableModel(Exam.class, exams, fields));
 	view.examTable.getSelectionModel().setSelectionMode(SINGLE_SELECTION);
 
@@ -303,20 +332,63 @@ public class MainController {
     }
 
     private void loadQuestionData() {
+	
 	questions.clear();
+	
+	final List<TableModelField> tableFields;
 
-	if (ObjectUtils.anyNotNull(selectedQuestionnaire)) {
-
-	    questions.addAll(selectedQuestionnaire.getQuestions());
-
-	} else if (ObjectUtils.anyNotNull(selectedCertification, selectedQuestionnaire)) {
+	if (ObjectUtils.allNotNull(selectedCertification, selectedQuestionnaireSet, selectedQuestionnaire)) {
+	    
+	    tableFields = List.of( //
+			    fieldOf("value"), //
+			    fieldOf("questionOrder", LABEL_TABLE_ORDER), //
+			    fieldOf("qtyCorrect", "Correct"), //
+			    fieldOf("qtyIncorrect", "Incorrect"), //
+			    fieldOf("qtyTotal", "Total"), //
+			    fieldOf("percCorrect", "% Correct"), //
+			    fieldOf("percIncorrect", "% Incorrect") //
+	    );
+	    
+	    questions.addAll(questionnaireService.findByCertificationAndQuestionnaireSetAndQuestionnaire(selectedCertification, selectedQuestionnaireSet, selectedQuestionnaire).toList());
+	
+	} else if (ObjectUtils.allNotNull(selectedCertification, selectedQuestionnaireSet)) {
+	    
+	    tableFields = List.of( //
+			    fieldOf("questionnaireName", "Questionnaire"), //
+			    fieldOf("value"), //
+			    fieldOf("questionOrder", LABEL_TABLE_ORDER), //
+			    fieldOf("qtyCorrect", "Correct"), //
+			    fieldOf("qtyIncorrect", "Incorrect"), //
+			    fieldOf("qtyTotal", "Total"), //
+			    fieldOf("percCorrect", "% Correct"), //
+			    fieldOf("percIncorrect", "% Incorrect") //
+	    );
+	    
+	    questions.addAll(questionnaireService.findByCertificationAndQuestionnaireSet(selectedCertification, selectedQuestionnaireSet).toList());
+	    
+	} else if (ObjectUtils.allNotNull(selectedCertification)) {
+	    tableFields = List.of( //
+			    fieldOf("questionnaireSetName", "Set"), //
+			    fieldOf("questionnaireName", "Questionnaire"), //
+			    fieldOf("value"), //
+			    fieldOf("questionOrder", LABEL_TABLE_ORDER), //
+			    fieldOf("qtyCorrect", "Correct"), //
+			    fieldOf("qtyIncorrect", "Incorrect"), //
+			    fieldOf("qtyTotal", "Total"), //
+			    fieldOf("percCorrect", "% Correct"), //
+			    fieldOf("percIncorrect", "% Incorrect") //
+	    );
+	    
 	    questions.addAll(questionnaireService.findByCertification(selectedCertification).toList());
+	} else {
+	    tableFields = List.of();
 	}
 
-	view.questionsTable.setModel(createTableModel(Question.class, questions, List.of(fieldOf("order", LABEL_TABLE_ORDER), fieldOf("name"), fieldOf("value"))));
+	
+	view.questionsTable.setModel(createTableModel(QuestionDTO.class, questions, tableFields));
+	
 	view.questionsTable.getSelectionModel().setSelectionMode(MULTIPLE_INTERVAL_SELECTION);
-
-	alignColumns(view.questionsTable, List.of(0), CENTER);
+//	alignColumns(view.questionsTable, List.of(0), CENTER);
     }
 
     public void loadCertificationFromFolder(final String certificationDir) {

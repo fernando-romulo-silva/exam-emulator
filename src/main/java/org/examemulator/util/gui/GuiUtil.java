@@ -1,4 +1,4 @@
-package org.examemulator.gui;
+package org.examemulator.util.gui;
 
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.NORTH;
@@ -131,7 +131,7 @@ public class GuiUtil {
 	textComponent.setEditorKit(kit);
 	var doc = kit.createDefaultDocument();
 	textComponent.setDocument(doc);
-	textComponent.setText("<html> <body>" + text + " </body> </html>");
+	textComponent.setText("<html> <body style=\"font-family:"+ DEFAULT_FONT.getName() +" \">" + text + " </body> </html>");
 	textComponent.setMinimumSize(new Dimension(100, 100));
 	textComponent.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
 	textComponent.setFont(DEFAULT_FONT);

@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Random;
 import java.util.function.Consumer;
 
@@ -51,9 +50,6 @@ public class Exam {
     @Column(name = "DISCRETE_PERCENT", precision = 19, scale = 2)
     private BigDecimal discretPercent;
 
-    @Column(name = "RANDOM_ORDER")
-    private boolean randomOrder;
-
     @Column(name = "TYPE")
     private ExamType type;
 
@@ -89,8 +85,7 @@ public class Exam {
     private Exam(final Builder builder) {
 	super();
 	this.name = builder.name;
-	this.randomOrder = builder.randomOrder;
-	this.type = Optional.ofNullable(builder.type).orElse(ExamType.PRACTICE);
+	this.type = ofNullable(builder.type).orElse(ExamType.PRACTICE);
 	this.minScorePercent = builder.minScorePercent;
 	this.discretPercent = builder.discretPercent;
 	this.shuffleQuestions = builder.shuffleQuestions;
@@ -178,10 +173,6 @@ public class Exam {
 	return discretPercent;
     }
 
-    public boolean isRandomOrder() {
-	return randomOrder;
-    }
-
     public ExamType getType() {
 	return type;
     }
@@ -232,10 +223,10 @@ public class Exam {
 	);
     }
 
-    public long getDuration() {
+    public Long getDuration() {
 
 	if (status != ExamStatus.FINISHED) {
-	    return 0;
+	    return 0L;
 	}
 
 	return start.until(finish, MINUTES);
@@ -251,6 +242,10 @@ public class Exam {
 
     public ExamStatus getStatus() {
 	return status;
+    }
+    
+    public boolean isShuffleQuestions() {
+        return shuffleQuestions;
     }
 
     // -----------------------------------------------------------------------
@@ -295,8 +290,6 @@ public class Exam {
 	public BigDecimal minScorePercent;
 
 	public BigDecimal discretPercent;
-
-	public boolean randomOrder;
 
 	public ExamType type;
 

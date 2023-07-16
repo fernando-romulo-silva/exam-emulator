@@ -23,17 +23,17 @@ import static org.apache.commons.lang3.StringUtils.leftPad;
 import static org.examemulator.domain.exam.ExamStatus.RUNNING;
 import static org.examemulator.domain.exam.ExamType.EXAM;
 import static org.examemulator.domain.exam.ExamType.PRACTICE;
-import static org.examemulator.gui.GuiUtil.MILLISECOND;
-import static org.examemulator.gui.GuiUtil.createDiscreteOptions;
-import static org.examemulator.gui.GuiUtil.createIndiscreteOptions;
-import static org.examemulator.gui.GuiUtil.createScrollTextToShow;
-import static org.examemulator.gui.GuiUtil.createTimerAction;
-import static org.examemulator.gui.GuiUtil.extractedOptions;
-import static org.examemulator.util.ControllerUtil.hasNextQuestion;
-import static org.examemulator.util.ControllerUtil.hasPreviousQuestion;
-import static org.examemulator.util.ControllerUtil.nextQuestion;
-import static org.examemulator.util.ControllerUtil.previousQuestion;
 import static org.examemulator.util.domain.DomainUtil.DISCRET_LIST;
+import static org.examemulator.util.gui.ControllerUtil.hasNextQuestion;
+import static org.examemulator.util.gui.ControllerUtil.hasPreviousQuestion;
+import static org.examemulator.util.gui.ControllerUtil.nextQuestion;
+import static org.examemulator.util.gui.ControllerUtil.previousQuestion;
+import static org.examemulator.util.gui.GuiUtil.MILLISECOND;
+import static org.examemulator.util.gui.GuiUtil.createDiscreteOptions;
+import static org.examemulator.util.gui.GuiUtil.createIndiscreteOptions;
+import static org.examemulator.util.gui.GuiUtil.createScrollTextToShow;
+import static org.examemulator.util.gui.GuiUtil.createTimerAction;
+import static org.examemulator.util.gui.GuiUtil.extractedOptions;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -145,6 +145,81 @@ public class ExamController {
 	    logger.info("finished swing-event: {}", this.getClass().getSimpleName());
 	});
     }
+    
+    
+    public void show(final Exam selectedExam, final Component lastView) {
+	
+	this.availableQuestions = selectedExam.getQuestions();
+	this.name = selectedExam.getName();
+
+	this.exam = selectedExam;
+	view.contentPane.setBorder(createTitledBorder(name));
+	
+	final var questionLabelListener = new QuestionLabelListener();
+
+	for (var i = 1; i <= availableQuestions.size(); i++) {
+	    final var value = Integer.toString(i);
+	    final var label = new JLabel(leftPad(value, 2, '0'));
+	    label.setName(value);
+	    view.pQuestions.add(label);
+	    
+	    final var tempQuestion = selectedExam.getQuestions().get(i - 1);
+	    
+	    if (tempQuestion.isMarked()) {
+		label.setForeground(BLUE);
+	    } else if (tempQuestion.isAnswered()) {
+		label.setForeground(GRAY);
+	    } else {
+		label.setForeground(BLACK);
+	    }
+	    
+	    label.addMouseListener(questionLabelListener);
+	    label.repaint();
+	}
+	
+	if (Objects.equals(exam.getType(), PRACTICE)) {
+	    view.btnCheckAnswer.setVisible(true);
+	    view.lblDuration.setVisible(false);
+	    view.spinnerTimeDuration.setVisible(false);
+	} else {
+	    view.btnCheckAnswer.setVisible(false);
+	    timer = new Timer(MILLISECOND, createTimerAction(exam.getDuration().intValue(), view.lblClock, () -> view.btnFinish.doClick()));
+	    timer.start();
+	}
+
+	view.btnStart.setEnabled(false);
+	view.btnStatistics.setEnabled(false);
+	view.btnPrevious.setEnabled(false);
+
+	view.textMinScore.setEnabled(false);
+	view.textDiscrete.setEnabled(false);
+	view.cbMode.setEnabled(false);
+	view.spinnerTimeDuration.setEnabled(false);
+	view.chckbxShuffleQuestions.setEnabled(false);
+	view.chckbxShuffleOptions.setEnabled(false);
+
+	view.btnPauseProceed.setEnabled(true);
+	view.btnFinish.setEnabled(true);
+	view.btnNext.setEnabled(true);
+	view.btnCheckAnswer.setEnabled(true);
+	
+	SwingUtilities.invokeLater(() -> {
+
+	    logger.info("starting swing-event: {}", this.getClass().getSimpleName());
+
+	    view.setLocationRelativeTo(lastView);
+
+	    view.revalidate();
+	    view.repaint();
+	    view.setVisible(true);
+
+	    logger.info("finished swing-event: {}", this.getClass().getSimpleName());
+	});
+	
+	selectedQuestion = exam.getQuestions().get(0);
+
+	loadPanelQuestion();
+    }
 
     // =================================================================================================================
     
@@ -193,7 +268,6 @@ public class ExamController {
 		$.type = practiceMode ? PRACTICE : EXAM;
 		$.discretPercent = discretPercent;
 		$.minScorePercent = minScorePercent;
-		$.randomOrder = false;
 		$.shuffleQuestions = shuffleQuestions;
 		$.shuffleOptions = shuffleOptions;
 		$.questions = availableQuestions;
@@ -307,6 +381,8 @@ public class ExamController {
 	view.btnFinish.addActionListener(event -> {
 
 	    exam.finish();
+	    
+	    service.save(exam);
 
 	    if (nonNull(timer)) {
 		timer.stop();
@@ -328,9 +404,6 @@ public class ExamController {
 	    view.questionInternPanel.removeAll();
 	    view.questionInternPanel.revalidate();
 	    view.questionInternPanel.repaint();
-	    
-	    
-	    service.save(exam);
 	});
 
 	view.btnStatistics.addActionListener(event -> {
@@ -393,6 +466,7 @@ public class ExamController {
 
 	    final var okButton = new JButton("Ok");
 	    okButton.addActionListener(okEvent -> answerDialog.setVisible(false));
+	    okButton.setMnemonic(KeyEvent.VK_O);
 
 	    final var panel = new JPanel(new FlowLayout());
 	    panel.add(okButton);
@@ -588,4 +662,5 @@ public class ExamController {
 	    view.btnNext.setEnabled(hasNextQuestion(exam.getQuestions(), selectedQuestion));
 	}
     }
+
 }

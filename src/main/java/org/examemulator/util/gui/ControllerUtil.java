@@ -1,8 +1,7 @@
-package org.examemulator.util;
+package org.examemulator.util.gui;
 
-import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
+import static org.apache.commons.lang3.reflect.MethodUtils.getMatchingAccessibleMethod;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -16,6 +15,8 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.examemulator.gui.components.TableColumnAdjuster;
 
 public class ControllerUtil {
@@ -129,31 +130,35 @@ public class ControllerUtil {
 
     public static <T> AbstractTableModel createTableModel(final Class<T> beanClass, final List<T> list, final List<TableModelField> fields) {
 
-	final BeanInfo beanInfo;
-	try {
-	    beanInfo = Introspector.getBeanInfo(beanClass);
-	} catch (final IntrospectionException ex) {
-	    throw new IllegalArgumentException(ex);
-	}
-
 	final var columns = new ArrayList<String>();
 	final var getters = new ArrayList<Method>();
 
-	final var propertyDescriptors = beanInfo.getPropertyDescriptors();
+	final var classFields = FieldUtils.getAllFields(beanClass);
 
 	for (final var field : fields) {
 	    final var name = field.name();
 
-	    final var optionalDescriptor = Stream.of(propertyDescriptors).filter(desc -> Objects.equals(desc.getName(), name)).findFirst();
+	    final var optionalClassField = Stream.of(classFields).filter(desc -> Objects.equals(desc.getName(), name)).findFirst();
 
-	    if (optionalDescriptor.isEmpty()) {
+	    if (optionalClassField.isEmpty()) {
 		continue;
 	    }
 
-	    final var descriptor = optionalDescriptor.get();
-
 	    columns.add(field.label());
-	    getters.add(descriptor.getReadMethod());
+
+	    if (beanClass.isRecord()) {
+		getters.add(getMatchingAccessibleMethod(beanClass, name));
+	    } else {
+		
+		String methodName;
+		if (Boolean.class.equals(optionalClassField.get().getType()) || boolean.class.equals(optionalClassField.get().getType())) {
+		    methodName = "is" + StringUtils.capitalize(name);
+		}else {
+		    methodName = "get" + StringUtils.capitalize(name);
+		}
+		
+		getters.add(getMatchingAccessibleMethod(beanClass, methodName));
+	    }
 	}
 
 	return new AbstractTableModel() {
@@ -178,7 +183,8 @@ public class ControllerUtil {
 	    @Override
 	    public Object getValueAt(int rowIndex, int columnIndex) {
 		try {
-		    return getters.get(columnIndex).invoke(list.get(rowIndex));
+		    final var method = getters.get(columnIndex);
+		    return method.invoke(list.get(rowIndex));
 		} catch (final IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
 		    throw new IllegalArgumentException(ex);
 		}
@@ -194,11 +200,11 @@ public class ControllerUtil {
 	if (!table.getColumnModel().getColumns().hasMoreElements()) {
 	    return;
 	}
-	
+
 	for (final var column : columns) {
 	    table.getColumnModel().getColumn(column).setCellRenderer(centerRenderer);
 	}
-	
+
 	final var tca = new TableColumnAdjuster(table);
 	tca.adjustColumns();
     }

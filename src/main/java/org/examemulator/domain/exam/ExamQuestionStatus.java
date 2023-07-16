@@ -6,5 +6,5 @@ public enum ExamQuestionStatus {
     
     ANSWERED,
     
-    FINALIZED
+    FINISHED
 }

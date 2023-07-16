@@ -5,7 +5,7 @@ import static java.awt.FlowLayout.LEFT;
 import static javax.swing.BorderFactory.createTitledBorder;
 import static javax.swing.BoxLayout.Y_AXIS;
 import static javax.swing.border.EtchedBorder.LOWERED;
-import static org.examemulator.gui.GuiUtil.APP_NAME;
+import static org.examemulator.util.gui.GuiUtil.APP_NAME;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;

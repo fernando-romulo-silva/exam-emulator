@@ -15,17 +15,17 @@ import static javax.swing.SwingUtilities.isRightMouseButton;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.leftPad;
 import static org.apache.commons.lang3.math.NumberUtils.toInt;
-import static org.examemulator.gui.GuiUtil.TAG_BR;
-import static org.examemulator.gui.GuiUtil.TAG_BR_BR;
-import static org.examemulator.gui.GuiUtil.TAG_CLOSE_B;
-import static org.examemulator.gui.GuiUtil.TAG_OPEN_B;
-import static org.examemulator.gui.GuiUtil.convertTextToHtml;
-import static org.examemulator.gui.GuiUtil.createScrollHtmlTextToShow;
-import static org.examemulator.gui.GuiUtil.extractedOptions;
-import static org.examemulator.util.ControllerUtil.hasNextQuestion;
-import static org.examemulator.util.ControllerUtil.hasPreviousQuestion;
-import static org.examemulator.util.ControllerUtil.nextQuestion;
-import static org.examemulator.util.ControllerUtil.previousQuestion;
+import static org.examemulator.util.gui.ControllerUtil.hasNextQuestion;
+import static org.examemulator.util.gui.ControllerUtil.hasPreviousQuestion;
+import static org.examemulator.util.gui.ControllerUtil.nextQuestion;
+import static org.examemulator.util.gui.ControllerUtil.previousQuestion;
+import static org.examemulator.util.gui.GuiUtil.TAG_BR;
+import static org.examemulator.util.gui.GuiUtil.TAG_BR_BR;
+import static org.examemulator.util.gui.GuiUtil.TAG_CLOSE_B;
+import static org.examemulator.util.gui.GuiUtil.TAG_OPEN_B;
+import static org.examemulator.util.gui.GuiUtil.convertTextToHtml;
+import static org.examemulator.util.gui.GuiUtil.createScrollHtmlTextToShow;
+import static org.examemulator.util.gui.GuiUtil.extractedOptions;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -125,6 +125,7 @@ public class QuestionnaireController {
 	view.pQuestions.revalidate();
 	view.pQuestions.repaint();
 	
+	toExamQuestions.clear();
 	toExamQuestions.addAll(questionnaire.getQuestions());
 
 	view.contentPane.setBorder(createTitledBorder(questionnaire.getName()));

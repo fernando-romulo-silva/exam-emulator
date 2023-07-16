@@ -5,7 +5,7 @@ import static java.util.stream.Collectors.joining;
 import static org.apache.commons.collections4.CollectionUtils.containsAny;
 import static org.apache.commons.collections4.CollectionUtils.isEqualCollection;
 import static org.examemulator.domain.exam.ExamQuestionStatus.ANSWERED;
-import static org.examemulator.domain.exam.ExamQuestionStatus.FINALIZED;
+import static org.examemulator.domain.exam.ExamQuestionStatus.FINISHED;
 import static org.examemulator.util.FileUtil.WORDS_ALL;
 import static org.examemulator.util.FileUtil.WORDS_NONE;
 import static org.examemulator.util.domain.DomainUtil.DISCRET_LIST;
@@ -70,6 +70,7 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
     private boolean correct = Boolean.FALSE;
     
     @Column(name = "STATUS")
+    @Enumerated(EnumType.STRING)
     private ExamQuestionStatus status = ExamQuestionStatus.UNANSWERED;
 
     ExamQuestion() {
@@ -172,7 +173,7 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
 
     public void selectAnswer(final String answer) {
 
-	if (status == FINALIZED) {
+	if (status == FINISHED) {
 	    throw new IllegalStateException("You can't select an answer to finalized exam question!");
 	}
 	
@@ -209,7 +210,7 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
 
     public void deselectAnswer(final String answer) {
 
-	if (status == FINALIZED) {
+	if (status == FINISHED) {
 	    throw new IllegalStateException("You can't deselect an answer to finalized exam question!");
 	}	
 	
@@ -230,7 +231,7 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
 
     public void mark(final boolean value) {
 	
-	if (status == FINALIZED) {
+	if (status == FINISHED) {
 	    throw new IllegalStateException("You can't mark an answer to finalized exam question!");
 	}	
 	
@@ -238,7 +239,8 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
     }
     
     void finalizeExamQuestion() {
-	status = FINALIZED;
+	status = FINISHED;
+	correct = isCorrect();
     }
 
     // ------------------------------------------------------------------------------
@@ -310,8 +312,7 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
     public boolean isCorrect() {
 
 	if (!isAnswered()) {
-	    correct = false;
-	    return correct;
+	    return false;
 	}
 
 	final var answers = getAnswers();
@@ -319,8 +320,7 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
 	final var correctOptions = getCorrectOptions();
 
 	if (isEqualCollection(answers, correctOptions)) {
-	    correct = true;
-	    return correct;
+	    return true;
 	}
 
 	final var answersText = options.stream() //
@@ -330,8 +330,7 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
 	if (CollectionUtils.containsAny(answersText, WORDS_ALL)) {
 
 	    if (options.size() == answers.size()) {
-		correct = true;
-		return correct;
+		return true;
 	    }
 
 	    final var remainderOptions = options.stream() //
@@ -339,15 +338,11 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
 			    .map(ExamOption::getLetter) //
 			    .toList();
 
-	    correct = isEqualCollection(answers, remainderOptions);
+	    return isEqualCollection(answers, remainderOptions);
 	    
-	} else {
-	    
-	    correct = false; 
-	}
-	    
+	} 
 
-	return correct;
+	return false;
     }
 
     // ------------------------------------------------------------------------------
