@@ -156,6 +156,8 @@ public class ExamController {
 	view.contentPane.setBorder(createTitledBorder(name));
 	
 	final var questionLabelListener = new QuestionLabelListener();
+	
+	view.pQuestions.removeAll();
 
 	for (var i = 1; i <= availableQuestions.size(); i++) {
 	    final var value = Integer.toString(i);
@@ -535,7 +537,7 @@ public class ExamController {
 	btnFake.setMnemonic(KeyEvent.VK_T);
 	panelQuestionPanel.add(btnFake);
 	
-	panelQuestionPanel.setBorder(titleBorder);
+	view.questionInternPanel.setBorder(titleBorder);
 	panelQuestionPanel.add(createScrollTextToShow(questionText));
 	panelQuestionPanel.revalidate();
 	panelQuestionPanel.repaint();
@@ -562,8 +564,6 @@ public class ExamController {
 
     private void loadNumbersPanel() {
 	view.pQuestions.removeAll();
-	view.pQuestions.revalidate();
-	view.pQuestions.repaint();
 
 	final var questionLabelListener = new QuestionLabelListener();
 
@@ -575,6 +575,9 @@ public class ExamController {
 	    view.pQuestions.add(label);
 	    label.addMouseListener(questionLabelListener);
 	}
+	
+	view.pQuestions.revalidate();
+	view.pQuestions.repaint();
     }
     
     private void updateQuestionLabel() {

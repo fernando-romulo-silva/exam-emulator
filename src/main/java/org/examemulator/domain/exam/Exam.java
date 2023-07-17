@@ -4,6 +4,9 @@ import static java.math.RoundingMode.HALF_UP;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Optional.ofNullable;
+import static org.examemulator.domain.exam.ExamResult.FAILED;
+import static org.examemulator.domain.exam.ExamResult.PASSED;
+import static org.examemulator.util.domain.DomainUtil.VALUE_100;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -66,7 +69,7 @@ public class Exam {
 
     @Column(name = "TIME_SPENT_MINUTES")
     private Integer timeSpentMinutes;
-    
+
     @Column(name = "START")
     private LocalDateTime start;
 
@@ -76,6 +79,10 @@ public class Exam {
     @Column(name = "STATUS")
     @Enumerated(EnumType.STRING)
     private ExamStatus status = ExamStatus.INITIAL;
+
+    @Column(name = "RESULT")
+    @Enumerated(EnumType.STRING)
+    private ExamResult result = ExamResult.UNDEFINED;
 
     // -----------------------------------------------------------------
     Exam() {
@@ -116,7 +123,17 @@ public class Exam {
 
 	finish = LocalDateTime.now();
 	status = ExamStatus.FINISHED;
-	
+
+	final var qtyTotal = questions.size();
+
+	final var qtyCorrect = getQtyCorrect();
+
+	final var minScoreValue = new BigDecimal(qtyTotal) //
+			.multiply(minScorePercent) //
+			.divide(VALUE_100, new MathContext(1, HALF_UP));
+
+	result = BigDecimal.valueOf(qtyCorrect).compareTo(minScoreValue) >= 0 ? PASSED : FAILED;
+
 	questions.forEach(ExamQuestion::finalizeExamQuestion);
     }
 
@@ -184,31 +201,16 @@ public class Exam {
 	return false;
     }
 
-    public String getResult() {
-
-	if (status != ExamStatus.FINISHED) {
-	    return "DOING";
-	}
-
-	final var qtyTotal = questions.size();
-
-	final var qtyCorrect = getQtyCorrect();
-
-//	final var qtyIncorrect = qtyTotal - qtyCorrect;
-
-	final var minScoreValue = new BigDecimal(qtyTotal) //
-			.multiply(minScorePercent) //
-			.divide(BigDecimal.valueOf(100l), new MathContext(1, HALF_UP));
-
-	return BigDecimal.valueOf(qtyCorrect).compareTo(minScoreValue) >= 0 ? "PASSED" : "FAILED";
+    public ExamResult getResult() {
+	return result;
     }
-    
+
     public Long getQtyCorrect() {
 	return questions.stream() //
 			.filter(q -> q.isCorrect()) //
 			.count();
     }
-    
+
     public Long getQtyIncorrect() {
 	return questions.stream() //
 			.filter(q -> !q.isCorrect()) //
@@ -218,8 +220,8 @@ public class Exam {
     public List<ExamQuestion> getQuestions() {
 	return unmodifiableList( //
 			questions.stream() //
-				.sorted((q1, q2) -> q1.getOrder().compareTo(q2.getOrder())) //
-				.toList() //
+					.sorted((q1, q2) -> q1.getOrder().compareTo(q2.getOrder())) //
+					.toList() //
 	);
     }
 
@@ -243,9 +245,9 @@ public class Exam {
     public ExamStatus getStatus() {
 	return status;
     }
-    
+
     public boolean isShuffleQuestions() {
-        return shuffleQuestions;
+	return shuffleQuestions;
     }
 
     // -----------------------------------------------------------------------
@@ -257,19 +259,13 @@ public class Exam {
     @Override
     public boolean equals(final Object obj) {
 
-	final boolean result;
-
 	if (this == obj) {
-	    result = true;
-
+	    return true;
 	} else if (obj instanceof final Exam other) {
-	    result = Objects.equals(id, other.id);
-
+	    return Objects.equals(id, other.id);
 	} else {
-	    result = false;
+	    return false;
 	}
-
-	return result;
     }
 
     @Override

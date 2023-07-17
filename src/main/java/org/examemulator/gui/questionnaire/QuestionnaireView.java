@@ -72,7 +72,7 @@ class QuestionnaireView extends JFrame {
 	// -------------------------------------------------------------------------------------------
 
 	examPanel = new JPanel();
-	examPanel.setBorder(new EtchedBorder(LOWERED, null, null));
+	examPanel.setBorder(null);
 	examPanel.setLayout(new BoxLayout(examPanel, Y_AXIS));
 	contentPane.add(examPanel);
 

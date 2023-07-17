@@ -93,7 +93,7 @@ class ExamView extends JFrame {
 	// -------------------------------------------------------------------------------------------
 
 	examPanel = new JPanel();
-	examPanel.setBorder(new EtchedBorder(LOWERED, null, null));
+	examPanel.setBorder(null);
 	examPanel.setLayout(new BoxLayout(examPanel, Y_AXIS));
 	contentPane.add(examPanel);
 
@@ -145,38 +145,38 @@ class ExamView extends JFrame {
 	examControlPanel2.add(textDiscrete);
 	textDiscrete.setEnabled(false);
 
+	final var examControlPanel3 = new JPanel();
+	examControlPanel3.setLayout(new WrapLayout(LEFT, 5, 5));
+	examPanel.add(examControlPanel3);
+
+	final var lblMinScore = new JLabel("Min Score (%)");
+	examControlPanel3.add(lblMinScore);
+
+	textMinScore = new JSpinner(new SpinnerNumberModel(90, 50, 100, 10));
+	textMinScore.setEnabled(false);
+	examControlPanel3.add(textMinScore);
+
 	final var lblMode = new JLabel("Mode");
-	examControlPanel2.add(lblMode);
+	examControlPanel3.add(lblMode);
 	lblMode.setBorder(new EtchedBorder(LOWERED, null, null));
 
 	cbMode = new JComboBox<>();
-	examControlPanel2.add(cbMode);
+	examControlPanel3.add(cbMode);
 	cbMode.setEnabled(false);
 	cbMode.addItem("Practice");
 	cbMode.addItem("Exam");
 
 	cbMode.setSize(200, cbMode.getPreferredSize().height);
 
-	final var examControlPane3 = new JPanel();
-	examControlPane3.setLayout(new WrapLayout(LEFT, 5, 5));
-	examPanel.add(examControlPane3);
-
-	final var lblMinScore = new JLabel("Min Score (%)");
-	examControlPane3.add(lblMinScore);
-
-	textMinScore = new JSpinner(new SpinnerNumberModel(90, 50, 100, 10));
-	textMinScore.setEnabled(false);
-	examControlPane3.add(textMinScore);
-
 	lblDuration = new JLabel("Duration (Min)");
-	examControlPane3.add(lblDuration);
+	examControlPanel3.add(lblDuration);
 
 	spinnerTimeDuration = new JSpinner(new SpinnerNumberModel(60, 10, 120, 10));
-	examControlPane3.add(spinnerTimeDuration);
+	examControlPanel3.add(spinnerTimeDuration);
 	spinnerTimeDuration.setEnabled(false);
 
 	lblClock = new JLabel("");
-	examControlPane3.add(lblClock);
+	examControlPanel3.add(lblClock);
 	lblClock.setBorder(new EtchedBorder(LOWERED, null, null));
 
 	// -------------------------------------------------------------------------------------------
