@@ -15,8 +15,11 @@ import static org.apache.commons.lang3.math.NumberUtils.toInt;
 import static org.apache.commons.lang3.math.NumberUtils.toLong;
 import static org.examemulator.domain.exam.ExamStatus.FINISHED;
 import static org.examemulator.util.gui.ControllerUtil.alignTableModel;
-import static org.examemulator.util.gui.ControllerUtil.TableModelField.fieldOf;
-import static org.examemulator.util.gui.TableCellRendererUtil.*;
+import static org.examemulator.util.gui.TableCellRendererUtil.ENUM_TABLE_CELL_RENDERER;
+import static org.examemulator.util.gui.TableCellRendererUtil.NUMBER_TABLE_CELL_RENDERER;
+import static org.examemulator.util.gui.TableCellRendererUtil.ORDER_TABLE_CELL_RENDERER;
+import static org.examemulator.util.gui.TableCellRendererUtil.PERCENT_TABLE_CELL_RENDERER;
+import static org.examemulator.util.gui.TableModelField.fieldOf;
 
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
@@ -53,7 +56,7 @@ import org.examemulator.service.QuestionnaireService;
 import org.examemulator.service.QuestionnaireSetService;
 import org.examemulator.util.FileUtil;
 import org.examemulator.util.dto.QuestionDTO;
-import org.examemulator.util.gui.ControllerUtil.TableModelField;
+import org.examemulator.util.gui.TableModelField;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.slf4j.Logger;
 
