@@ -7,7 +7,6 @@ import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION;
 import static javax.swing.ListSelectionModel.SINGLE_SELECTION;
-import static javax.swing.SwingConstants.CENTER;
 import static javax.swing.SwingUtilities.isLeftMouseButton;
 import static org.apache.commons.lang3.StringUtils.leftPad;
 import static org.apache.commons.lang3.StringUtils.substringBefore;
@@ -15,9 +14,9 @@ import static org.apache.commons.lang3.StringUtils.trim;
 import static org.apache.commons.lang3.math.NumberUtils.toInt;
 import static org.apache.commons.lang3.math.NumberUtils.toLong;
 import static org.examemulator.domain.exam.ExamStatus.FINISHED;
-import static org.examemulator.util.gui.ControllerUtil.alignColumns;
-import static org.examemulator.util.gui.ControllerUtil.createTableModel;
+import static org.examemulator.util.gui.ControllerUtil.alignTableModel;
 import static org.examemulator.util.gui.ControllerUtil.TableModelField.fieldOf;
+import static org.examemulator.util.gui.TableCellRendererUtil.*;
 
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
@@ -65,7 +64,7 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class MainController {
 
-    private static final String LABEL_TABLE_ORDER = "   Order  ";
+    private static final String LABEL_TABLE_ORDER = "Order";
 
     private final CertificationService certificationService;
 
@@ -324,11 +323,18 @@ public class MainController {
 	}
 
 	selectedExam = null;
-	final var fields = List.of(fieldOf("id"), fieldOf("name"), fieldOf("status"), fieldOf("type"), fieldOf("shuffleQuestions"), fieldOf("result"));
-	view.examTable.setModel(createTableModel(Exam.class, exams, fields));
+	
+	final var fields = List.of( //
+			fieldOf("id", NUMBER_TABLE_CELL_RENDERER), //
+			fieldOf("name", true), //
+			fieldOf("status", ENUM_TABLE_CELL_RENDERER), //
+			fieldOf("type", ENUM_TABLE_CELL_RENDERER), //
+			fieldOf("shuffleQuestions"), //
+			fieldOf("result", ENUM_TABLE_CELL_RENDERER)//
+	);
+	
+	alignTableModel(view.examTable, Exam.class, exams, fields);
 	view.examTable.getSelectionModel().setSelectionMode(SINGLE_SELECTION);
-
-	alignColumns(view.examTable, List.of(0), CENTER);
     }
 
     private void loadQuestionData() {
@@ -340,13 +346,13 @@ public class MainController {
 	if (ObjectUtils.allNotNull(selectedCertification, selectedQuestionnaireSet, selectedQuestionnaire)) {
 	    
 	    tableFields = List.of( //
-			    fieldOf("value"), //
-			    fieldOf("questionOrder", LABEL_TABLE_ORDER), //
-			    fieldOf("qtyCorrect", "Correct"), //
-			    fieldOf("qtyIncorrect", "Incorrect"), //
-			    fieldOf("qtyTotal", "Total"), //
-			    fieldOf("percCorrect", "% Correct"), //
-			    fieldOf("percIncorrect", "% Incorrect") //
+			    fieldOf("value", true), //
+			    fieldOf("questionOrder", LABEL_TABLE_ORDER, ORDER_TABLE_CELL_RENDERER), //
+			    fieldOf("qtyCorrect", "Correct", NUMBER_TABLE_CELL_RENDERER), //
+			    fieldOf("qtyIncorrect", "Incorrect", NUMBER_TABLE_CELL_RENDERER), //
+			    fieldOf("qtyTotal", "Total", NUMBER_TABLE_CELL_RENDERER), //
+			    fieldOf("percCorrect", "% Correct", PERCENT_TABLE_CELL_RENDERER), //
+			    fieldOf("percIncorrect", "% Incorrect", PERCENT_TABLE_CELL_RENDERER) //
 	    );
 	    
 	    questions.addAll(questionnaireService.findByCertificationAndQuestionnaireSetAndQuestionnaire(selectedCertification, selectedQuestionnaireSet, selectedQuestionnaire).toList());
@@ -355,13 +361,13 @@ public class MainController {
 	    
 	    tableFields = List.of( //
 			    fieldOf("questionnaireName", "Questionnaire"), //
-			    fieldOf("value"), //
-			    fieldOf("questionOrder", LABEL_TABLE_ORDER), //
-			    fieldOf("qtyCorrect", "Correct"), //
-			    fieldOf("qtyIncorrect", "Incorrect"), //
-			    fieldOf("qtyTotal", "Total"), //
-			    fieldOf("percCorrect", "% Correct"), //
-			    fieldOf("percIncorrect", "% Incorrect") //
+			    fieldOf("value", true), //
+			    fieldOf("questionOrder", LABEL_TABLE_ORDER, ORDER_TABLE_CELL_RENDERER), //
+			    fieldOf("qtyCorrect", "Correct", NUMBER_TABLE_CELL_RENDERER), //
+			    fieldOf("qtyIncorrect", "Incorrect", NUMBER_TABLE_CELL_RENDERER), //
+			    fieldOf("qtyTotal", "Total", NUMBER_TABLE_CELL_RENDERER), //
+			    fieldOf("percCorrect", "% Correct", PERCENT_TABLE_CELL_RENDERER), //
+			    fieldOf("percIncorrect", "% Incorrect", PERCENT_TABLE_CELL_RENDERER) //
 	    );
 	    
 	    questions.addAll(questionnaireService.findByCertificationAndQuestionnaireSet(selectedCertification, selectedQuestionnaireSet).toList());
@@ -370,13 +376,13 @@ public class MainController {
 	    tableFields = List.of( //
 			    fieldOf("questionnaireSetName", "Set"), //
 			    fieldOf("questionnaireName", "Questionnaire"), //
-			    fieldOf("value"), //
-			    fieldOf("questionOrder", LABEL_TABLE_ORDER), //
-			    fieldOf("qtyCorrect", "Correct"), //
-			    fieldOf("qtyIncorrect", "Incorrect"), //
-			    fieldOf("qtyTotal", "Total"), //
-			    fieldOf("percCorrect", "% Correct"), //
-			    fieldOf("percIncorrect", "% Incorrect") //
+			    fieldOf("value", true), //
+			    fieldOf("questionOrder", LABEL_TABLE_ORDER, ORDER_TABLE_CELL_RENDERER), //
+			    fieldOf("qtyCorrect", "Correct", NUMBER_TABLE_CELL_RENDERER), //
+			    fieldOf("qtyIncorrect", "Incorrect", NUMBER_TABLE_CELL_RENDERER), //
+			    fieldOf("qtyTotal", "Total", NUMBER_TABLE_CELL_RENDERER), //
+			    fieldOf("percCorrect", "% Correct", PERCENT_TABLE_CELL_RENDERER), //
+			    fieldOf("percIncorrect", "% Incorrect", PERCENT_TABLE_CELL_RENDERER) //
 	    );
 	    
 	    questions.addAll(questionnaireService.findByCertification(selectedCertification).toList());
@@ -385,10 +391,9 @@ public class MainController {
 	}
 
 	
-	view.questionsTable.setModel(createTableModel(QuestionDTO.class, questions, tableFields));
+	alignTableModel(view.questionsTable, QuestionDTO.class, questions, tableFields);
 	
 	view.questionsTable.getSelectionModel().setSelectionMode(MULTIPLE_INTERVAL_SELECTION);
-//	alignColumns(view.questionsTable, List.of(0), CENTER);
     }
 
     public void loadCertificationFromFolder(final String certificationDir) {

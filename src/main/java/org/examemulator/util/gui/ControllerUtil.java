@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import javax.swing.JTable;
@@ -19,7 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.examemulator.gui.components.TableColumnAdjuster;
 
-public class ControllerUtil {
+public final class ControllerUtil {
 
     private ControllerUtil() {
 	throw new IllegalStateException("You can't instanciate this class");
@@ -95,26 +94,37 @@ public class ControllerUtil {
 	return Optional.empty();
     }
 
-    public static record TableModelField(String name, String label, Function<String, Object> formatter) {
+    public static record TableModelField(String name, String label, boolean principal, DefaultTableCellRenderer cellRender) {
 
 	public TableModelField {
 	    Objects.requireNonNull(name);
-	    Objects.requireNonNull(label);
+	    
+	    if (Objects.isNull(label)) {
+		label = createLabel(name);
+	    } 
+	}
+	
+	public static TableModelField fieldOf(String name, String label, DefaultTableCellRenderer cellRender) {
+	    return new TableModelField(name, label, false, cellRender);
 	}
 
-	public static TableModelField fieldOf(String name, Function<String, Object> formatter) {
-	    return new TableModelField(name, createLabel(name), formatter);
+	public static TableModelField fieldOf(String name, DefaultTableCellRenderer cellRender) {
+	    return new TableModelField(name, null, false, cellRender);
 	}
 
 	public static TableModelField fieldOf(String name, String label) {
-	    return new TableModelField(name, label, null);
+	    return new TableModelField(name, label, false, null);
 	}
 
 	public static TableModelField fieldOf(String name) {
-	    return new TableModelField(name, createLabel(name), null);
+	    return new TableModelField(name, null, false, null);
 	}
-
-	private static String createLabel(final String name) {
+	
+	public static TableModelField fieldOf(String name, boolean principal) {
+	    return new TableModelField(name, null, principal, null);
+	}
+	
+	private String createLabel(final String name) {
 
 	    final var nameTemp = Character.toUpperCase(name.charAt(0)) + name.substring(1);
 	    final var splitedName = nameTemp.split("(?=\\p{Upper})");
@@ -128,7 +138,34 @@ public class ControllerUtil {
 	}
     }
 
-    public static <T> AbstractTableModel createTableModel(final Class<T> beanClass, final List<T> list, final List<TableModelField> fields) {
+    public static <T> void alignTableModel(final JTable table, final Class<T> beanClass, final List<T> list, final List<TableModelField> fields) {
+	table.setModel(createTableModel(beanClass, list, fields));
+	
+	final var tableColumnModel = table.getColumnModel();
+
+	
+	for(var i = 0; i < fields.size(); i++) {
+	    
+	    final var field = fields.get(i);
+	    final var column = tableColumnModel.getColumn(i);
+	    
+	    if (Objects.nonNull(field.cellRender)) {
+		column.setCellRenderer(field.cellRender);
+	    }
+	    
+	    if (field.principal) {
+		column.setPreferredWidth(Integer.MAX_VALUE);
+	    } else {
+		column.setPreferredWidth(table.getColumnName(i).length() + 2);
+	    }
+	}
+	
+	final var tca = new TableColumnAdjuster(table);
+	tca.adjustColumns();
+	table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+    }
+    
+    private static <T> AbstractTableModel createTableModel(final Class<T> beanClass, final List<T> list, final List<TableModelField> fields) {
 
 	final var columns = new ArrayList<String>();
 	final var getters = new ArrayList<Method>();
@@ -138,7 +175,9 @@ public class ControllerUtil {
 	for (final var field : fields) {
 	    final var name = field.name();
 
-	    final var optionalClassField = Stream.of(classFields).filter(desc -> Objects.equals(desc.getName(), name)).findFirst();
+	    final var optionalClassField = Stream.of(classFields) //
+			    .filter(desc -> Objects.equals(desc.getName(), name)) //
+			    .findFirst();
 
 	    if (optionalClassField.isEmpty()) {
 		continue;
@@ -179,33 +218,27 @@ public class ControllerUtil {
 	    public int getColumnCount() {
 		return columns.size();
 	    }
+	    
+	    @Override
+	    public Class<?> getColumnClass(int columnIndex) {
+		
+		if (getRowCount() == 0) {
+		    return Object.class;
+		}
+		
+	        return getValueAt(0, columnIndex).getClass();
+	    }	    
 
 	    @Override
 	    public Object getValueAt(int rowIndex, int columnIndex) {
 		try {
 		    final var method = getters.get(columnIndex);
-		    return method.invoke(list.get(rowIndex));
+		    final var object = list.get(rowIndex);
+		    return method.invoke(object);
 		} catch (final IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
 		    throw new IllegalArgumentException(ex);
 		}
 	    }
 	};
-    }
-
-    public static void alignColumns(final JTable table, final List<Integer> columns, final int alignment) {
-
-	final var centerRenderer = new DefaultTableCellRenderer();
-	centerRenderer.setHorizontalAlignment(alignment);
-
-	if (!table.getColumnModel().getColumns().hasMoreElements()) {
-	    return;
-	}
-
-	for (final var column : columns) {
-	    table.getColumnModel().getColumn(column).setCellRenderer(centerRenderer);
-	}
-
-	final var tca = new TableColumnAdjuster(table);
-	tca.adjustColumns();
     }
 }

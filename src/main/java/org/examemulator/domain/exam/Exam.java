@@ -53,6 +53,7 @@ public class Exam {
     @Column(name = "DISCRETE_PERCENT", precision = 19, scale = 2)
     private BigDecimal discretPercent;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "TYPE")
     private ExamType type;
 
@@ -283,15 +284,11 @@ public class Exam {
 
 	public String name;
 
-	public BigDecimal minScorePercent;
-
-	public BigDecimal discretPercent;
+	public BigDecimal minScorePercent, discretPercent;
 
 	public ExamType type;
 
-	public boolean shuffleQuestions = false;
-
-	public boolean shuffleOptions = true;
+	public boolean shuffleQuestions, shuffleOptions = false;
 
 	public List<? extends InquiryInterface> questions;
 

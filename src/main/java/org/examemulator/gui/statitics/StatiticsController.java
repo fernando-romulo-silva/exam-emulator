@@ -104,7 +104,8 @@ public class StatiticsController {
     private ExamQuestion selectedQuestion;
 
     @Inject
-    StatiticsController(final StatiticsView.StatiticsGui gui, //
+    StatiticsController( //
+		    final StatiticsView.StatiticsGui gui, //
 		    final ExamController examController, //
 		    final MainController mainController) {
 

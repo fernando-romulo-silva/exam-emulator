@@ -17,7 +17,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.EtchedBorder;
 
 import org.examemulator.gui.components.WrapLayout;
 
@@ -65,17 +64,19 @@ class StatiticsView extends JFrame {
 	getContentPane().add(pMain, CENTER);
 
 	final var pGroup = new JPanel();
-	pGroup.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+	pGroup.setBorder(null);
 	pGroup.setLayout(new BoxLayout(pGroup, BoxLayout.Y_AXIS));
 	pMain.add(pGroup);
 
 	final var panelStatistic = new JPanel(new FlowLayout(LEFT, 5, 5));
+	panelStatistic.setBorder(null);
 	pGroup.add(panelStatistic);
 
 	lblStatistic = new JLabel("New label");
 	panelStatistic.add(lblStatistic);
 
 	final var panelControl = new JPanel(new FlowLayout(LEFT, 5, 5));
+	panelControl.setBorder(null);
 	pGroup.add(panelControl);
 
 	btnPrevious = new JButton("Previous");

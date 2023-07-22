@@ -20,6 +20,7 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.LF;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static org.apache.commons.lang3.StringUtils.leftPad;
+import static org.examemulator.domain.exam.ExamStatus.PAUSED;
 import static org.examemulator.domain.exam.ExamStatus.RUNNING;
 import static org.examemulator.domain.exam.ExamType.EXAM;
 import static org.examemulator.domain.exam.ExamType.PRACTICE;
@@ -61,7 +62,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.examemulator.domain.exam.Exam;
 import org.examemulator.domain.exam.ExamOption;
 import org.examemulator.domain.exam.ExamQuestion;
-import org.examemulator.domain.exam.ExamStatus;
 import org.examemulator.domain.inquiry.InquiryInterface;
 import org.examemulator.gui.exam.ExamView.ExamGui;
 import org.examemulator.gui.main.MainController;
@@ -324,7 +324,7 @@ public class ExamController {
 
 	view.btnPauseProceed.addActionListener(event -> {
 
-	    if (exam.getStatus().equals(ExamStatus.RUNNING)) {
+	    if (exam.getStatus().equals(RUNNING)) {
 
 		exam.pause();
 		view.btnPauseProceed.setText("Proceed");
@@ -348,7 +348,7 @@ public class ExamController {
 		    timer.stop();
 		}
 
-	    } else if (exam.getStatus().equals(ExamStatus.PAUSED)) {
+	    } else if (exam.getStatus().equals(PAUSED)) {
 
 		view.btnStart.setEnabled(false);
 		view.btnStatistics.setEnabled(false);
@@ -530,7 +530,7 @@ public class ExamController {
 	}
 	
 	final var btnFake = new JButton(EMPTY);
-	btnFake.addActionListener(event ->  markQuestion(panelQuestionPanel));
+	btnFake.addActionListener(event ->  markQuestion(view.questionInternPanel));
 	btnFake.setOpaque(false);
 	btnFake.setContentAreaFilled(false);
 	btnFake.setBorderPainted(false);
