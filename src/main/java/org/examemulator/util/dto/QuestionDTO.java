@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 public record QuestionDTO( //
 		String questionnaireSetName, //
 		String questionnaireName, //
+		String idQuestion, //
 		String value, //
 		Integer questionOrder, //
 		Integer qtyCorrect, //
@@ -22,27 +23,24 @@ public record QuestionDTO( //
     public QuestionDTO {
 	qtyTotal = qtyCorrect + qtyIncorrect;
 
-	percCorrect = qtyTotal > 0 
-			? new BigDecimal(qtyCorrect) //
-				.divide(valueOf(qtyTotal), MATH_CONTEXT) //
-				.multiply(VALUE_100)
-			: ZERO;
+	percCorrect = qtyTotal > 0 ? new BigDecimal(qtyCorrect) //
+			.divide(valueOf(qtyTotal), MATH_CONTEXT) //
+			.multiply(VALUE_100) : ZERO;
 
-	percIncorrect = qtyTotal > 0 
-			?  new BigDecimal(qtyIncorrect) //
-				.divide(valueOf(qtyTotal), MATH_CONTEXT) //
-				.multiply(VALUE_100)
-	                : ZERO;
+	percIncorrect = qtyTotal > 0 ? new BigDecimal(qtyIncorrect) //
+			.divide(valueOf(qtyTotal), MATH_CONTEXT) //
+			.multiply(VALUE_100) : ZERO;
     }
 
     public QuestionDTO(//
 		    String questionnaireSetName, //
 		    String questionnaireName, //
+		    String idQuestion, //
 		    String value, //
 		    Integer questionOrder, //
 		    Integer qtyCorrect, //
 		    Integer qtyIncorrect) {
-	
-	this(questionnaireSetName, questionnaireName, value, questionOrder, qtyCorrect, ZERO, qtyIncorrect, ZERO, INTEGER_ZERO);
+
+	this(questionnaireSetName, questionnaireName, idQuestion, value, questionOrder, qtyCorrect, ZERO, qtyIncorrect, ZERO, INTEGER_ZERO);
     }
 }

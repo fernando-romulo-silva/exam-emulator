@@ -10,6 +10,7 @@ import static javax.swing.JOptionPane.QUESTION_MESSAGE;
 import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
+import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.isLeftMouseButton;
 import static javax.swing.SwingUtilities.isRightMouseButton;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
@@ -41,11 +42,11 @@ import java.util.stream.Stream;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 
-import org.apache.commons.lang3.StringUtils;
 import org.examemulator.domain.questionnaire.Questionnaire;
 import org.examemulator.domain.questionnaire.question.Question;
 import org.examemulator.gui.exam.ExamController;
@@ -143,7 +144,7 @@ public class QuestionnaireController {
 	final var certification = questionnaire.getCertification();
 	view.textCertification.setText(certification.getName());
 
-	view.textOrder.setText(StringUtils.leftPad(questionnaire.getOrder().toString(), 2, "0"));
+	view.textOrder.setText(leftPad(questionnaire.getOrder().toString(), 2, "0"));
 
 	view.btnNext.setEnabled(false);
 	view.btnPrevious.setEnabled(false);
@@ -202,12 +203,13 @@ public class QuestionnaireController {
 //	});
 
 	view.btnNewExam.addActionListener(event -> {
-	    view.setVisible(false);
-
+	    
 	    if (toExamQuestions.isEmpty()) {
-		toExamQuestions.addAll(questionnaire.getQuestions());
+		showMessageDialog(view, "You need select at least one question!", "Error!", JOptionPane.ERROR_MESSAGE);
+		return;
 	    }
-
+	    
+	    view.setVisible(false);
 	    examController.show(questionnaire.getName(), view, toExamQuestions);
 	});
 	
@@ -414,6 +416,7 @@ public class QuestionnaireController {
 		label.repaint();
 		
 	    } else if (isRightMouseButton(event) && event.getClickCount() == 1 && nonNull(questionnaire)) {	
+		
 		selectQuestion(toInt(text));
 
 		if (toExamQuestions.contains(selectedQuestion)) {

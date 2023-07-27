@@ -129,7 +129,7 @@ class ExamView extends JFrame {
 
 	chckbxShuffleQuestions = new JCheckBox("Shuffle Questions");
 	chckbxShuffleQuestions.setEnabled(false);
-	chckbxShuffleQuestions.setSelected(false);
+	chckbxShuffleQuestions.setSelected(true);
 	examControlPanel2.add(chckbxShuffleQuestions);
 
 	chckbxShuffleOptions = new JCheckBox("Shuffle Options");

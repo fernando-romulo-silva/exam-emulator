@@ -15,11 +15,10 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-
-import org.jdesktop.swingx.JXTable;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -29,12 +28,13 @@ class MainView extends JFrame {
     
     public static final int HEADER_HEIGHT = 32;
 
-    private static final class ExtendedJTable extends JXTable {
+    private static final class ExtendedJTable extends JTable {
 
 	private static final long serialVersionUID = 1L;
 
-	private ExtendedJTable(TableModel dm) {
+	private ExtendedJTable(final TableModel dm) {
 	    super(dm);
+	    setAutoCreateRowSorter(true);
 	}
 
 	@Override
@@ -55,7 +55,7 @@ class MainView extends JFrame {
 
     JLabel lblCertificationStatistics;
     
-    JXTable examTable, questionsTable;
+    JTable examTable, questionsTable;
     
     JTabbedPane tabbedPane;
     

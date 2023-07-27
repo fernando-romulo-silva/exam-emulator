@@ -4,9 +4,13 @@ import static jakarta.transaction.Transactional.TxType.REQUIRED;
 import static jakarta.transaction.Transactional.TxType.SUPPORTS;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.examemulator.domain.cerfication.Certification;
 import org.examemulator.domain.questionnaire.Questionnaire;
 import org.examemulator.domain.questionnaire.QuestionnaireRepository;
@@ -26,7 +30,7 @@ import jakarta.transaction.Transactional;
 public class QuestionnaireService {
 
     private final QuestionnaireRepository questionnaireRepository;
-    
+
     private final QuestionRepository questionRepository;
 
     private final QuestionConceptRepository questionConceptRepository;
@@ -42,8 +46,9 @@ public class QuestionnaireService {
 	this.questionConceptRepository = questionConceptRepository;
     }
 
-    public record QuestionnaireDTO(Integer order, String name, String description) {}
-    
+    public record QuestionnaireDTO(Integer order, String name, String description) {
+    }
+
     @Transactional(REQUIRED)
     public Questionnaire saveOrUpdateQuestionnaire(final QuestionnaireDTO data, final List<Question> questionsFromFile, final QuestionnaireSet questionnaireSet) {
 
@@ -57,7 +62,7 @@ public class QuestionnaireService {
 			    data.order(), //
 			    questionnaireSet, //
 			    questionsFromFile //
-	    ); //
+	    );
 
 	    return questionnaireRepository.save(questionnaireTemp);
 	}
@@ -84,19 +89,58 @@ public class QuestionnaireService {
 	return questionnaireRepository.findByQuestionnaireSet(questionnaireSet);
     }
 
-    public Optional<Questionnaire> findByQuestionnaireSetAndOrder(final QuestionnaireSet questionnaireSet,final Integer order) {
+    public Optional<Questionnaire> findByQuestionnaireSetAndOrder(final QuestionnaireSet questionnaireSet, final Integer order) {
+
+	if (ObjectUtils.anyNull(questionnaireSet, order)) {
+	    return Optional.empty();
+	}
+
 	return questionnaireRepository.findByQuestionnaireSetAndOrder(questionnaireSet, order);
     }
     
+    public Optional<Question> findById(final String id) {
+	
+	if (StringUtils.isBlank(id)) {
+	    return Optional.empty();
+	}
+	
+	return questionRepository.findById(id);
+    }
+
+    public Stream<Question> findByIds(final List<String> ids) {
+
+	if (CollectionUtils.isEmpty(ids)) {
+	    return Stream.<Question>of();
+	}
+
+	return questionRepository.findByIds(ids);
+    }
+
     public Stream<QuestionDTO> findByCertificationAndQuestionnaireSetAndQuestionnaire(final Certification certification, final QuestionnaireSet questionnaireSet, final Questionnaire questionnaire) {
+
+	if (ObjectUtils.anyNull(certification, questionnaireSet, questionnaire)) {
+	    return Stream.of();
+	}
+
 	return questionRepository.findByCertificationAndQuestionnaireSetAndQuestionnaire(certification, questionnaireSet, questionnaire);
     }
-    
+
     public Stream<QuestionDTO> findByCertificationAndQuestionnaireSet(final Certification certification, final QuestionnaireSet questionnaireSet) {
+
+	if (ObjectUtils.anyNull(certification, questionnaireSet)) {
+	    return Stream.of();
+	}
+
 	return questionRepository.findByCertificationAndQuestionnaireSet(certification, questionnaireSet);
     }
-    
+
     public Stream<QuestionDTO> findByCertification(final Certification certification) {
+
+	if (Objects.isNull(certification)) {
+	    return Stream.of();
+	}
+
 	return questionRepository.findByCertification(certification);
     }
+
 }

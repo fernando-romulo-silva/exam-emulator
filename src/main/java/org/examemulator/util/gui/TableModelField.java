@@ -14,23 +14,23 @@ public record TableModelField(String name, String label, boolean principal, Defa
 	}
     }
 
-    public static TableModelField fieldOf(String name, String label, DefaultTableCellRenderer cellRender) {
+    public static TableModelField fieldOf(final String name, final String label, final DefaultTableCellRenderer cellRender) {
 	return new TableModelField(name, label, false, cellRender);
     }
 
-    public static TableModelField fieldOf(String name, DefaultTableCellRenderer cellRender) {
+    public static TableModelField fieldOf(final String name, final DefaultTableCellRenderer cellRender) {
 	return new TableModelField(name, null, false, cellRender);
     }
 
-    public static TableModelField fieldOf(String name, String label) {
+    public static TableModelField fieldOf(final String name, final String label) {
 	return new TableModelField(name, label, false, null);
     }
 
-    public static TableModelField fieldOf(String name) {
+    public static TableModelField fieldOf(final String name) {
 	return new TableModelField(name, null, false, null);
     }
 
-    public static TableModelField fieldOf(String name, boolean principal) {
+    public static TableModelField fieldOf(final String name, final boolean principal) {
 	return new TableModelField(name, null, principal, null);
     }
 

@@ -9,12 +9,15 @@ import static java.math.BigDecimal.valueOf;
 import static java.math.RoundingMode.HALF_UP;
 import static java.util.stream.Collectors.joining;
 import static javax.swing.BorderFactory.createTitledBorder;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.QUESTION_MESSAGE;
 import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
+import static javax.swing.JOptionPane.showMessageDialog;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.leftPad;
+import static org.apache.commons.lang3.math.NumberUtils.toInt;
 import static org.examemulator.util.domain.DomainUtil.MATH_CONTEXT;
 import static org.examemulator.util.domain.DomainUtil.VALUE_100;
 import static org.examemulator.util.gui.ControllerUtil.hasNextQuestion;
@@ -46,7 +49,6 @@ import java.util.TreeSet;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
-import org.apache.commons.lang3.math.NumberUtils;
 import org.examemulator.domain.exam.Exam;
 import org.examemulator.domain.exam.ExamQuestion;
 import org.examemulator.gui.exam.ExamController;
@@ -78,7 +80,7 @@ public class StatiticsController {
 
 		selectedQuestion = exam.getQuestions() //
 				.stream() //
-				.filter(question -> Objects.equals(question.getOrder(), NumberUtils.toInt(text))) //
+				.filter(question -> Objects.equals(question.getOrder(), toInt(text))) //
 				.findFirst() //
 				.orElse(null);
 
@@ -122,6 +124,7 @@ public class StatiticsController {
 	    if (nextQuestionOptional.isPresent()) {
 		selectedQuestion = nextQuestionOptional.get();
 	    }
+	    
 	    loadPanelQuestion();
 	});
 
@@ -129,11 +132,18 @@ public class StatiticsController {
 	    final var previousQuestionOptional = previousQuestion(questions, selectedQuestion);
 	    if (previousQuestionOptional.isPresent()) {
 		selectedQuestion = previousQuestionOptional.get();
+	    
 	    }
 	    loadPanelQuestion();
 	});
 
 	view.btnNewExam.addActionListener(event -> {
+	    
+	    if (questions.isEmpty()) {
+		showMessageDialog(view, "You need select at least one question!", "Error!", ERROR_MESSAGE);
+		return;
+	    }
+	    
 	    view.setVisible(false);
 	    examController.show(exam.getName() + " new attempt", view, questions);
 	});
@@ -246,7 +256,6 @@ public class StatiticsController {
 			    .toList();
 
 	    questionsTemp.addAll(questionsCorrects);
-
 	}
 
 	if (showMarked) {
@@ -266,7 +275,6 @@ public class StatiticsController {
 			    .toList();
 
 	    questionsTemp.addAll(questionsIncorrects);
-
 	}
 
 	questions.clear();

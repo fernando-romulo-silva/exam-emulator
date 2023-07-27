@@ -11,6 +11,7 @@ import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
 import static javax.swing.BorderFactory.createTitledBorder;
 import static javax.swing.BoxLayout.Y_AXIS;
+import static javax.swing.JOptionPane.NO_OPTION;
 import static javax.swing.JOptionPane.QUESTION_MESSAGE;
 import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.JOptionPane.YES_OPTION;
@@ -76,6 +77,8 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class ExamController {
 
+    private static final String FINISH_THIS_EXAM_MSG = "Are you sure you want to finish this Exam?";
+
     private final ExamView view;
 
     private final ExamService service;
@@ -83,7 +86,7 @@ public class ExamController {
     private final Logger logger;
 
     private final StatiticsController statiticsController;
-    
+
     private final MainController mainController;
 
     private List<? extends InquiryInterface> availableQuestions;
@@ -124,7 +127,7 @@ public class ExamController {
 	view.contentPane.setBorder(createTitledBorder(name));
 
 	initView();
-	
+
 	for (var i = 1; i <= availableQuestions.size(); i++) {
 	    final var value = Integer.toString(i);
 	    final var label = new JLabel(leftPad(value, 2, '0'));
@@ -145,18 +148,17 @@ public class ExamController {
 	    logger.info("finished swing-event: {}", this.getClass().getSimpleName());
 	});
     }
-    
-    
+
     public void show(final Exam selectedExam, final Component lastView) {
-	
+
 	this.availableQuestions = selectedExam.getQuestions();
 	this.name = selectedExam.getName();
 
 	this.exam = selectedExam;
 	view.contentPane.setBorder(createTitledBorder(name));
-	
+
 	final var questionLabelListener = new QuestionLabelListener();
-	
+
 	view.pQuestions.removeAll();
 
 	for (var i = 1; i <= availableQuestions.size(); i++) {
@@ -164,9 +166,9 @@ public class ExamController {
 	    final var label = new JLabel(leftPad(value, 2, '0'));
 	    label.setName(value);
 	    view.pQuestions.add(label);
-	    
+
 	    final var tempQuestion = selectedExam.getQuestions().get(i - 1);
-	    
+
 	    if (tempQuestion.isMarked()) {
 		label.setForeground(BLUE);
 	    } else if (tempQuestion.isAnswered()) {
@@ -174,11 +176,11 @@ public class ExamController {
 	    } else {
 		label.setForeground(BLACK);
 	    }
-	    
+
 	    label.addMouseListener(questionLabelListener);
 	    label.repaint();
 	}
-	
+
 	if (Objects.equals(exam.getType(), PRACTICE)) {
 	    view.btnCheckAnswer.setVisible(true);
 	    view.lblDuration.setVisible(false);
@@ -204,7 +206,7 @@ public class ExamController {
 	view.btnFinish.setEnabled(true);
 	view.btnNext.setEnabled(true);
 	view.btnCheckAnswer.setEnabled(true);
-	
+
 	SwingUtilities.invokeLater(() -> {
 
 	    logger.info("starting swing-event: {}", this.getClass().getSimpleName());
@@ -217,15 +219,14 @@ public class ExamController {
 
 	    logger.info("finished swing-event: {}", this.getClass().getSimpleName());
 	});
-	
+
 	selectedQuestion = exam.getQuestions().get(0);
 
 	loadPanelQuestion();
     }
 
     // =================================================================================================================
-    
-    
+
     private void initView() {
 
 	view.questionInternPanel.removeAll();
@@ -251,7 +252,7 @@ public class ExamController {
 	view.btnStatistics.setEnabled(false);
 	view.btnPauseProceed.setEnabled(false);
     }
-    
+
     private void initActions() {
 
 	view.btnStart.addActionListener(event -> {
@@ -274,7 +275,7 @@ public class ExamController {
 		$.shuffleOptions = shuffleOptions;
 		$.questions = availableQuestions;
 	    }).build();
-	    
+
 	    service.save(exam);
 
 	    view.btnStart.setEnabled(false);
@@ -318,7 +319,7 @@ public class ExamController {
 	    loadNumbersPanel();
 
 	    loadPanelQuestion();
-	    
+
 	    service.save(exam);
 	});
 
@@ -376,14 +377,18 @@ public class ExamController {
 		    timer.restart();
 		}
 	    }
-	    
+
 	    service.save(exam);
 	});
 
 	view.btnFinish.addActionListener(event -> {
 
+	    if (showConfirmDialog(view, FINISH_THIS_EXAM_MSG, "Finish Exam", YES_NO_OPTION, QUESTION_MESSAGE) == NO_OPTION) {
+		return;
+	    }
+
 	    exam.finish();
-	    
+
 	    service.save(exam);
 
 	    if (nonNull(timer)) {
@@ -414,26 +419,26 @@ public class ExamController {
 	});
 
 	view.btnNext.addActionListener(event -> {
-	    
+
 	    updateQuestionLabel();
 	    final var nextQuestionOptional = nextQuestion(exam.getQuestions(), selectedQuestion);
 	    if (nextQuestionOptional.isPresent()) {
 		selectedQuestion = nextQuestionOptional.get();
 	    }
 	    loadPanelQuestion();
-	    
+
 	    service.save(exam);
 	});
 
 	view.btnPrevious.addActionListener(event -> {
-	    
+
 	    updateQuestionLabel();
 	    final var previousQuestionOptional = previousQuestion(exam.getQuestions(), selectedQuestion);
 	    if (previousQuestionOptional.isPresent()) {
 		selectedQuestion = previousQuestionOptional.get();
 	    }
 	    loadPanelQuestion();
-	    
+
 	    service.save(exam);
 	});
 
@@ -476,19 +481,19 @@ public class ExamController {
 	    dialogContainer.add(panel, SOUTH);
 	    answerDialog.setVisible(true);
 	});
-	
+
 	view.addWindowListener(new WindowAdapter() {
-	    
+
 	    @Override
 	    public void windowClosing(final WindowEvent windowEvent) {
-		
+
 		if (showConfirmDialog(view, //
 				"Are you sure you want to leave this window?", "Close Window", //
 				YES_NO_OPTION, //
 				QUESTION_MESSAGE) == YES_OPTION) {
-		    
+
 		    service.save(exam);
-		    
+
 		    view.setVisible(false);
 		    mainController.show(view);
 		}
@@ -506,19 +511,19 @@ public class ExamController {
 			: "";
 
 	final var questionText = LF.concat(selectedQuestion.getValue()).concat(LF);
-	
+
 	final var currentOrder = leftPad(selectedQuestion.getOrder().toString(), 2, '0');
 	final var originalOrder = selectedQuestion.isSameOrderQuestion() ? EMPTY : " (".concat(leftPad(selectedQuestion.getQuestion().getOrder().toString(), 2, '0')).concat(")");
 
 	final var panelQuestionPanel = new JPanel();
 	panelQuestionPanel.addMouseListener(new MouseAdapter() {
-	   
+
 	    @Override
 	    public void mouseClicked(final MouseEvent event) {
 		markQuestion(panelQuestionPanel);
 	    }
 	});
-	
+
 	panelQuestionPanel.setLayout(new BoxLayout(panelQuestionPanel, Y_AXIS));
 	final var titleBorder = new TitledBorder("Question ".concat(currentOrder).concat(originalOrder).concat(conceptName));
 	if (selectedQuestion.isMarked()) {
@@ -528,15 +533,15 @@ public class ExamController {
 	} else {
 	    titleBorder.setTitleColor(BLACK);
 	}
-	
+
 	final var btnFake = new JButton(EMPTY);
-	btnFake.addActionListener(event ->  markQuestion(view.questionInternPanel));
+	btnFake.addActionListener(event -> markQuestion(view.questionInternPanel));
 	btnFake.setOpaque(false);
 	btnFake.setContentAreaFilled(false);
 	btnFake.setBorderPainted(false);
 	btnFake.setMnemonic(KeyEvent.VK_T);
 	panelQuestionPanel.add(btnFake);
-	
+
 	view.questionInternPanel.setBorder(titleBorder);
 	panelQuestionPanel.add(createScrollTextToShow(questionText));
 	panelQuestionPanel.revalidate();
@@ -575,18 +580,18 @@ public class ExamController {
 	    view.pQuestions.add(label);
 	    label.addMouseListener(questionLabelListener);
 	}
-	
+
 	view.pQuestions.revalidate();
 	view.pQuestions.repaint();
     }
-    
+
     private void updateQuestionLabel() {
 	final var component = Stream.of(view.pQuestions.getComponents()) //
 			.filter(comp -> Objects.equals(comp.getName(), selectedQuestion.getOrder().toString())) //
 			.findFirst();
-	
+
 	if (component.isPresent() && component.get() instanceof final JLabel label) {
-	    
+
 	    if (selectedQuestion.isMarked()) {
 		label.setForeground(BLUE);
 	    } else if (selectedQuestion.isAnswered()) {
@@ -594,19 +599,18 @@ public class ExamController {
 	    } else {
 		label.setForeground(BLACK);
 	    }
-	    
+
 	    label.repaint();
 	}
     }
-    
 
     private void markQuestion(final JPanel tempPanel) {
-	
+
 	selectedQuestion.mark(!selectedQuestion.isMarked());
 	updateQuestionLabel();
 
 	final var titleBorder = (TitledBorder) tempPanel.getBorder();
-	
+
 	if (selectedQuestion.isMarked()) {
 	    titleBorder.setTitleColor(BLUE);
 	} else if (selectedQuestion.isAnswered()) {
@@ -614,13 +618,12 @@ public class ExamController {
 	} else {
 	    titleBorder.setTitleColor(BLACK);
 	}
-	
+
 	tempPanel.repaint();
     }
 
-    
     private final class QuestionLabelListener extends MouseAdapter {
-	
+
 	@Override
 	public void mouseClicked(final MouseEvent event) {
 	    final var label = (JLabel) event.getSource();
