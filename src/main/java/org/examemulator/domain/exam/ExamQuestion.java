@@ -180,6 +180,10 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
 	if (StringUtils.isEmpty(answer)) {
 	    throw new IllegalArgumentException("Empty answer is not allowed!");
 	}
+	
+	if (Objects.equals(answer, "N/A")) {
+	    status = ANSWERED;
+	}
 
 	final var answers = getAnswers();
 
@@ -200,7 +204,9 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
 	    throw new IllegalArgumentException("Invalid answer. It can be [" + validValues + "]");
 	}
 
-	final var optionSelected = options.stream().filter(option -> Objects.equals(option.getLetter(), answer)).findFirst();
+	final var optionSelected = options.stream() //
+			.filter(option -> Objects.equals(option.getLetter(), answer)) //
+			.findFirst();
 
 	if (optionSelected.isPresent()) {
 	    optionSelected.get().select();
@@ -306,12 +312,16 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
     }
 
     public boolean isAnswered() {
-	return !getAnswers().isEmpty();
+	return status == ANSWERED;
     }
 
     public boolean isCorrect() {
-
+	
 	if (!isAnswered()) {
+	    return false;
+	}
+
+	if (isAnswered() && getAnswers().isEmpty()) {
 	    return false;
 	}
 

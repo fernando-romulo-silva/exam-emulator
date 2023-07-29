@@ -4,6 +4,7 @@ import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.NORTH;
 import static java.awt.FlowLayout.LEFT;
 import static java.util.Objects.nonNull;
+import static javax.swing.BorderFactory.createEmptyBorder;
 import static javax.swing.BoxLayout.Y_AXIS;
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER;
 import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS;
@@ -42,6 +43,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.text.html.HTMLEditorKit;
 
 import org.examemulator.domain.exam.ExamQuestion;
@@ -211,6 +213,9 @@ public class GuiUtil {
 
 	final var substringAfter = substringAfter(optionsLabels.get(0), "|");
 	optionPanel.add(createTextToShow(substringAfter));
+	
+	final var titleBorder = new TitledBorder("Option ".concat(substringBefore(optionsLabels.get(0), "|")));
+	optionsQuestionPanel.setBorder(titleBorder);
 
 	final var buttonYesListener = new ActionListener() {
 
@@ -232,8 +237,10 @@ public class GuiUtil {
 
 		if (iterator.hasNext()) {
 		    current = optionsLabels.get(currentIndex + 1);
-
 		    optionPanel.add(createTextToShow(substringAfter(current, "|")));
+		    
+		    final var titleBorder = new TitledBorder("Option ".concat(substringBefore(current, "|")));
+		    optionsQuestionPanel.setBorder(titleBorder);
 		} else {
 		    final var label = new JLabel("You finalized this question");
 		    label.setFont(DEFAULT_FONT);
@@ -243,6 +250,9 @@ public class GuiUtil {
 		    if (question.getAnswers().isEmpty()) {
 			question.selectAnswer("N/A");
 		    }
+		    
+		    final var titleBorder = new TitledBorder("Finished");
+		    optionsQuestionPanel.setBorder(titleBorder);
 		}
 
 		optionPanel.revalidate();
@@ -283,6 +293,7 @@ public class GuiUtil {
 	    for (final var questionOption : question.getOptions()) {
 
 		final var radio = new JRadioButton(treatOptionText(questionOption.getLetter(), questionOption.getValue()));
+		radio.setBorder(createEmptyBorder());
 		radio.setFont(DEFAULT_FONT);
 		radio.setMnemonic(getShort(questionOption.getLetter()));
 
@@ -318,6 +329,7 @@ public class GuiUtil {
 	    for (final var questionOption : question.getOptions()) {
 
 		final var check = new JCheckBox(treatOptionText(questionOption.getLetter(), questionOption.getValue()));
+		check.setBorder(createEmptyBorder());
 		check.setMnemonic(getShort(questionOption.getLetter()));
 		check.setFont(DEFAULT_FONT);
 

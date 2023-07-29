@@ -46,6 +46,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -121,7 +122,7 @@ public class ExamController {
 
     public void show(final String name, final Component lastView, final List<? extends InquiryInterface> availableQuestions) {
 
-	this.availableQuestions = availableQuestions;
+	this.availableQuestions = new ArrayList<>(availableQuestions);
 	this.name = name;
 
 	view.contentPane.setBorder(createTitledBorder(name));
@@ -151,7 +152,7 @@ public class ExamController {
 
     public void show(final Exam selectedExam, final Component lastView) {
 
-	this.availableQuestions = selectedExam.getQuestions();
+	this.availableQuestions = new ArrayList<>(selectedExam.getQuestions());
 	this.name = selectedExam.getName();
 
 	this.exam = selectedExam;
@@ -550,6 +551,7 @@ public class ExamController {
 	final var groupOptionsQuestionPanel = new JPanel(new BorderLayout());
 
 	if (selectedQuestion.isAnswered() && DISCRET_LIST.contains(selectedQuestion.getType())) {
+	    groupOptionsQuestionPanel.setBorder(new TitledBorder("Finished"));
 	    groupOptionsQuestionPanel.add(new JLabel("You alrealdy answered it"), NORTH);
 	} else if (DISCRET_LIST.contains(selectedQuestion.getType())) {
 	    groupOptionsQuestionPanel.add(createDiscreteOptions(selectedQuestion), CENTER);
@@ -632,13 +634,7 @@ public class ExamController {
 	    if (isLeftMouseButton(event) && event.getClickCount() == 1 && !event.isConsumed() && nonNull(exam) && exam.getStatus() == RUNNING) {
 		selectQuestion(Integer.valueOf(text));
 		loadPanelQuestion();
-
 	    }
-//		else if (event.getClickCount() == 2 && !event.isConsumed() && event.getButton() == MouseEvent.BUTTON3 && Objects.nonNull(exam) && exam.getStatus() == RUNNING) {
-//		    selectQuestion(Integer.valueOf(text));
-//		    selectedQuestion.mark(!selectedQuestion.isMarked());
-//		    loadPanelQuestion(); // bug reset the question
-//		} 
 
 	    if (selectedQuestion.isMarked()) {
 		label.setForeground(BLUE);

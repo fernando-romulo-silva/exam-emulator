@@ -1,7 +1,21 @@
 package org.examemulator.util.gui;
 
+import static java.awt.BorderLayout.CENTER;
+import static java.awt.BorderLayout.SOUTH;
+import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.reflect.MethodUtils.getMatchingAccessibleMethod;
+import static org.examemulator.util.gui.GuiUtil.TAG_BR;
+import static org.examemulator.util.gui.GuiUtil.TAG_BR_BR;
+import static org.examemulator.util.gui.GuiUtil.TAG_CLOSE_B;
+import static org.examemulator.util.gui.GuiUtil.TAG_OPEN_B;
+import static org.examemulator.util.gui.GuiUtil.convertTextToHtml;
+import static org.examemulator.util.gui.GuiUtil.createScrollHtmlTextToShow;
+import static org.examemulator.util.gui.GuiUtil.extractedOptions;
 
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.event.KeyEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -10,11 +24,15 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.examemulator.domain.questionnaire.question.Question;
 import org.examemulator.gui.components.TableColumnAdjuster;
 
 public final class ControllerUtil {
@@ -194,5 +212,47 @@ public final class ControllerUtil {
 		}
 	    }
 	};
+    }
+    
+    public static void createQuestionDialog(final Frame owner, final Question question) {
+
+	final var optionalConcept = question.getConcept();
+	final var conceptName = optionalConcept.isPresent() //
+		    ? " (".concat(optionalConcept.get().getName()).concat(")") //
+		    : "";
+	
+	final var questionValue = TAG_BR.concat(TAG_OPEN_B).concat(convertTextToHtml(question.getValue())).concat(TAG_CLOSE_B);
+
+	final var options = question.getOptions() //
+		    .stream() //
+		    .map(option -> option.getLetter().concat(") ").concat(TAG_BR).concat(convertTextToHtml(option.getValue()))) //
+		    .collect(joining(TAG_BR_BR));
+
+	final var correctOptions = TAG_OPEN_B.concat("Correct Answer(s): ").concat(TAG_CLOSE_B).concat(extractedOptions(question.getCorrectOptions()));
+
+	final var explanation = TAG_OPEN_B.concat("Explanation: ").concat(TAG_CLOSE_B).concat(TAG_BR_BR).concat(convertTextToHtml(question.getExplanation()));
+
+	final var txt = questionValue.concat(TAG_BR_BR) //
+		    .concat(options).concat(TAG_BR_BR) //
+		    .concat(correctOptions).concat(TAG_BR_BR) //
+		    .concat(explanation);
+
+	final var dialogQuestion = new JDialog(owner, question.getName().concat(conceptName), true);
+	dialogQuestion.setLocationRelativeTo(owner);
+	
+	final var panelQuestionPanel = dialogQuestion.getContentPane();
+	panelQuestionPanel.setLayout(new BorderLayout());
+	panelQuestionPanel.add(createScrollHtmlTextToShow(txt), CENTER);
+	
+	final var panel = new JPanel(new FlowLayout());
+	panelQuestionPanel.add(panel, SOUTH);
+	
+	final var okButton = new JButton("Ok");
+	okButton.addActionListener(okEvent -> dialogQuestion.setVisible(false));
+	okButton.setMnemonic(KeyEvent.VK_O);
+	panel.add(okButton);
+
+	dialogQuestion.pack();
+	dialogQuestion.setVisible(true);
     }
 }

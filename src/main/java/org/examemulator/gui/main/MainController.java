@@ -1,9 +1,6 @@
 package org.examemulator.gui.main;
 
-import static java.awt.BorderLayout.CENTER;
-import static java.awt.BorderLayout.SOUTH;
 import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.joining;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.QUESTION_MESSAGE;
 import static javax.swing.JOptionPane.YES_NO_OPTION;
@@ -22,23 +19,14 @@ import static org.apache.commons.lang3.math.NumberUtils.toLong;
 import static org.examemulator.domain.exam.ExamStatus.FINISHED;
 import static org.examemulator.domain.exam.ExamStatus.RUNNING;
 import static org.examemulator.util.gui.ControllerUtil.alignTableModel;
-import static org.examemulator.util.gui.GuiUtil.TAG_BR;
-import static org.examemulator.util.gui.GuiUtil.TAG_BR_BR;
-import static org.examemulator.util.gui.GuiUtil.TAG_CLOSE_B;
-import static org.examemulator.util.gui.GuiUtil.TAG_OPEN_B;
-import static org.examemulator.util.gui.GuiUtil.convertTextToHtml;
-import static org.examemulator.util.gui.GuiUtil.createScrollHtmlTextToShow;
-import static org.examemulator.util.gui.GuiUtil.extractedOptions;
+import static org.examemulator.util.gui.ControllerUtil.createQuestionDialog;
 import static org.examemulator.util.gui.TableCellRendererUtil.ENUM_TABLE_CELL_RENDERER;
 import static org.examemulator.util.gui.TableCellRendererUtil.NUMBER_TABLE_CELL_RENDERER;
 import static org.examemulator.util.gui.TableCellRendererUtil.ORDER_TABLE_CELL_RENDERER;
 import static org.examemulator.util.gui.TableCellRendererUtil.PERCENT_TABLE_CELL_RENDERER;
 import static org.examemulator.util.gui.TableModelField.fieldOf;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.FlowLayout;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -49,10 +37,8 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
@@ -303,18 +289,43 @@ public class MainController {
 		    
 		    final var selectedRow = table.getSelectedRow();
 		    final var finalSelectedRow = table.convertRowIndexToModel(selectedRow);
-		    final var questionOrder = tableModel.getValueAt(finalSelectedRow, 1);
 		    
-		    final var optionalQuestion = questions.stream() //
-				    .filter(q -> Objects.equals(q.questionOrder(), questionOrder)) //
-				    .findFirst();
-		    
-		    final String id;
-		    if (optionalQuestion.isPresent()) {
-			id =  optionalQuestion.get().idQuestion();
-		    }else {
-			id = StringUtils.EMPTY; 
+		    final Optional<QuestionDTO> optionalQuestion;
+		    if (tableModel.getColumnCount() == 7) { // without questionnaire name and set name
+
+			final var questionOrder = tableModel.getValueAt(finalSelectedRow, 1);
+
+			optionalQuestion = questions.stream() //
+					.filter(q -> Objects.equals(q.questionOrder(), questionOrder)) //
+					.findFirst();
+
+		    } else if (tableModel.getColumnCount() == 8) {
+			
+			final var questionnaireName = tableModel.getValueAt(finalSelectedRow, 0);
+			final var questionOrder = tableModel.getValueAt(finalSelectedRow, 2);
+
+			optionalQuestion = questions.stream() //
+					.filter(q -> Objects.equals(q.questionOrder(), questionOrder) //
+							&& Objects.equals(q.questionnaireName(), questionnaireName)) //
+					.findFirst();
+
+		    } else {
+
+			final var setName = tableModel.getValueAt(finalSelectedRow, 0);
+			final var questionnaireName = tableModel.getValueAt(finalSelectedRow, 1);
+			final var questionOrder = tableModel.getValueAt(finalSelectedRow, 3);
+
+			optionalQuestion = questions.stream() //
+					.filter(q -> Objects.equals(q.questionOrder(), questionOrder) //
+							&& Objects.equals(q.questionnaireName(), questionnaireName) //
+							&& Objects.equals(q.questionnaireSetName(), setName)) //
+					.findFirst();
 		    }
+		    
+		    
+		    final var id = optionalQuestion.isPresent() // 
+				    ? optionalQuestion.get().idQuestion() // 
+				    : StringUtils.EMPTY;
 		    
 		    final var questionOptional = questionnaireService.findById(id);
 		    
@@ -322,46 +333,7 @@ public class MainController {
 			return;
 		    }
 		    
-		    final var question = questionOptional.get();
-		    
-		    final var optionalConcept = question.getConcept();
-		    final var conceptName = optionalConcept.isPresent() //
-				    ? " (".concat(optionalConcept.get().getName()).concat(")") //
-				    : "";
-		    
-		    final var questionValue = TAG_BR.concat(TAG_OPEN_B).concat(convertTextToHtml(question.getValue())).concat(TAG_CLOSE_B);
-
-		    final var options = question.getOptions() //
-				    .stream() //
-				    .map(option -> option.getLetter().concat(") ").concat(TAG_BR).concat(convertTextToHtml(option.getValue()))) //
-				    .collect(joining(TAG_BR_BR));
-
-		    final var correctOptions = TAG_OPEN_B.concat("Correct Answer(s): ").concat(TAG_CLOSE_B).concat(extractedOptions(question.getCorrectOptions()));
-
-		    final var explanation = TAG_OPEN_B.concat("Explanation: ").concat(TAG_CLOSE_B).concat(TAG_BR_BR).concat(convertTextToHtml(question.getExplanation()));
-
-		    final var txt = questionValue.concat(TAG_BR_BR) //
-				    .concat(options).concat(TAG_BR_BR) //
-				    .concat(correctOptions).concat(TAG_BR_BR) //
-				    .concat(explanation);
-
-		    final var dialogQuestion = new JDialog(view, question.getName().concat(conceptName), true);
-		    dialogQuestion.setLocationRelativeTo(view);
-		    
-		    final var panelQuestionPanel = dialogQuestion.getContentPane();
-		    panelQuestionPanel.setLayout(new BorderLayout());
-		    panelQuestionPanel.add(createScrollHtmlTextToShow(txt), CENTER);
-		    
-		    final var panel = new JPanel(new FlowLayout());
-		    panelQuestionPanel.add(panel, SOUTH);
-		    
-		    final var okButton = new JButton("Ok");
-		    okButton.addActionListener(okEvent -> dialogQuestion.setVisible(false));
-		    okButton.setMnemonic(KeyEvent.VK_O);
-		    panel.add(okButton);
-
-		    dialogQuestion.pack();
-		    dialogQuestion.setVisible(true);
+		    createQuestionDialog(view, questionOptional.get());
 		}
 
 		if (isRightMouseButton(event) && event.getClickCount() == 2) {
@@ -373,7 +345,6 @@ public class MainController {
 
 		    final var selectedRows = table.getSelectedRows();
 		    final var selectedIds = new ArrayList<String>();
-
 
 		    if (tableModel.getColumnCount() == 7) { // without questionnaire name and set name
 
@@ -399,7 +370,6 @@ public class MainController {
 			    final var finalSelectedRow = table.convertRowIndexToModel(selectedRow);
 			    
 			    final var questionnaireName = tableModel.getValueAt(finalSelectedRow, 0);
-			    
 			    final var questionOrder = tableModel.getValueAt(finalSelectedRow, 2);
 
 			    final var optionalQuestion = questions.stream() //
@@ -419,9 +389,7 @@ public class MainController {
 			    final var finalSelectedRow = table.convertRowIndexToModel(selectedRow);
 			    
 			    final var setName = tableModel.getValueAt(finalSelectedRow, 0);
-			    
 			    final var questionnaireName = tableModel.getValueAt(finalSelectedRow, 1);
-			    
 			    final var questionOrder = tableModel.getValueAt(finalSelectedRow, 3);
 
 			    final var optionalQuestion = questions.stream() //
@@ -440,7 +408,6 @@ public class MainController {
 		    view.setVisible(false);
 		    examController.show("Dynamic", view, questionsFromDb);
 		}
-
 	    }
 	    
 	});
