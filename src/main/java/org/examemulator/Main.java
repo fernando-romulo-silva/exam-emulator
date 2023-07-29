@@ -13,13 +13,10 @@ public class Main {
 
 	HsqldbServer.start();
 
-//	final var mainController = container.select(QuestionnaireController.class).get();
 	final var mainController = container.select(MainController.class).get();
 	mainController.loadCertificationFromFolder("/home/fernando/Development/workspaces/eclipse-workspace/certifications-technologies/docker-dca-certification");
 	mainController.show();
 
-//	mainController.loadCertificationFromFolder("/home/fernando/Development/workspaces/eclipse-workspace/exam-emulator/src/test/resources/Food-Certification");
-	
 	Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 
 	    // Both OpenWebBeans and Weld seem to shutdown on their own.
@@ -30,7 +27,5 @@ public class Main {
 
 	    HsqldbServer.stop();
 	}));
-//	test01();
     }
-    
 }
