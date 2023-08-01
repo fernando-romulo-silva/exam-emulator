@@ -3,6 +3,7 @@ package org.examemulator.util;
 import static java.io.File.separator;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.SPACE;
 import static org.apache.commons.lang3.StringUtils.contains;
 import static org.apache.commons.lang3.StringUtils.remove;
 import static org.apache.commons.lang3.StringUtils.replace;
@@ -29,8 +30,8 @@ import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class FileUtil {
-    
-    public static final String ANSWER_MSG = "Answer(s)";
+
+    public static final List<String> ANSWER_MSGS = List.of("Answer(s)", "Answer", "Answers");
 
     public static final List<String> WORDS_ALL = List.of( //
 		    "All of these", //
@@ -56,21 +57,23 @@ public class FileUtil {
 		    "None of the options are valid", //
 		    "None of the above", //
 		    "None of the answers", //
-		    "None of the answers is true", "None of the answers is correct", //
+		    "None of the answers is true", // 
+		    "None of the answers is correct", //
 		    "None of the preceding options", //
-		    "None of the preceding answers are true", "None of the preceding answers are correct", //
+		    "None of the preceding answers are true", // 
+		    "None of the preceding answers are correct", //
 		    "None of the preceding sentences are right", //
 		    "None of the preceding options are true" //
     );
-    
+
     private FileUtil() {
 	throw new IllegalStateException("You can't instanciate this class!");
     }
 
     public static List<String> readQuestionsFiles(final Path dir) {
-	
+
 	final var matcher = FileSystems.getDefault().getPathMatcher("glob:**question*.txt");
-	
+
 	final var questionFiles = new ArrayList<String>();
 
 	try (final var stream = Files.list(dir)) {
@@ -87,9 +90,9 @@ public class FileUtil {
 
 	return questionFiles;
     }
-    
+
     public static List<Path> readFolders(final Path dir) {
-	
+
 	final var questionFiles = new ArrayList<Path>();
 
 	try (final var stream = Files.list(dir)) {
@@ -107,7 +110,7 @@ public class FileUtil {
     }
 
     public static int getQtyFiles(final String dir) {
-	
+
 	final var matcher = FileSystems.getDefault().getPathMatcher("glob:**question*.txt");
 
 	var result = 0;
@@ -139,14 +142,18 @@ public class FileUtil {
 
     public static String readExplanation(final String data) {
 
-	final var explanationTemp = substringAfter(data, ANSWER_MSG);
+	final var answerMsg = getAnswerMsg(data);
+
+	final var explanationTemp = substringAfter(data, answerMsg);
 
 	return substringAfter(explanationTemp, "\n");
     }
 
     public static List<String> readCorrectOptions(final String data) {
 
-	final var explanation = RegExUtils.removeAll(substringBetween(data, ANSWER_MSG, "\n"), "[,and\\s+]");
+	final var answerMsg = getAnswerMsg(data);
+
+	final var explanation = RegExUtils.removeAll(substringBetween(data, answerMsg, "\n"), "[,and\\s+]");
 
 	if (Objects.isNull(explanation)) {
 	    throw new IllegalArgumentException("Error on read data: " + data);
@@ -168,7 +175,9 @@ public class FileUtil {
     public static Map<String, String> readOptions(final String data) {
 	final var dataTemp1 = replace(data, readQuestion(data), StringUtils.EMPTY);
 
-	final var dataTemp2 = substringBefore(dataTemp1, ANSWER_MSG);
+	final var answerMsg = getAnswerMsg(data);
+
+	final var dataTemp2 = substringBefore(dataTemp1, answerMsg);
 
 	final var answers = new HashMap<String, String>();
 
@@ -209,5 +218,14 @@ public class FileUtil {
 	} catch (final IOException ex) {
 	    throw new IllegalArgumentException("Not a UTF-8 file", ex);
 	}
+    }
+
+    private static String getAnswerMsg(final String data) {
+	return ANSWER_MSGS.stream() //
+			.filter(msg -> contains(data, msg + SPACE)) //
+			.findAny() //
+			.orElseThrow(() -> new IllegalStateException("Not found: ".concat(ANSWER_MSGS.toString())));
+	
+//	return contains(data, ANSWER_MSGS.get(0) + SPACE) ? ANSWER_MSGS.get(0) : ANSWER_MSGS.get(1);
     }
 }

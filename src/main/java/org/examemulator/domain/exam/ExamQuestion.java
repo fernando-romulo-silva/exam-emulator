@@ -312,7 +312,7 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
     }
 
     public boolean isAnswered() {
-	return status == ANSWERED;
+	return status == ANSWERED || status == FINISHED;
     }
 
     public boolean isCorrect() {
