@@ -1,10 +1,10 @@
 ---------------------------------------------------------
 
-* Show questions statitics on main view
+* Create a database backup before shutdown the application 
+
+* Show questions statitics on main view (marked)
 
 * Create exams from questions reports
-* Create exam with specific questions on main view
-* Create an exam with most dificult questions, based on historical
 
 * Create exams with correct names (from questionnaiere, retest, dynamic)
 

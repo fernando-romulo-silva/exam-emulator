@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.examemulator.domain.questionnaire.question.Option;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -24,7 +25,7 @@ public class ExamOption {
     @Column(name = "LETTER")
     private String letter;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "OPTION_ID", referencedColumnName = "ID")
     private Option option;
 

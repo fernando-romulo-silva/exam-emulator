@@ -131,10 +131,10 @@
 		</dependency>
 		
 		<dependency>
-		  <artifactId>jakarta-data-api</artifactId>
-		  <groupId>jakarta.data</groupId>
-		  <version>1.0.0-SNAPSHOT</version>
-		</dependency>	
+		    <groupId>jakarta.data</groupId>
+		    <artifactId>jakarta-data-api</artifactId>
+		    <version>1.0.0-b3</version>
+		</dependency>
 		
 		<!-- utils -->
 	
