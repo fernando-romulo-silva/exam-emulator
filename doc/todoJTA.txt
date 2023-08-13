@@ -61,3 +61,8 @@ https://github.com/microbean/microbean-narayana-jta-weld-se/
 * JpaRepository *
 
 https://vladmihalcea.com/best-spring-data-jparepository/
+
+
+
+
+ jndi.properties
