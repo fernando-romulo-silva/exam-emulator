@@ -1,7 +1,14 @@
 package org.examemulator.util.transaction.jta;
 
-import jakarta.enterprise.context.ApplicationScoped;
+import org.jboss.weld.transaction.spi.TransactionServices;
+
+import com.arjuna.ats.jta.cdi.TransactionContext;
+import com.arjuna.ats.jta.common.JTAEnvironmentBean;
+
+import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.Instance;
+import jakarta.enterprise.inject.spi.AfterBeanDiscovery;
+import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.transaction.RollbackException;
 import jakarta.transaction.Status;
@@ -11,13 +18,13 @@ import jakarta.transaction.Transaction;
 import jakarta.transaction.TransactionManager;
 import jakarta.transaction.UserTransaction;
 
-import com.arjuna.ats.jta.common.JTAEnvironmentBean;
-
-import org.jboss.weld.transaction.spi.TransactionServices;
-
-@ApplicationScoped
 public class NarayanaTransactionServices implements TransactionServices {
-
+    
+    public void afterBeanDiscovery(@Observes final AfterBeanDiscovery event, final BeanManager manager) {
+	final var jtaEnvironmentBean = com.arjuna.ats.jta.common.jtaPropertyManager.getJTAEnvironmentBean();
+	event.addContext(new TransactionContext(com.arjuna.ats.jta.TransactionManager::transactionManager, jtaEnvironmentBean::getTransactionSynchronizationRegistry));
+    }
+    
     /**
      * Returns the {@link UserTransaction} present in this environment by invoking the {@link com.arjuna.ats.jta.UserTransaction#userTransaction()} method and returning its result.
      *

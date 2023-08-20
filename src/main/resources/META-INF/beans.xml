@@ -10,4 +10,14 @@
         <class>org.examemulator.util.transaction.nonjta.TransactionInterceptor</class>
     </interceptors>
     
+       <!--
+      	Activate the alternative if JNDI binding of the TransactionSynchronizationRegistryProducer is not available.
+      	Then the registry is taken from the bean defined by the producer (see test CDIBindingTestCase).
+    	--> 
+    <!--
+     <alternatives>
+        <class>org.jboss.narayana.quickstarts.jta.cdibinding.TransactionSynchronizationRegistryProducer</class>
+    </alternatives>
+    -->
+    
 </beans>

@@ -13,6 +13,16 @@ https://github.com/luiz158/usertransaction-in-java-se/blob/master/src/main/java/
 
 https://stackoverflow.com/questions/5861874/easy-way-to-start-a-standalone-jndi-server-and-register-some-resources
 
+jndi.properties
+
+https://github.com/h-thurow/Simple-JNDI/blob/master/src/test/java/commons/configuration/JNDIConfigurationTest.java
+https://github.com/h-thurow/Simple-JNDI/blob/master/src/test/java/eclipselink/EclipselinkTest.java
+
+https://stackoverflow.com/questions/1615417/out-of-container-jndi-data-source
+https://www.google.com/search?q=%22datasource%22+%22java+se%22+%22jndi%22&sca_esv=556540922&sxsrf=AB5stBiRs8Onk3wbk_XfGD1SMo93AIY52Q:1691958043941&ei=GzvZZI6KOZiekdUP8ZSkmA4&start=0&sa=N&ved=2ahUKEwjOg7zxutqAAxUYT6QEHXEKCeM4ChDy0wN6BAgGEAQ&biw=2560&bih=934&dpr=1
+https://www.google.com/search?q=%22datasource%22+%22java+se%22+%22jndi%22&sca_esv=556540922&biw=2560&bih=934&sxsrf=AB5stBgykH-T_pv2K9oM6x4yk0jbXQsWQw:1691958183182&ei=pzvZZLPJCrf1kdUP-pi1uAc&start=20&sa=N&ved=2ahUKEwjzuO6zu9qAAxW3eqQEHXpMDXcQ8tMDegQIBBAG
+https://www.torutk.com/boards/3/topics/98
+
 
 * Data Source *
 
@@ -22,8 +32,14 @@ https://www.google.com/search?q=register+datasource+jndi+java+se&oq=register+dat
 
 https://www.google.com/search?q=datasource+jta+jndi&sxsrf=AB5stBjx2dmLI6FodpJ-XM7y-D602LOA8Q%3A1688242464480&ei=IImgZLDzHJmgkdUPp82mmAk&ved=0ahUKEwiwg4-jqe7_AhUZUKQEHaemCZMQ4dUDCBA&uact=5&oq=datasource+jta+jndi&gs_lcp=Cgxnd3Mtd2l6LXNlcnAQAzIGCAAQFhAeOgYIABAHEB46CAgAEIAEEMsBOgQIABAeSgQIQRgAUABY8htgqx9oAHABeACAAWmIAf4EkgEDNi4xmAEAoAEBwAEB&sclient=gws-wiz-serp
 
+https://github.com/h-thurow/Simple-JNDI
+
+https://stackoverflow.com/questions/6838191/simple-jndi-contextfactory
+
 
 * JTA *
+
+https://developer.jboss.org/thread/278367
 
 https://stackoverflow.com/questions/840694/what-do-i-need-to-do-to-integrate-jta-into-a-java-se-application
 

@@ -14,6 +14,7 @@ public record QuestionDTO( //
 		String idQuestion, //
 		String value, //
 		Integer questionOrder, //
+		Integer qtyMarked, //
 		Integer qtyCorrect, //
 		BigDecimal percCorrect, //
 		Integer qtyIncorrect, //
@@ -38,9 +39,10 @@ public record QuestionDTO( //
 		    String idQuestion, //
 		    String value, //
 		    Integer questionOrder, //
+		    Integer qtyMarked, //
 		    Integer qtyCorrect, //
 		    Integer qtyIncorrect) {
 
-	this(questionnaireSetName, questionnaireName, idQuestion, value, questionOrder, qtyCorrect, ZERO, qtyIncorrect, ZERO, INTEGER_ZERO);
+	this(questionnaireSetName, questionnaireName, idQuestion, value, questionOrder, qtyMarked, qtyCorrect, ZERO, qtyIncorrect, ZERO, INTEGER_ZERO);
     }
 }

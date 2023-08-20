@@ -162,13 +162,6 @@ public class MainController {
     }
 
     private void initView() {
-//	view.questionInternPanel.removeAll();
-//	view.questionInternPanel.revalidate();
-//	view.questionInternPanel.repaint();
-//
-//	view.pQuestions.removeAll();
-//	view.pQuestions.revalidate();
-//	view.pQuestions.repaint();
 	loadTreeData();
 	loadExamData();
 	loadQuestionData();
@@ -492,6 +485,7 @@ public class MainController {
 	final var fieldOfQuestionOrder = fieldOf("questionOrder", LABEL_TABLE_ORDER, ORDER_TABLE_CELL_RENDERER);
 	final var fieldOfQtyCorrect = fieldOf("qtyCorrect", "Correct", NUMBER_TABLE_CELL_RENDERER);
 	final var fieldOfQtyIncorrect = fieldOf("qtyIncorrect", "Incorrect", NUMBER_TABLE_CELL_RENDERER);
+	final var fieldOfQtyMarked = fieldOf("qtyMarked", "Marked", NUMBER_TABLE_CELL_RENDERER);	
 	
 	final var fieldOfQtyTotal = fieldOf("qtyTotal", "Total", NUMBER_TABLE_CELL_RENDERER);
 	final var fieldOfPercCorrect = fieldOf("percCorrect", "% Correct", PERCENT_TABLE_CELL_RENDERER);
@@ -502,6 +496,7 @@ public class MainController {
 	    tableFields = List.of( //
 			    fieldOfValue, //
 			    fieldOfQuestionOrder, //
+			    fieldOfQtyMarked,
 			    fieldOfQtyCorrect, //
 			    fieldOfQtyIncorrect, //
 			    fieldOfQtyTotal, //
@@ -521,6 +516,7 @@ public class MainController {
 				fieldOfQuestionnaireName, //
 				fieldOfValue, //
 				fieldOfQuestionOrder, //
+				fieldOfQtyMarked,
 				fieldOfQtyCorrect, //
 				fieldOfQtyIncorrect, //
 				fieldOfQtyTotal, //
@@ -536,6 +532,7 @@ public class MainController {
 				fieldOfQuestionnaireName, //
 				fieldOfValue, //
 				fieldOfQuestionOrder, //
+				fieldOfQtyMarked, //
 				fieldOfQtyCorrect, //
 				fieldOfQtyIncorrect, //
 				fieldOfQtyTotal, //

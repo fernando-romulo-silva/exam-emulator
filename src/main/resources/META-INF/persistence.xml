@@ -8,22 +8,30 @@
 	<persistence-unit name="defaultPU" transaction-type="RESOURCE_LOCAL">
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
-		
+		<non-jta-datasource>HikariDataSource</non-jta-datasource>
 		<mapping-file>META-INF/orm.xml</mapping-file>
+  
 		<properties>
 			<property name="jakarta.persistence.validation.mode" value="NONE" />
+			<property name="eclipselink.session.customizer" value="org.examemulator.util.datasource.JPAEclipseLinkSessionCustomizer"/> 
+   			<property name="jakarta.persistence.nonJtaDataSource" value="HikariDataSource"/>
 			
+			
+			<!-- 
             <property name="jakarta.persistence.jdbc.driver" value="org.hsqldb.jdbc.JDBCDriver"/>
             <property name="jakarta.persistence.jdbc.url" value="jdbc:hsqldb:hsql://localhost:9137/examEmulator"/> 
-            <!-- <property name="jakarta.persistence.jdbc.url" value="jdbc:hsqldb:file:database/examulator;shutdown=true;files_read_only=false"/> -->
+			 -->
+            <!-- <property name="jakarta.persistence.jdbc.url" value="jdbc:hsqldb:file:database/examulator;shutdown=true;files_read_only=false"/> OLD -->
+            <!-- 
             <property name="eclipselink.target-database" value="HSQL"/>
             <property name="jakarta.persistence.jdbc.user" value="sa"/>
+            <property name="jakarta.persistence.jdbc.password" value=""/>
+             -->
             
             <!-- 
             <property name="eclipselink.jdbc.connector" value="org.eclipse.persistence.sessions.DefaultConnector"/> -->
             <!-- https://stackoverflow.com/questions/58762706/how-to-reference-a-custom-connectionprovider-in-eclipselink -->
             	
-            <property name="jakarta.persistence.jdbc.password" value=""/>
 			<property name="eclipselink.ddl-generation" value="create-or-extend-tables" />
 			<!-- <property name="eclipselink.logging.level" value="FINEST" />  -->
 			

@@ -17,7 +17,7 @@ public class TransactionInterceptor {
 
     @Inject
     private EntityManager entityManager;
-    
+
     @Inject
     private Logger logger;
 
@@ -25,9 +25,9 @@ public class TransactionInterceptor {
     public Object contextInterceptor(final InvocationContext context) throws Exception {
 
 	Object result = null;
-	
+
 	final var transaction = entityManager.getTransaction();
-	
+
 	try {
 
 	    transaction.begin();
@@ -45,9 +45,9 @@ public class TransactionInterceptor {
 	    } catch (final Exception exRollback) {
 		logger.warn("Rollback of transaction failed", exRollback);
 	    }
-	    
+
 	    throw exTransaction;
-	    
+
 	} finally {
 	    if (entityManager.isOpen()) {
 		entityManager.clear();

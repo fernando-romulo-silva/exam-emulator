@@ -15,6 +15,7 @@
 				<column name="QUESTION_ID" class="java.lang.String" />
 				<column name="VALUE" class="java.lang.String" />
 				<column name="QUESTION_ORDER" class="java.lang.Integer" />
+				<column name="QT_MARKED" class="java.lang.Integer" />				
 				<column name="QTY_CORRECT" class="java.lang.Integer" />
 				<column name="QTY_INCORRECT" class="java.lang.Integer" />
 			</constructor-result>
@@ -27,6 +28,7 @@
 				       Q.ID AS QUESTION_ID, 
 				       LEFT(Q.VALUE, 25) ||'...' AS VALUE, 
 				       Q.NUM_ORDER AS QUESTION_ORDER, 
+				       SUM(CASE EQ.MARKED when true then 1 else 0 END) AS QT_MARKED, 
 				       SUM(case EQ.CORRECT when true then 1 else 0 end) AS QTY_CORRECT,
 				       SUM(case EQ.CORRECT when false then 1 else 0 end) AS QTY_INCORRECT
 				  FROM QUESTION Q 
@@ -48,7 +50,8 @@
 				       QRE.NAME AS QUESTIONNARIE_NAME,
 				       Q.ID AS QUESTION_ID,
 				       LEFT(Q.VALUE, 25) ||'...' AS VALUE, 
-				       Q.NUM_ORDER AS QUESTION_ORDER, 
+				       Q.NUM_ORDER AS QUESTION_ORDER,
+				       SUM(CASE EQ.MARKED when true then 1 else 0 END) AS QT_MARKED,
 				       SUM(case EQ.CORRECT when true then 1 else 0 end) AS QTY_CORRECT,
 				       SUM(case EQ.CORRECT when false then 1 else 0 end) AS QTY_INCORRECT
 				  FROM QUESTION Q 
@@ -69,7 +72,8 @@
 				       QRE.NAME AS QUESTIONNARIE_NAME,
 				       Q.ID AS QUESTION_ID,
 				       LEFT(Q.VALUE, 25) ||'...' AS VALUE, 
-				       Q.NUM_ORDER AS QUESTION_ORDER, 
+				       Q.NUM_ORDER AS QUESTION_ORDER,
+				       SUM(CASE EQ.MARKED when true then 1 else 0 END) AS QT_MARKED, 
 				       SUM(case EQ.CORRECT when true then 1 else 0 end) AS QTY_CORRECT,
 				       SUM(case EQ.CORRECT when false then 1 else 0 end) AS QTY_INCORRECT
 				  FROM QUESTION Q 
