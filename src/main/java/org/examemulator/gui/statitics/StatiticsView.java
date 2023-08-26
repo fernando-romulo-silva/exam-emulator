@@ -112,7 +112,7 @@ class StatiticsView extends JFrame {
 	btnMain = new JButton("Go Main");
 	btnMain.setMnemonic(KeyEvent.VK_M);
 	
-	btnNewExam = new JButton("New Exam");
+	btnNewExam = new JButton("Retry Exam");
 	btnNewExam.setMnemonic(KeyEvent.VK_E);
 	
 	final var panelButtons = new JPanel(new FlowLayout());
