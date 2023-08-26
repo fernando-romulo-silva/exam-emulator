@@ -53,6 +53,7 @@ import org.examemulator.domain.exam.Exam;
 import org.examemulator.domain.exam.ExamQuestion;
 import org.examemulator.gui.exam.ExamController;
 import org.examemulator.gui.main.MainController;
+import org.examemulator.service.ExamService;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -68,6 +69,8 @@ public class StatiticsController {
     private final ExamController examController;
 
     private final MainController mainController;
+    
+    private final ExamService examService;
 
     private final MouseAdapter questionLabelListener = new MouseAdapter() {
 
@@ -109,11 +112,13 @@ public class StatiticsController {
     StatiticsController( //
 		    final StatiticsView.StatiticsGui gui, //
 		    final ExamController examController, //
-		    final MainController mainController) {
+		    final MainController mainController, //
+		    final ExamService examService) {
 
 	this.view = gui.getView();
 	this.examController = examController;
 	this.mainController = mainController;
+	this.examService = examService;
     }
 
     @PostConstruct
@@ -145,7 +150,7 @@ public class StatiticsController {
 	    }
 	    
 	    view.setVisible(false);
-	    examController.show(exam.getName() + " new attempt", view, questions);
+	    examController.show(examService.getExamNameByBy(exam.getName()), view, questions);
 	});
 
 	view.btnMain.addActionListener(event -> {

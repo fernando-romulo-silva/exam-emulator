@@ -234,6 +234,10 @@ public class Exam {
 
 	return start.until(finish, MINUTES);
     }
+    
+    public LocalDateTime getStart() {
+	return start;
+    }    
 
     public LocalDateTime getFinish() {
 	return finish;

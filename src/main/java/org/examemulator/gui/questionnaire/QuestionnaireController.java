@@ -52,8 +52,7 @@ import org.examemulator.domain.questionnaire.question.Question;
 import org.examemulator.gui.exam.ExamController;
 import org.examemulator.gui.main.MainController;
 import org.examemulator.gui.questionnaire.QuestionnaireView.PreExameGui;
-import org.examemulator.service.LoadFromFileService;
-import org.examemulator.service.QuestionnaireService;
+import org.examemulator.service.ExamService;
 import org.slf4j.Logger;
 
 import jakarta.annotation.PostConstruct;
@@ -68,6 +67,8 @@ public class QuestionnaireController {
     private final ExamController examController;
     
     private final MainController mainController;
+    
+    private final ExamService examService;
 
     private final Logger logger;
 
@@ -80,15 +81,15 @@ public class QuestionnaireController {
     @Inject
     QuestionnaireController( //
 		    final PreExameGui gui, //
-		    final QuestionnaireService service, //
-		    final LoadFromFileService loadFromFileService, //
 		    final ExamController examController, //
 		    final MainController mainController,//
+		    final ExamService examService,
 		    final Logger logger) {
 	super();
 	this.view = gui.getView();
 	this.examController = examController;
 	this.mainController = mainController;
+	this.examService = examService;
 	this.logger = logger;
     }
 
@@ -210,7 +211,7 @@ public class QuestionnaireController {
 	    }
 	    
 	    view.setVisible(false);
-	    examController.show(questionnaire.getName(), view, toExamQuestions);
+	    examController.show(examService.getExamNameBy(questionnaire), view, toExamQuestions);
 	});
 	
 	view.rdbtnAll.addActionListener(event -> {

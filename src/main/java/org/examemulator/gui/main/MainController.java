@@ -17,9 +17,11 @@ import static org.apache.commons.lang3.StringUtils.trim;
 import static org.apache.commons.lang3.math.NumberUtils.toInt;
 import static org.apache.commons.lang3.math.NumberUtils.toLong;
 import static org.examemulator.domain.exam.ExamStatus.FINISHED;
+import static org.examemulator.domain.exam.ExamStatus.INITIAL;
 import static org.examemulator.domain.exam.ExamStatus.RUNNING;
 import static org.examemulator.util.gui.ControllerUtil.alignTableModel;
 import static org.examemulator.util.gui.ControllerUtil.createQuestionDialog;
+import static org.examemulator.util.gui.TableCellRendererUtil.DATE_TIME_TABLE_CELL_RENDERER;
 import static org.examemulator.util.gui.TableCellRendererUtil.ENUM_TABLE_CELL_RENDERER;
 import static org.examemulator.util.gui.TableCellRendererUtil.NUMBER_TABLE_CELL_RENDERER;
 import static org.examemulator.util.gui.TableCellRendererUtil.ORDER_TABLE_CELL_RENDERER;
@@ -262,7 +264,7 @@ public class MainController {
 			if (nonNull(selectedExam) && FINISHED.equals(selectedExam.getStatus())) {
 			    view.setVisible(false);
 			    statiticsController.show(selectedExam, view);
-			} else if (nonNull(selectedExam) && RUNNING.equals(selectedExam.getStatus())) {
+			} else if (nonNull(selectedExam) && (Objects.equals(RUNNING, selectedExam.getStatus()) || Objects.equals(INITIAL, selectedExam.getStatus()))) {
 			    view.setVisible(false);
 			    examController.show(selectedExam, view);
 			}
@@ -284,7 +286,8 @@ public class MainController {
 		    final var finalSelectedRow = table.convertRowIndexToModel(selectedRow);
 		    
 		    final Optional<QuestionDTO> optionalQuestion;
-		    if (tableModel.getColumnCount() == 7) { // without questionnaire name and set name
+		    
+		    if (tableModel.getColumnCount() == 8) { // without questionnaire name and set name
 
 			final var questionOrder = tableModel.getValueAt(finalSelectedRow, 1);
 
@@ -292,7 +295,7 @@ public class MainController {
 					.filter(q -> Objects.equals(q.questionOrder(), questionOrder)) //
 					.findFirst();
 
-		    } else if (tableModel.getColumnCount() == 8) {
+		    } else if (tableModel.getColumnCount() == 9) {
 			
 			final var questionnaireName = tableModel.getValueAt(finalSelectedRow, 0);
 			final var questionOrder = tableModel.getValueAt(finalSelectedRow, 2);
@@ -339,7 +342,7 @@ public class MainController {
 		    final var selectedRows = table.getSelectedRows();
 		    final var selectedIds = new ArrayList<String>();
 
-		    if (tableModel.getColumnCount() == 7) { // without questionnaire name and set name
+		    if (tableModel.getColumnCount() == 8) { // without questionnaire name and set name
 
 			for (final var selectedRow : selectedRows) {
 
@@ -356,7 +359,7 @@ public class MainController {
 			    }
 			}
 
-		    } else if (tableModel.getColumnCount() == 8) { // without set name
+		    } else if (tableModel.getColumnCount() == 9) { // without set name
 			
 			for (final var selectedRow : selectedRows) {
 
@@ -399,7 +402,7 @@ public class MainController {
 		    
 		    final var questionsFromDb = questionnaireService.findByIds(selectedIds).toList();
 		    view.setVisible(false);
-		    examController.show("Dynamic", view, questionsFromDb);
+		    examController.show(examService.getNextExamDynamicNameBy(), view, questionsFromDb);
 		}
 	    }
 	    
@@ -464,6 +467,8 @@ public class MainController {
 	final var fields = List.of( //
 			fieldOf("id", NUMBER_TABLE_CELL_RENDERER), //
 			fieldOf("name", true), //
+			fieldOf("start", DATE_TIME_TABLE_CELL_RENDERER),
+			fieldOf("finish", DATE_TIME_TABLE_CELL_RENDERER),
 			fieldOf("status", ENUM_TABLE_CELL_RENDERER), //
 			fieldOf("type", ENUM_TABLE_CELL_RENDERER), //
 			fieldOf("shuffleQuestions"), //

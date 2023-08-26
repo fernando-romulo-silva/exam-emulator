@@ -9,28 +9,26 @@ import jakarta.enterprise.inject.se.SeContainerInitializer;
 public class Main {
 
     public static void main(final String... args) throws Exception {
-	
+
 	HsqldbServer.start();
-	
+
 	JndiHelper.registerDataSource();
 
 	final var container = SeContainerInitializer.newInstance().initialize();
-	
 
 	final var mainController = container.select(MainController.class).get();
-	
+
 	mainController.loadCertificationFromFolder("/home/fernando/Development/workspaces/eclipse-workspace/certifications-technologies/docker-dca-certification");
 	mainController.show();
 
 	Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 
-	    // Both OpenWebBeans and Weld seem to shutdown on their own.
-	    // Weld even prints a stack trace if we close it.
 	    if (container.isRunning()) {
 		container.close();
 	    }
 
 	    HsqldbServer.stop();
 	}));
+
     }
 }

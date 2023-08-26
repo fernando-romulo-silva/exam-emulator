@@ -2,13 +2,20 @@ package org.examemulator.service;
 
 import static jakarta.transaction.Transactional.TxType.REQUIRED;
 import static jakarta.transaction.Transactional.TxType.SUPPORTS;
+import static org.apache.commons.lang3.StringUtils.SPACE;
+import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
+import static org.apache.commons.lang3.StringUtils.leftPad;
+import static org.apache.commons.lang3.StringUtils.substring;
+import static org.apache.commons.lang3.StringUtils.trim;
 
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.examemulator.domain.cerfication.Certification;
 import org.examemulator.domain.exam.Exam;
 import org.examemulator.domain.exam.ExamRepository;
+import org.examemulator.domain.questionnaire.Questionnaire;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -19,20 +26,20 @@ import jakarta.transaction.Transactional;
 public class ExamService {
 
     private final ExamRepository examRepository;
-    
+
     @Inject
-    ExamService(ExamRepository examRepository) {
+    ExamService(final ExamRepository examRepository) {
 	super();
 	this.examRepository = examRepository;
     }
 
     @Transactional(REQUIRED)
     public void save(final Exam exam) {
-	
+
 	if (Objects.isNull(exam)) {
 	    return;
 	}
-	
+
 	if (Objects.isNull(exam.getId())) {
 	    examRepository.save(exam);
 	} else {
@@ -46,5 +53,38 @@ public class ExamService {
 
     public Stream<Exam> findByCertification(final Certification selectedCertification) {
 	return examRepository.findByCertification(selectedCertification);
+    }
+
+    public String getExamNameBy(final Questionnaire questionnaire) {
+
+	final var setName = questionnaire.getSet().getName();
+	final String[] strings = { setName, " - ", questionnaire.getName(), " - ", "Exam" };
+	final var name = StringUtils.join(strings);
+
+	final var attempt = examRepository.getNextExamNumberBy(name);
+	
+	return name + SPACE + leftPad(attempt.toString(), 2, '0');
+    }
+    
+    public String getExamNameByBy(final String name) {
+	
+	if (containsIgnoreCase(name, "retry")) {
+	    
+	    final var nameTemp = trim(substring(name, 0, name.length() - 2));
+	    final var attempt = examRepository.getNextExamRetryNumberBy(nameTemp);
+	    return nameTemp + SPACE + leftPad(attempt.toString(), 2, '0');
+	    
+	} else {
+	    return name.concat(" - Retry 01");
+	}
+    }
+    
+    public String getNextExamDynamicNameBy() {
+
+	final var name = "Dynamic";
+	
+	final var attempt = examRepository.getNextExamNumberBy(name);
+	
+	return name + SPACE + leftPad(attempt.toString(), 2, '0');
     }
 }
