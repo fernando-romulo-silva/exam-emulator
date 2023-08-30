@@ -130,7 +130,11 @@ public class QuestionnaireController {
 	toExamQuestions.clear();
 	toExamQuestions.addAll(questionnaire.getQuestions());
 
-	view.contentPane.setBorder(createTitledBorder(questionnaire.getName()));
+	final var questionnaireSet = questionnaire.getSet();
+	final var tabText = questionnaireSet.getName()
+			.concat(" - ")
+			.concat(questionnaire.getName());
+	view.contentPane.setBorder(createTitledBorder(tabText));
 
 	view.rdbtnAll.setEnabled(true);
 	view.rdbtnNone.setEnabled(true);

@@ -82,7 +82,6 @@ class QuestionnaireView extends JFrame {
 
 	final var lblDescription = new JLabel("Description");
 	examControlPanel2.add(lblDescription);
-	lblDescription.setBorder(new EtchedBorder(LOWERED, null, null));
 
 	textDescription = new JTextField();
 	textDescription.setEnabled(false);
@@ -102,7 +101,6 @@ class QuestionnaireView extends JFrame {
 
 	final var lblSet = new JLabel("Set");
 	examControlPanel3.add(lblSet);
-	lblSet.setBorder(new EtchedBorder(LOWERED, null, null));
 
 	textSet = new JTextField();
 	textSet.setEnabled(false);

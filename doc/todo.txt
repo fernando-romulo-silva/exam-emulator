@@ -1,19 +1,25 @@
 ---------------------------------------------------------
 
+* Remove the excess of space
+
+* Filtering exams according to certification tree data
+
 * Create a database backup before shutdown the application 
 
-* Show questions statitics on main view (marked)
+* Show data statitics on main view, next to certification tree data 
 
-* Create exams from questions reports
+* Set colors to Exam table and Question table
 
-* Create exams with correct names (from questionnaiere, retest, dynamic)
+* Change text for icons if possible 
 
 * Calculate the time correctly
-
-* Stop and continue exam for another day
 
 * Automated Tests
 
 * Doc
 
-                                                  
+                   
+                   
+https://medium.com/@keeptoo/spicing-up-your-java-swingui-using-custom-look-and-feel-113501dd5920
+
+https://www.google.com/search?q=best+swing+look+and+feel&tbm=isch&ved=2ahUKEwiEnp_aroGBAxXUoScCHRV-DCAQ2-cCegQIABAA&oq=best+swing+look+and+feel&gs_lcp=CgNpbWcQA1CPD1jFFWDLFmgAcAB4AIABVIgByAOSAQE2mAEAoAEBqgELZ3dzLXdpei1pbWfAAQE&sclient=img&ei=06DtZMToMNTDnsEPlfyxgAI&bih=961&biw=1920#imgrc=AosvK19-pU7WkM                        

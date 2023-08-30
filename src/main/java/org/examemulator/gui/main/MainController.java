@@ -471,7 +471,7 @@ public class MainController {
 			fieldOf("finish", DATE_TIME_TABLE_CELL_RENDERER),
 			fieldOf("status", ENUM_TABLE_CELL_RENDERER), //
 			fieldOf("type", ENUM_TABLE_CELL_RENDERER), //
-			fieldOf("shuffleQuestions"), //
+			fieldOf("shuffleQuestions", "Shuffled"), //
 			fieldOf("result", ENUM_TABLE_CELL_RENDERER)//
 	);
 

@@ -115,7 +115,6 @@ class ExamView extends JFrame {
 
 	final var lblDiscretePercent = new JLabel("Discrete (%)");
 	examControlPanel2.add(lblDiscretePercent);
-	lblDiscretePercent.setBorder(new EtchedBorder(LOWERED, null, null));
 
 	textDiscrete = new JSpinner(new SpinnerNumberModel(100, 0, 100, 10));
 	examControlPanel2.add(textDiscrete);
@@ -134,7 +133,6 @@ class ExamView extends JFrame {
 
 	final var lblMode = new JLabel("Mode");
 	examControlPanel3.add(lblMode);
-	lblMode.setBorder(new EtchedBorder(LOWERED, null, null));
 
 	cbMode = new JComboBox<>();
 	examControlPanel3.add(cbMode);
@@ -153,7 +151,6 @@ class ExamView extends JFrame {
 
 	lblClock = new JLabel("");
 	examControlPanel3.add(lblClock);
-	lblClock.setBorder(new EtchedBorder(LOWERED, null, null));
 
 	// -------------------------------------------------------------------------------------------
 	// Control Panel

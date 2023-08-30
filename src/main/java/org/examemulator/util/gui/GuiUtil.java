@@ -4,7 +4,9 @@ import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.NORTH;
 import static java.awt.FlowLayout.LEFT;
 import static java.util.Objects.nonNull;
+import static javax.swing.BorderFactory.createCompoundBorder;
 import static javax.swing.BorderFactory.createEmptyBorder;
+import static javax.swing.BorderFactory.createTitledBorder;
 import static javax.swing.BoxLayout.Y_AXIS;
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER;
 import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS;
@@ -158,8 +160,13 @@ public class GuiUtil {
 	textComponent.setFont(DEFAULT_FONT);
 	textComponent.setSelectionStart(0);
 	textComponent.setSelectionEnd(0); 
+	final var compoundBorder = createCompoundBorder(textComponent.getBorder(), BorderFactory.createEmptyBorder(0, 2, 2, 2));
+	textComponent.setBorder(compoundBorder);
 
-	return new JScrollPane(textComponent, VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_NEVER);
+	final var jScrollPane = new JScrollPane(textComponent, VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_NEVER);
+	jScrollPane.setBorder(null);
+	
+	return jScrollPane;
     }
 
     public static ActionListener createTimerAction(final Integer duration, final JLabel jlabel, final Action action) {
@@ -272,7 +279,7 @@ public class GuiUtil {
     public static JPanel createIndiscreteOptions(final ExamQuestion question) {
 
 	final var optionsQuestionPanel = new JPanel();
-	optionsQuestionPanel.setBorder(BorderFactory.createTitledBorder("Options"));
+	optionsQuestionPanel.setBorder(createTitledBorder("Options"));
 	optionsQuestionPanel.setLayout(new BoxLayout(optionsQuestionPanel, Y_AXIS));
 
 	if (question.getCorrectOptions().size() == 1) { // One selection
@@ -304,10 +311,13 @@ public class GuiUtil {
 		radio.addItemListener(radioItemListener);
 
 		bg.add(radio);
+		
 
-		optionsQuestionPanel.add(new JScrollPane(radio));
+		final var radioScrollPane = new JScrollPane(radio);
+		radioScrollPane.setBorder(createEmptyBorder());
+		optionsQuestionPanel.add(radioScrollPane);
 	    }
-
+	    
 	    return optionsQuestionPanel;
 
 	} else { // Multi selection
@@ -340,6 +350,7 @@ public class GuiUtil {
 		check.addItemListener(checkItemListener);
 
 		box.add(new JScrollPane(check));
+		box.setBorder(createEmptyBorder());
 	    }
 
 	    optionsQuestionPanel.add(box);
