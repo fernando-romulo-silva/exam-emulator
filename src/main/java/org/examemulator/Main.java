@@ -19,6 +19,7 @@ public class Main {
 	JndiHelper.registerDataSource();
 	
 	FlatLightLaf.setup();
+//	FlatDarkLaf.setup();
 
 	final var container = SeContainerInitializer.newInstance().initialize();
 

@@ -10,6 +10,8 @@
 
 * Set colors to Exam table and Question table
 
+* Set colors for dark theme
+
 * Change text for icons if possible 
 
 * Calculate the time correctly
