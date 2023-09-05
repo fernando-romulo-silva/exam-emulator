@@ -129,13 +129,15 @@ public class GuiUtil {
     }
 
     public static JComponent createScrollHtmlTextToShow(final String text) {
+	
 	final var textComponent = new JEditorPane();
 	textComponent.setEditable(false);
+	
 	final var kit = new HTMLEditorKit();
 	textComponent.setEditorKit(kit);
-	var doc = kit.createDefaultDocument();
-	textComponent.setDocument(doc);
-	textComponent.setText("<html> <body style=\"font-family:"+ DEFAULT_FONT.getName() +" \">" + text + " </body> </html>");
+	
+	textComponent.setDocument(kit.createDefaultDocument());
+	textComponent.setText("<html> <body style=\"font-family:" + DEFAULT_FONT.getName() + " \">" + text + " </body> </html>");
 	textComponent.setMinimumSize(new Dimension(100, 100));
 	textComponent.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
 	textComponent.setFont(DEFAULT_FONT);
@@ -143,7 +145,10 @@ public class GuiUtil {
 	textComponent.setSelectionStart(0);
 	textComponent.setSelectionEnd(0); 
 
-	return new JScrollPane(textComponent, VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_NEVER);
+	final var jScrollPane = new JScrollPane(textComponent, VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_NEVER);
+	jScrollPane.setBorder(null);
+	
+	return jScrollPane;
     }
 
     public static JComponent createScrollTextToShow(final String text) {
@@ -158,6 +163,7 @@ public class GuiUtil {
 	textComponent.setLineWrap(true);
 	textComponent.setWrapStyleWord(true);
 	textComponent.setFont(DEFAULT_FONT);
+	textComponent.setCaretPosition(0);
 	textComponent.setSelectionStart(0);
 	textComponent.setSelectionEnd(0); 
 	final var compoundBorder = createCompoundBorder(textComponent.getBorder(), BorderFactory.createEmptyBorder(0, 2, 2, 2));
@@ -165,6 +171,9 @@ public class GuiUtil {
 
 	final var jScrollPane = new JScrollPane(textComponent, VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_NEVER);
 	jScrollPane.setBorder(null);
+	
+	textComponent.revalidate();
+	jScrollPane.revalidate();
 	
 	return jScrollPane;
     }

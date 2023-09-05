@@ -4,6 +4,8 @@
 
 * Filtering exams according to certification tree data
 
+* Fix the size, text are hidden when first load
+
 * Create a database backup before shutdown the application 
 
 * Show data statitics on main view, next to certification tree data 

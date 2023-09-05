@@ -16,6 +16,7 @@ import org.examemulator.domain.cerfication.Certification;
 import org.examemulator.domain.exam.Exam;
 import org.examemulator.domain.exam.ExamRepository;
 import org.examemulator.domain.questionnaire.Questionnaire;
+import org.examemulator.domain.questionnaire.set.QuestionnaireSet;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -51,8 +52,16 @@ public class ExamService {
 	return examRepository.findAll();
     }
 
-    public Stream<Exam> findByCertification(final Certification selectedCertification) {
-	return examRepository.findByCertification(selectedCertification);
+    public Stream<Exam> findExamBy(final Certification selectedCertification) {
+	return examRepository.findExamBy(selectedCertification);
+    }
+    
+    public Stream<Exam> findExamBy(final Certification selectedCertification, final QuestionnaireSet questionnaireSet) {
+	return examRepository.findExamBy(selectedCertification, questionnaireSet);
+    }
+    
+    public Stream<Exam> findExamBy(final Certification selectedCertification, final QuestionnaireSet questionnaireSet, final Questionnaire questionnaire) {
+	return examRepository.findExamBy(selectedCertification, questionnaireSet, questionnaire);
     }
 
     public String getExamNameBy(final Questionnaire questionnaire) {

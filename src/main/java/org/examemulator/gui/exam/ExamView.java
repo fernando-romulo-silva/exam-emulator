@@ -4,7 +4,6 @@ import static java.awt.BorderLayout.CENTER;
 import static java.awt.FlowLayout.LEFT;
 import static javax.swing.BorderFactory.createTitledBorder;
 import static javax.swing.BoxLayout.Y_AXIS;
-import static javax.swing.border.EtchedBorder.LOWERED;
 import static org.examemulator.util.gui.GuiUtil.APP_NAME;
 
 import java.awt.BorderLayout;
@@ -20,7 +19,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.border.EtchedBorder;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 
 import org.examemulator.gui.components.WrapLayout;
 
@@ -103,14 +103,16 @@ class ExamView extends JFrame {
 	examControlPanel2.setLayout(new WrapLayout(LEFT, 5, 5));
 	examPanel.add(examControlPanel2);
 
-	chckbxShuffleQuestions = new JCheckBox("Shuffle Questions");
+	chckbxShuffleQuestions = new JCheckBox("<html>Shuffle Questions</html>");
+	chckbxShuffleQuestions.setHorizontalTextPosition(SwingConstants.LEFT);
 	chckbxShuffleQuestions.setEnabled(false);
 	chckbxShuffleQuestions.setSelected(true);
 	examControlPanel2.add(chckbxShuffleQuestions);
 
-	chckbxShuffleOptions = new JCheckBox("Shuffle Options");
+	chckbxShuffleOptions = new JCheckBox("<html>Shuffle Options</html>");
 	chckbxShuffleOptions.setEnabled(false);
 	chckbxShuffleOptions.setSelected(true);
+	chckbxShuffleOptions.setHorizontalTextPosition(SwingConstants.LEFT);
 	examControlPanel2.add(chckbxShuffleOptions);
 
 	final var lblDiscretePercent = new JLabel("Discrete (%)");

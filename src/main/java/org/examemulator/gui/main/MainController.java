@@ -213,6 +213,7 @@ public class MainController {
 			selectedQuestionnaire = null;
 
 			if (nonNull(selectedQuestionnaireSet)) {
+			    loadExamData();
 			    loadQuestionData();
 			}
 		    }
@@ -235,6 +236,7 @@ public class MainController {
 		    }
 
 		    if (isLeftMouseButton(event) && !event.isConsumed() && event.getClickCount() == 1 && nonNull(selectedQuestionnaire)) {
+			loadExamData();
 			loadQuestionData();
 		    }
 
@@ -272,21 +274,21 @@ public class MainController {
 		}
 	    }
 	});
-	
+
 	view.questionsTable.addMouseListener(new MouseAdapter() {
-	    
+
 	    @Override
 	    public void mousePressed(final MouseEvent event) {
 		final var table = (JTable) event.getSource();
 		final var tableModel = (AbstractTableModel) table.getModel();
-		
+
 		if (isLeftMouseButton(event) && event.getClickCount() == 2) {
-		    
+
 		    final var selectedRow = table.getSelectedRow();
 		    final var finalSelectedRow = table.convertRowIndexToModel(selectedRow);
-		    
+
 		    final Optional<QuestionDTO> optionalQuestion;
-		    
+
 		    if (tableModel.getColumnCount() == 8) { // without questionnaire name and set name
 
 			final var questionOrder = tableModel.getValueAt(finalSelectedRow, 1);
@@ -296,7 +298,7 @@ public class MainController {
 					.findFirst();
 
 		    } else if (tableModel.getColumnCount() == 9) {
-			
+
 			final var questionnaireName = tableModel.getValueAt(finalSelectedRow, 0);
 			final var questionOrder = tableModel.getValueAt(finalSelectedRow, 2);
 
@@ -317,23 +319,22 @@ public class MainController {
 							&& Objects.equals(q.questionnaireSetName(), setName)) //
 					.findFirst();
 		    }
-		    
-		    
-		    final var id = optionalQuestion.isPresent() // 
-				    ? optionalQuestion.get().idQuestion() // 
+
+		    final var id = optionalQuestion.isPresent() //
+				    ? optionalQuestion.get().idQuestion() //
 				    : StringUtils.EMPTY;
-		    
+
 		    final var questionOptional = questionnaireService.findById(id);
-		    
+
 		    if (questionOptional.isEmpty()) {
 			return;
 		    }
-		    
+
 		    createQuestionDialog(view, questionOptional.get());
 		}
 
 		if (isRightMouseButton(event) && event.getClickCount() == 2) {
-		    
+
 		    if (questions.isEmpty()) {
 			showMessageDialog(view, "You need select at least one question!", "Error!", ERROR_MESSAGE);
 			return;
@@ -347,7 +348,7 @@ public class MainController {
 			for (final var selectedRow : selectedRows) {
 
 			    final var finalSelectedRow = table.convertRowIndexToModel(selectedRow);
-			    
+
 			    final var questionOrder = tableModel.getValueAt(finalSelectedRow, 1);
 
 			    final var optionalQuestion = questions.stream() //
@@ -360,17 +361,17 @@ public class MainController {
 			}
 
 		    } else if (tableModel.getColumnCount() == 9) { // without set name
-			
+
 			for (final var selectedRow : selectedRows) {
 
 			    final var finalSelectedRow = table.convertRowIndexToModel(selectedRow);
-			    
+
 			    final var questionnaireName = tableModel.getValueAt(finalSelectedRow, 0);
 			    final var questionOrder = tableModel.getValueAt(finalSelectedRow, 2);
 
 			    final var optionalQuestion = questions.stream() //
 					    .filter(q -> Objects.equals(q.questionOrder(), questionOrder) //
-							 && Objects.equals(q.questionnaireName(), questionnaireName)) //
+							    && Objects.equals(q.questionnaireName(), questionnaireName)) //
 					    .findFirst();
 
 			    if (optionalQuestion.isPresent()) {
@@ -379,19 +380,19 @@ public class MainController {
 			}
 
 		    } else { // full
-			
+
 			for (final var selectedRow : selectedRows) {
 
 			    final var finalSelectedRow = table.convertRowIndexToModel(selectedRow);
-			    
+
 			    final var setName = tableModel.getValueAt(finalSelectedRow, 0);
 			    final var questionnaireName = tableModel.getValueAt(finalSelectedRow, 1);
 			    final var questionOrder = tableModel.getValueAt(finalSelectedRow, 3);
 
 			    final var optionalQuestion = questions.stream() //
 					    .filter(q -> Objects.equals(q.questionOrder(), questionOrder) //
-							 && Objects.equals(q.questionnaireName(), questionnaireName) //
-							 && Objects.equals(q.questionnaireSetName(), setName)) //
+							    && Objects.equals(q.questionnaireName(), questionnaireName) //
+							    && Objects.equals(q.questionnaireSetName(), setName)) //
 					    .findFirst();
 
 			    if (optionalQuestion.isPresent()) {
@@ -399,13 +400,13 @@ public class MainController {
 			    }
 			}
 		    }
-		    
+
 		    final var questionsFromDb = questionnaireService.findByIds(selectedIds).toList();
 		    view.setVisible(false);
 		    examController.show(examService.getNextExamDynamicNameBy(), view, questionsFromDb);
 		}
 	    }
-	    
+
 	});
 
 	view.addWindowListener(new WindowAdapter() {
@@ -458,24 +459,31 @@ public class MainController {
 
 	exams.clear();
 
-	if (ObjectUtils.allNotNull(selectedCertification)) {
-	    exams.addAll(examService.findByCertification(selectedCertification).toList());
+	if (ObjectUtils.allNotNull(selectedCertification, selectedQuestionnaireSet, selectedQuestionnaire)) {
+
+	    exams.addAll(examService.findExamBy(selectedCertification, selectedQuestionnaireSet, selectedQuestionnaire).toList());
+
+	} else if (ObjectUtils.allNotNull(selectedCertification, selectedQuestionnaireSet)) {
+
+	    exams.addAll(examService.findExamBy(selectedCertification, selectedQuestionnaireSet).toList());
+
+	} else if (ObjectUtils.allNotNull(selectedCertification)) {
+
+	    exams.addAll(examService.findExamBy(selectedCertification).toList());
 	}
 
 	selectedExam = null;
 
-	final var fields = List.of( //
+	final var tableFields = List.of( //
 			fieldOf("id", NUMBER_TABLE_CELL_RENDERER), //
 			fieldOf("name", true), //
-			fieldOf("start", DATE_TIME_TABLE_CELL_RENDERER),
-			fieldOf("finish", DATE_TIME_TABLE_CELL_RENDERER),
-			fieldOf("status", ENUM_TABLE_CELL_RENDERER), //
+			fieldOf("start", DATE_TIME_TABLE_CELL_RENDERER), fieldOf("finish", DATE_TIME_TABLE_CELL_RENDERER), fieldOf("status", ENUM_TABLE_CELL_RENDERER), //
 			fieldOf("type", ENUM_TABLE_CELL_RENDERER), //
 			fieldOf("shuffleQuestions", "Shuffled"), //
 			fieldOf("result", ENUM_TABLE_CELL_RENDERER)//
 	);
 
-	alignTableModel(view.examTable, Exam.class, exams, fields);
+	alignTableModel(view.examTable, Exam.class, exams, tableFields);
 	view.examTable.getSelectionModel().setSelectionMode(SINGLE_SELECTION);
     }
 
@@ -486,13 +494,13 @@ public class MainController {
 	final List<TableModelField> tableFields;
 
 	final var fieldOfValue = fieldOf("value", true);
-	
+
 	final var fieldOfQuestionOrder = fieldOf("questionOrder", LABEL_TABLE_ORDER, ORDER_TABLE_CELL_RENDERER);
 	final var fieldOfQtyCorrect = fieldOf("qtyCorrect", "Correct", NUMBER_TABLE_CELL_RENDERER);
 	final var fieldOfQtyIncorrect = fieldOf("qtyIncorrect", "Incorrect", NUMBER_TABLE_CELL_RENDERER);
-	final var fieldOfQtyMarked = fieldOf("qtyMarked", "Marked", NUMBER_TABLE_CELL_RENDERER);	
-	
-	final var fieldOfQtyTotal = fieldOf("qtyTotal", "Total", NUMBER_TABLE_CELL_RENDERER);
+	final var fieldOfQtyMarked = fieldOf("qtyMarked", "Marked", NUMBER_TABLE_CELL_RENDERER);
+
+	final var fieldOfQtyTotal = fieldOf("qtyTotal", "Attempts", NUMBER_TABLE_CELL_RENDERER);
 	final var fieldOfPercCorrect = fieldOf("percCorrect", "% Correct", PERCENT_TABLE_CELL_RENDERER);
 	final var fieldOfPercIncorrect = fieldOf("percIncorrect", "% Incorrect", PERCENT_TABLE_CELL_RENDERER);
 
@@ -501,8 +509,7 @@ public class MainController {
 	    tableFields = List.of( //
 			    fieldOfValue, //
 			    fieldOfQuestionOrder, //
-			    fieldOfQtyMarked,
-			    fieldOfQtyCorrect, //
+			    fieldOfQtyMarked, fieldOfQtyCorrect, //
 			    fieldOfQtyIncorrect, //
 			    fieldOfQtyTotal, //
 			    fieldOfPercCorrect, //
@@ -521,8 +528,7 @@ public class MainController {
 				fieldOfQuestionnaireName, //
 				fieldOfValue, //
 				fieldOfQuestionOrder, //
-				fieldOfQtyMarked,
-				fieldOfQtyCorrect, //
+				fieldOfQtyMarked, fieldOfQtyCorrect, //
 				fieldOfQtyIncorrect, //
 				fieldOfQtyTotal, //
 				fieldOfPercCorrect, //
