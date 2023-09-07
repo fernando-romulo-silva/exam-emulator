@@ -166,12 +166,12 @@ class ExamView extends JFrame {
 
 	btnPrevious = new JButton("Previous");
 	btnPrevious.setEnabled(false);
-	btnPrevious.setMnemonic(KeyEvent.VK_LEFT);
+	btnPrevious.setMnemonic(KeyEvent.VK_MINUS);
 	quesitonControlPanel.add(btnPrevious);
 
 	btnNext = new JButton("Next");
 	btnNext.setEnabled(false);
-	btnNext.setMnemonic(KeyEvent.VK_RIGHT);
+	btnNext.setMnemonic(KeyEvent.VK_EQUALS);
 	quesitonControlPanel.add(btnNext);
 
 	btnCheckAnswer = new JButton("Answer");

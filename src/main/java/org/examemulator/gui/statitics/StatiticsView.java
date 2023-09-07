@@ -80,12 +80,12 @@ class StatiticsView extends JFrame {
 	pGroup.add(panelControl);
 
 	btnPrevious = new JButton("Previous");
-	btnPrevious.setMnemonic(KeyEvent.VK_LEFT);
+	btnPrevious.setMnemonic(KeyEvent.VK_MINUS);
 	btnPrevious.setEnabled(false);
 	panelControl.add(btnPrevious);
 
 	btnNext = new JButton("Next");
-	btnNext.setMnemonic(KeyEvent.VK_RIGHT);
+	btnNext.setMnemonic(KeyEvent.VK_EQUALS);
 	panelControl.add(btnNext);
 
 	chckbxCorrects = new JCheckBox("Corrects");

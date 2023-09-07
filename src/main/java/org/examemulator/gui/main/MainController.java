@@ -577,12 +577,12 @@ public class MainController {
 	    throw new IllegalArgumentException("Certification folder 'Questionnaires' does not exist!");
 	}
 
-	final var certification = loadFromFileService.loadCertification(certificationPath);
-
 	final var questionnaireSetFolders = FileUtil.readFolders(questionnairesSetPath);
 	if (questionnaireSetFolders.isEmpty()) {
 	    throw new IllegalArgumentException("The 'Questionnaires' does not have any folders, questionnaires set!");
 	}
+	
+	final var certification = loadFromFileService.loadCertification(certificationPath);
 
 	for (final var quetionnaireSetFolder : questionnaireSetFolders) {
 
