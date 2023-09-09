@@ -6,6 +6,7 @@ import static java.util.Collections.unmodifiableList;
 import static java.util.Optional.ofNullable;
 import static org.examemulator.domain.exam.ExamResult.FAILED;
 import static org.examemulator.domain.exam.ExamResult.PASSED;
+import static org.examemulator.util.domain.DomainUtil.MATH_CONTEXT;
 import static org.examemulator.util.domain.DomainUtil.VALUE_100;
 
 import java.math.BigDecimal;
@@ -129,9 +130,9 @@ public class Exam {
 
 	final var qtyCorrect = getQtyCorrect();
 
-	final var minScoreValue = new BigDecimal(qtyTotal) //
-			.multiply(minScorePercent) //
-			.divide(VALUE_100, new MathContext(1, HALF_UP));
+	final var minScoreValue = minScorePercent
+			.divide(VALUE_100, MATH_CONTEXT)
+			.multiply(new BigDecimal(qtyTotal));
 
 	result = BigDecimal.valueOf(qtyCorrect).compareTo(minScoreValue) >= 0 ? PASSED : FAILED;
 
@@ -193,13 +194,6 @@ public class Exam {
 
     public ExamType getType() {
 	return type;
-    }
-
-    public boolean isSameQuestionnaire() {
-//	questions.stream()
-//		.collect(Collectors.groupingBy(q -> q.get))
-
-	return false;
     }
 
     public ExamResult getResult() {

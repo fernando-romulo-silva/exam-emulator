@@ -324,10 +324,10 @@ public class StatiticsController {
 
 	final var qtyIncorrect = qtyTotal - qtyCorrect;
 
-	final var minScoreValue = new BigDecimal(qtyTotal) //
-			.multiply(exam.getMinScorePercent()) //
-			.divide(VALUE_100, new MathContext(1, HALF_UP));
-
+	final var minScoreValue = exam.getMinScorePercent()
+			.divide(VALUE_100, MATH_CONTEXT)
+			.multiply(new BigDecimal(qtyTotal));
+			
 	final var percCorrect = new BigDecimal(qtyCorrect) //
 			.divide(valueOf(qtyTotal), MATH_CONTEXT) //
 			.multiply(VALUE_100);
