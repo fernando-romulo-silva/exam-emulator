@@ -214,6 +214,11 @@ public class QuestionnaireController {
 		return;
 	    }
 	    
+	    if (toExamQuestions.size() > questionnaire.getQuestions().size()) {
+		showMessageDialog(view, "You selected more question than quesitonnaire!", "Error!", JOptionPane.ERROR_MESSAGE);
+		return;
+	    }	    
+	    
 	    view.setVisible(false);
 	    examController.show(examService.getExamNameBy(questionnaire), view, toExamQuestions);
 	});

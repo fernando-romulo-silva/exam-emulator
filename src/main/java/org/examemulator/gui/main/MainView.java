@@ -20,12 +20,14 @@ import javax.swing.JTree;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
+import org.apache.commons.lang3.StringUtils;
+
 import jakarta.enterprise.context.ApplicationScoped;
 
 class MainView extends JFrame {
 
     private static final long serialVersionUID = 1L;
-    
+
     public static final int HEADER_HEIGHT = 32;
 
     private static final class ExtendedJTable extends JTable {
@@ -53,20 +55,25 @@ class MainView extends JFrame {
 
     JPanel pMain, contentPane, pFirstData;
 
-    JLabel lblCertificationStatistics;
-    
+    JLabel lblCertifications;
+
     JTable examTable, questionsTable;
-    
+
     JTabbedPane tabbedPane;
-    
+
     JScrollPane spExams, spQuestions, spData;
-    
+
     JPopupMenu popupMenuCertification;
-    
+
     JMenuItem menuItemLoadCertification, menuItemStatiticsCertification;
-    
+
     JTree trData;
-    
+    private JPanel pCertifications;
+    private JPanel pStatistic;
+    private JPanel pStatisticLabel;
+    private JLabel lblCertificationStatistics;
+    private JPanel pStatisticData;
+
     MainView() {
 	setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 	setBounds(100, 100, 871, 723);
@@ -82,52 +89,66 @@ class MainView extends JFrame {
 	pMain.setPreferredSize(new Dimension(80, 200));
 	contentPane.add(pMain, BorderLayout.NORTH);
 
-	final var pCertificationStatistics = new JPanel(new FlowLayout(LEFT, 5, 5));
-	pMain.add(pCertificationStatistics, BorderLayout.NORTH);
-
-	lblCertificationStatistics = new JLabel("Certifications");
-	pCertificationStatistics.add(lblCertificationStatistics);
-
 	menuItemLoadCertification = new JMenuItem("Load from file");
 	menuItemStatiticsCertification = new JMenuItem("Show the statitics");
-	
+
 	popupMenuCertification = new JPopupMenu();
 	popupMenuCertification.add(menuItemLoadCertification);
 	popupMenuCertification.add(menuItemStatiticsCertification);
+
+	pFirstData = new JPanel();
 	
+	pStatistic = new JPanel();
+	pStatistic.setLayout(new BorderLayout(0, 0));
+	pMain.add(pStatistic, BorderLayout.EAST);
+	pStatistic.setSize(new Dimension(180, 80));
+	
+	pStatisticLabel = new JPanel();
+	pStatistic.add(pStatisticLabel, BorderLayout.NORTH);
+	
+	lblCertificationStatistics = new JLabel(StringUtils.rightPad("Statistics", 100));
+	pStatisticLabel.add(lblCertificationStatistics);
+	
+	pStatisticData = new JPanel();
+	pStatistic.add(pStatisticData, BorderLayout.CENTER);
+
+	pCertifications = new JPanel();
+	pMain.add(pCertifications, BorderLayout.CENTER);
+	pCertifications.setLayout(new BorderLayout(0, 0));
+
+	final var pCertificationLabels = new JPanel(new FlowLayout(LEFT, 5, 5));
+	pCertifications.add(pCertificationLabels, BorderLayout.NORTH);
+
+	lblCertifications = new JLabel("Certifications");
+	pCertificationLabels.add(lblCertifications);
+
 	trData = new JTree();
 	trData.setEditable(false);
 	trData.setRootVisible(false);
-	
-	pFirstData = new JPanel();
-	
+
 	spData = new JScrollPane(trData);
-	pMain.add(spData, BorderLayout.CENTER);
-	
+	pCertifications.add(spData);
+
 	tabbedPane = new JTabbedPane(TOP);
 	contentPane.add(tabbedPane, BorderLayout.CENTER);
-	
-        Object[] columnNamesQuestion = { "id", "value", "Correct Answers" };
-        Object[][] rowDataQuestion = { 
-                { "1", "What your name?", "04" },
-        };
-	
+
+	Object[] columnNamesQuestion = { "id", "value", "Correct Answers" };
+	Object[][] rowDataQuestion = { { "1", "What your name?", "04" }, };
+
 	questionsTable = new ExtendedJTable(new DefaultTableModel(rowDataQuestion, columnNamesQuestion));
 	questionsTable.setCellSelectionEnabled(false);
 	questionsTable.setRowSelectionAllowed(true);
-	
+
 	spQuestions = new JScrollPane(questionsTable);
-	tabbedPane.addTab("Questions", null, spQuestions, null);	
-	
-        Object[] columnNamesExam = { "id", "name", "status" };
-        Object[][] rowDataExam = { 
-                { "1", "Questionnaire 01 - Attempt 1", "passed" },
-        };
-	
+	tabbedPane.addTab("Questions", null, spQuestions, null);
+
+	Object[] columnNamesExam = { "id", "name", "status" };
+	Object[][] rowDataExam = { { "1", "Questionnaire 01 - Attempt 1", "passed" }, };
+
 	examTable = new ExtendedJTable(new DefaultTableModel(rowDataExam, columnNamesExam));
 	examTable.setCellSelectionEnabled(false);
 	examTable.setRowSelectionAllowed(true);
-	
+
 	spExams = new JScrollPane(examTable);
 	tabbedPane.addTab("Exams", null, spExams, null);
     }
