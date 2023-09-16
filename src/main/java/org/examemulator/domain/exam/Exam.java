@@ -61,13 +61,9 @@ public class Exam {
     @Column(name = "SHUFFLE_QUESTIONS")
     private boolean shuffleQuestions;
 
-    @JoinColumn(name = "EXAM_QUESTION_ID")
+    @JoinColumn(name = "EXAM_ID")
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<ExamQuestion> questions = new ArrayList<>();
-
-    @Column(name = "ORIGIN")
-    @Enumerated(EnumType.STRING)
-    private ExamOrigin origin;
 
     @Column(name = "TIME_SPENT_MINUTES")
     private Integer timeSpentMinutes;
@@ -98,7 +94,6 @@ public class Exam {
 	this.minScorePercent = builder.minScorePercent;
 	this.discretPercent = builder.discretPercent;
 	this.shuffleQuestions = builder.shuffleQuestions;
-	this.origin = builder.origin;
 	this.questions.addAll(builder.questionsIntern);
     }
 
@@ -132,7 +127,7 @@ public class Exam {
 
 	final var minScoreValue = minScorePercent
 			.divide(VALUE_100, MATH_CONTEXT)
-			.multiply(new BigDecimal(qtyTotal));
+			.multiply(new BigDecimal(qtyTotal), MATH_CONTEXT);
 
 	result = BigDecimal.valueOf(qtyCorrect).compareTo(minScoreValue) >= 0 ? PASSED : FAILED;
 
@@ -291,8 +286,6 @@ public class Exam {
 	public List<? extends InquiryInterface> questions;
 
 	private List<ExamQuestion> questionsIntern = new ArrayList<>();
-
-	private ExamOrigin origin;
 
 	public Builder with(final Consumer<Builder> function) {
 	    function.accept(this);

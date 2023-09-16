@@ -45,7 +45,7 @@ public class QuestionRepository extends GenericRepository<Question, String> {
 	
 	return query.getResultStream();
     }
-
+    
     @SuppressWarnings("unchecked")
     public Stream<Question> findByIds(final List<String> ids) {
 	

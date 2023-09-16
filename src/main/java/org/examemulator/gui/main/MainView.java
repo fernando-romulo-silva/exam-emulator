@@ -53,9 +53,9 @@ class MainView extends JFrame {
 	}
     }
 
-    JPanel pMain, contentPane, pFirstData;
+    JPanel pMain, contentPane, pFirstData, pCertifications, pStatistic, pStatisticLabel, pStatisticData;
 
-    JLabel lblCertifications;
+    JLabel lblCertifications, lblCertificationStatistics;
 
     JTable examTable, questionsTable;
 
@@ -68,12 +68,7 @@ class MainView extends JFrame {
     JMenuItem menuItemLoadCertification, menuItemStatiticsCertification;
 
     JTree trData;
-    private JPanel pCertifications;
-    private JPanel pStatistic;
-    private JPanel pStatisticLabel;
-    private JLabel lblCertificationStatistics;
-    private JPanel pStatisticData;
-
+    
     MainView() {
 	setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 	setBounds(100, 100, 871, 723);
@@ -132,6 +127,16 @@ class MainView extends JFrame {
 	tabbedPane = new JTabbedPane(TOP);
 	contentPane.add(tabbedPane, BorderLayout.CENTER);
 
+	Object[] columnNamesExam = { "id", "name", "status" };
+	Object[][] rowDataExam = { { "1", "Questionnaire 01 - Attempt 1", "passed" }, };
+
+	examTable = new ExtendedJTable(new DefaultTableModel(rowDataExam, columnNamesExam));
+	examTable.setCellSelectionEnabled(false);
+	examTable.setRowSelectionAllowed(true);
+	
+	spExams = new JScrollPane(examTable);
+	tabbedPane.addTab("Exams", null, spExams, null);
+	
 	Object[] columnNamesQuestion = { "id", "value", "Correct Answers" };
 	Object[][] rowDataQuestion = { { "1", "What your name?", "04" }, };
 
@@ -140,16 +145,7 @@ class MainView extends JFrame {
 	questionsTable.setRowSelectionAllowed(true);
 
 	spQuestions = new JScrollPane(questionsTable);
-	tabbedPane.addTab("Questions", null, spQuestions, null);
+	tabbedPane.addTab("Questions", null, spQuestions, null);	
 
-	Object[] columnNamesExam = { "id", "name", "status" };
-	Object[][] rowDataExam = { { "1", "Questionnaire 01 - Attempt 1", "passed" }, };
-
-	examTable = new ExtendedJTable(new DefaultTableModel(rowDataExam, columnNamesExam));
-	examTable.setCellSelectionEnabled(false);
-	examTable.setRowSelectionAllowed(true);
-
-	spExams = new JScrollPane(examTable);
-	tabbedPane.addTab("Exams", null, spExams, null);
     }
 }

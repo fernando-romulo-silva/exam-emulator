@@ -49,6 +49,8 @@ class ExamView extends JFrame {
     JCheckBox chckbxShuffleQuestions, chckbxShuffleOptions;
 
     JComboBox<String> cbMode;
+    private JLabel lblShuffleQuestions;
+    private JLabel lblShuffleOptions;
 
     ExamView() {
 	setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -102,14 +104,20 @@ class ExamView extends JFrame {
 	final var examControlPanel2 = new JPanel();
 	examControlPanel2.setLayout(new WrapLayout(LEFT, 5, 5));
 	examPanel.add(examControlPanel2);
+	
+	lblShuffleQuestions = new JLabel("Shuffle Questions");
+	examControlPanel2.add(lblShuffleQuestions);
 
-	chckbxShuffleQuestions = new JCheckBox("<html>Shuffle Questions</html>");
+	chckbxShuffleQuestions = new JCheckBox("");
 	chckbxShuffleQuestions.setHorizontalTextPosition(SwingConstants.LEFT);
 	chckbxShuffleQuestions.setEnabled(false);
 	chckbxShuffleQuestions.setSelected(true);
 	examControlPanel2.add(chckbxShuffleQuestions);
+	
+	lblShuffleOptions = new JLabel("Shuffle Options");
+	examControlPanel2.add(lblShuffleOptions);
 
-	chckbxShuffleOptions = new JCheckBox("<html>Shuffle Options</html>");
+	chckbxShuffleOptions = new JCheckBox("");
 	chckbxShuffleOptions.setEnabled(false);
 	chckbxShuffleOptions.setSelected(true);
 	chckbxShuffleOptions.setHorizontalTextPosition(SwingConstants.LEFT);

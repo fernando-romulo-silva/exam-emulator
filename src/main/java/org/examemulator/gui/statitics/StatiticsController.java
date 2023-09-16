@@ -326,7 +326,7 @@ public class StatiticsController {
 
 	final var minScoreValue = exam.getMinScorePercent()
 			.divide(VALUE_100, MATH_CONTEXT)
-			.multiply(new BigDecimal(qtyTotal));
+			.multiply(new BigDecimal(qtyTotal), MATH_CONTEXT);
 			
 	final var percCorrect = new BigDecimal(qtyCorrect) //
 			.divide(valueOf(qtyTotal), MATH_CONTEXT) //

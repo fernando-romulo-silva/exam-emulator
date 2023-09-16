@@ -21,10 +21,11 @@ public class ExamRepository extends GenericRepository<Exam, Long> {
 	final var sqlString = """
 			SELECT DISTINCT ex.*
 			  FROM EXAM ex
-		         INNER JOIN EXAM_QUESTION exq on exq.EXAM_QUESTION_ID = ex.ID
+		         INNER JOIN EXAM_QUESTION exq on exq.EXAM_ID = ex.ID
 		         INNER JOIN QUESTION q on q.id = exq.QUESTION_ID
 		         INNER JOIN QUESTIONNARIE qre on qre.id = q.QUESTIONNAIRE_ID
 		         WHERE qre.CERTIFICATION_ID = ?
+		         ORDER BY ex.NAME
 			""";
 
 	final var query = entityManager.createNativeQuery(sqlString, Exam.class);
@@ -39,11 +40,12 @@ public class ExamRepository extends GenericRepository<Exam, Long> {
 	final var sqlString = """
 			SELECT DISTINCT ex.*
 			  FROM EXAM ex
-		         INNER JOIN EXAM_QUESTION exq on exq.EXAM_QUESTION_ID = ex.ID
+		         INNER JOIN EXAM_QUESTION exq on exq.EXAM_ID = ex.ID
 		         INNER JOIN QUESTION q on q.id = exq.QUESTION_ID
 		         INNER JOIN QUESTIONNARIE qre on qre.id = q.QUESTIONNAIRE_ID
 		         WHERE qre.CERTIFICATION_ID = ?
 		           AND UPPER(ex.name) LIKE UPPER(?)
+		         ORDER BY ex.NAME
 			""";
 
 	final var query = entityManager.createNativeQuery(sqlString, Exam.class);
@@ -59,12 +61,13 @@ public class ExamRepository extends GenericRepository<Exam, Long> {
 	final var sqlString = """
 			SELECT DISTINCT ex.*
 			  FROM EXAM ex
-		         INNER JOIN EXAM_QUESTION exq on exq.EXAM_QUESTION_ID = ex.ID
+		         INNER JOIN EXAM_QUESTION exq on exq.EXAM_ID = ex.ID
 		         INNER JOIN QUESTION q on q.id = exq.QUESTION_ID
 		         INNER JOIN QUESTIONNARIE qre on qre.id = q.QUESTIONNAIRE_ID
 		         WHERE qre.CERTIFICATION_ID = ?
 		           AND UPPER(ex.name) LIKE UPPER(?)
 		           AND UPPER(ex.name) LIKE UPPER(?)
+		         ORDER BY ex.NAME
 			""";
 
 	final var query = entityManager.createNativeQuery(sqlString, Exam.class);

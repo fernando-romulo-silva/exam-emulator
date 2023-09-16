@@ -21,6 +21,17 @@
 			</constructor-result>
 		</sql-result-set-mapping>
 		
+		<sql-result-set-mapping name="QuestionStatistic">
+			<constructor-result target-class="org.examemulator.util.dto.QuestionStatisticDTO">
+				<column name="QUESTION_QUESTIONS" class="java.lang.Integer" />
+				<column name="QUESTION_ANSWERS" class="java.lang.Integer" />
+				<column name="QUESTION_ORDER" class="java.lang.Integer" />
+				<column name="QT_MARKED" class="java.lang.Integer" />				
+				<column name="QTY_CORRECT" class="java.lang.Integer" />
+				<column name="QTY_INCORRECT" class="java.lang.Integer" />
+			</constructor-result>
+		</sql-result-set-mapping>		
+		
 		<named-native-query name="QuestionByCertificationAndQuestionnaireSetAndQuestionnaire" result-set-mapping="QuestionResult">
 			<query><![CDATA[	
 				SELECT QRS.NAME AS QUESTIONNARIE_SET_NAME, 
@@ -85,6 +96,61 @@
 				 GROUP BY QRS.NAME, QRE.NAME, Q.ID, Q.VALUE, Q.NUM_ORDER
 				 ORDER BY QRS.NAME, QRE.NAME, Q.NUM_ORDER]]>
 			</query>
+		</named-native-query>
+		
+		<!-- =========================================================================================================================== -->
+		
+		<named-native-query name="QuestionStatisticByCertificationAndQuestionnaireSetAndQuestionnaire" result-set-mapping="QuestionStatistic">
+			<query><![CDATA[
+                SELECT COUNT(DISTINCT Q.ID) AS QT_QUESTIONS,
+                       COUNT(DISTINCT EQ.ID) AS QT_ANSWERS,
+                       SUM(CASE EQ.MARKED when true then 1 else 0 END) AS QT_MARKED, 
+                       SUM(case EQ.CORRECT when true then 1 else 0 end) AS QTY_CORRECT,
+                       SUM(case EQ.CORRECT when false then 1 else 0 end) AS QTY_INCORRECT
+                  FROM QUESTION Q 
+                 INNER JOIN QUESTIONNARIE QRE ON QRE.ID = Q.QUESTIONNAIRE_ID
+                 INNER JOIN QUESTIONNARIE_SET QRS ON QRS.ID = QRE.SET_ID
+                  LEFT JOIN EXAM_QUESTION EQ ON (EQ.QUESTION_ID = Q.ID AND EQ.STATUS = 'FINISHED')
+                  LEFT JOIN EXAM EX ON (EX.ID = EQ.EXAM_ID)
+                 WHERE 1 = 1
+                   AND QRE.CERTIFICATION_ID = ?
+                   AND QRE.SET_ID = ?]]>
+			</query>		
+		</named-native-query>		
+		
+		<named-native-query name="QuestionStatisticByCertificationAndQuestionnaireSet" result-set-mapping="QuestionStatistic">
+			<query><![CDATA[
+                SELECT COUNT(DISTINCT Q.ID) AS QT_QUESTIONS,
+                       COUNT(DISTINCT EQ.ID) AS QT_ANSWERS,
+                       SUM(CASE EQ.MARKED when true then 1 else 0 END) AS QT_MARKED, 
+                       SUM(case EQ.CORRECT when true then 1 else 0 end) AS QTY_CORRECT,
+                       SUM(case EQ.CORRECT when false then 1 else 0 end) AS QTY_INCORRECT
+                  FROM QUESTION Q 
+                 INNER JOIN QUESTIONNARIE QRE ON QRE.ID = Q.QUESTIONNAIRE_ID
+                 INNER JOIN QUESTIONNARIE_SET QRS ON QRS.ID = QRE.SET_ID
+                  LEFT JOIN EXAM_QUESTION EQ ON (EQ.QUESTION_ID = Q.ID AND EQ.STATUS = 'FINISHED')
+                  LEFT JOIN EXAM EX ON (EX.ID = EQ.EXAM_ID)
+                 WHERE 1 = 1
+                   AND QRE.CERTIFICATION_ID = ?
+                   AND QRE.SET_ID = ?]]>
+			</query>		
+		</named-native-query>
+		
+		<named-native-query name="QuestionStatisticByCertification" result-set-mapping="QuestionStatistic">
+			<query><![CDATA[
+                SELECT COUNT(DISTINCT Q.ID) AS QT_QUESTIONS,
+                       COUNT(DISTINCT EQ.ID) AS QT_ANSWERS,
+                       SUM(CASE EQ.MARKED when true then 1 else 0 END) AS QT_MARKED, 
+                       SUM(case EQ.CORRECT when true then 1 else 0 end) AS QTY_CORRECT,
+                       SUM(case EQ.CORRECT when false then 1 else 0 end) AS QTY_INCORRECT
+                  FROM QUESTION Q 
+                 INNER JOIN QUESTIONNARIE QRE ON QRE.ID = Q.QUESTIONNAIRE_ID
+                 INNER JOIN QUESTIONNARIE_SET QRS ON QRS.ID = QRE.SET_ID
+                  LEFT JOIN EXAM_QUESTION EQ ON (EQ.QUESTION_ID = Q.ID AND EQ.STATUS = 'FINISHED')
+                  LEFT JOIN EXAM EX ON (EX.ID = EQ.EXAM_ID)
+                 WHERE 1 = 1
+                   AND QRE.CERTIFICATION_ID = ?]]>
+			</query>		
 		</named-native-query>		
 
 </entity-mappings>
