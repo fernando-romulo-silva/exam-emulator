@@ -27,13 +27,6 @@ public class Certification {
     @Column(name = "MAX_MINUTES")
     private Integer maxMinutes;
 
-//    @JoinTable(name="BOOK_CHAPTER", joinColumns=@JoinColumn(name="BOOK_ID"))  
-//    @ElementCollection(fetch=FetchType.EAGER)
-//    @CollectionTable(name = "CERTIFICATION_CONCEPTS")
-//    @MapKeyColumn(name = "KEY")
-//    @Column(name = "VALUE")
-//    private Map<Concept, BigDecimal> concepts;
-
     // ------------------------------------------
     
     Certification() {

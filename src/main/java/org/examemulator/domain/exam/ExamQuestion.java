@@ -104,7 +104,8 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
 
 	final var answersOptional = options.stream() //
 			.map(ExamOption::getValue) //
-			.filter(answer -> containsAny(List.of(answer), words)).findAny();
+			.filter(answer -> containsAny(List.of(answer), words)) //
+			.findAny();
 
 	final var lastOptions = new ArrayList<ExamOption>();
 

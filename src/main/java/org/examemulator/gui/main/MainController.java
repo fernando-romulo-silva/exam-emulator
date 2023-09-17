@@ -11,6 +11,8 @@ import static javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION;
 import static javax.swing.ListSelectionModel.SINGLE_SELECTION;
 import static javax.swing.SwingUtilities.isLeftMouseButton;
 import static javax.swing.SwingUtilities.isRightMouseButton;
+import static javax.swing.tree.TreeSelectionModel.SINGLE_TREE_SELECTION;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.leftPad;
 import static org.apache.commons.lang3.StringUtils.substringBefore;
 import static org.apache.commons.lang3.StringUtils.trim;
@@ -19,6 +21,7 @@ import static org.apache.commons.lang3.math.NumberUtils.toLong;
 import static org.examemulator.domain.exam.ExamStatus.FINISHED;
 import static org.examemulator.domain.exam.ExamStatus.INITIAL;
 import static org.examemulator.domain.exam.ExamStatus.RUNNING;
+import static org.examemulator.util.domain.DomainUtil.QUESTION_MIN_ATTEMPT;
 import static org.examemulator.util.gui.ControllerUtil.alignTableModel;
 import static org.examemulator.util.gui.ControllerUtil.createQuestionDialog;
 import static org.examemulator.util.gui.TableCellRendererUtil.DATE_TIME_TABLE_CELL_RENDERER;
@@ -167,6 +170,7 @@ public class MainController {
 	loadTreeData();
 	loadExamData();
 	loadQuestionData();
+	statisticData();
     }
 
     private void initActions() {
@@ -199,6 +203,7 @@ public class MainController {
 			if (nonNull(selectedCertification)) {
 			    loadExamData();
 			    loadQuestionData();
+			    statisticData();
 			}
 		    }
 
@@ -215,6 +220,7 @@ public class MainController {
 			if (nonNull(selectedQuestionnaireSet)) {
 			    loadExamData();
 			    loadQuestionData();
+			    statisticData();
 			}
 		    }
 
@@ -238,6 +244,7 @@ public class MainController {
 		    if (isLeftMouseButton(event) && !event.isConsumed() && event.getClickCount() == 1 && nonNull(selectedQuestionnaire)) {
 			loadExamData();
 			loadQuestionData();
+			statisticData();
 		    }
 
 		}
@@ -453,6 +460,7 @@ public class MainController {
 	}
 
 	view.trData.setModel(new DefaultTreeModel(root));
+	view.trData.getSelectionModel().setSelectionMode(SINGLE_TREE_SELECTION);
     }
 
     private void loadExamData() {
@@ -562,6 +570,53 @@ public class MainController {
 	alignTableModel(view.questionsTable, QuestionDTO.class, questions, tableFields);
 
 	view.questionsTable.getSelectionModel().setSelectionMode(MULTIPLE_INTERVAL_SELECTION);
+    }
+    
+    public void statisticData() {
+	
+	view.lblStatistic.setText(EMPTY);
+	
+	final var qtExams = exams.stream().count();
+	final var qtExamsPassed = exams.stream().filter(Exam::isPassed).count();
+	final var qtExamsFailed = exams.stream().filter(Exam::isFailed).count();
+	final var qtExamsUndefined = exams.stream().filter(Exam::isUndefined).count();
+	
+	final var qtQuestions = questions.stream().count();
+	final var qtQuestionsReady = questions.stream().filter(QuestionDTO::ready).count();
+	final var qtQuestionsUnready = qtQuestions - qtQuestionsReady; 
+	
+	final var qtQuestionsAttemps = questions.stream().filter(question -> question.qtyTotal() >= QUESTION_MIN_ATTEMPT).count();
+	final var qtQuestionsNonAttemps = questions.stream().filter(question -> question.qtyTotal() < QUESTION_MIN_ATTEMPT).count();
+	
+	final var msgLayout = """
+			<html>
+			The selection has {0} exam(s), and of them, {1} exam(s) has passed. <br />
+			There is(are) {2} failed exam(s), and {3} is(are) undefined. <br />
+			<br />
+			The selection has {4} question(s) with a minimum of attempts ({5} attempts).<br />
+			And {6} question(s) without a minimum of attempts. <br />
+			<br />
+			The selection has {7} question(s) and {8} is(are) ready (score >= 90%). <br />
+			And {9} is(are) unready (score &lt; 90%). <br />
+			</html>
+			""";
+	
+	final var msg = MessageFormat.format( //
+			msgLayout, //
+			qtExams,
+			qtExamsPassed,
+			qtExamsFailed,
+			qtExamsUndefined,
+			qtQuestionsAttemps,
+			QUESTION_MIN_ATTEMPT,
+			qtQuestionsNonAttemps,
+			qtQuestions,
+			qtQuestionsReady,
+			qtQuestionsUnready
+	);
+	
+	view.lblStatistic.setText(msg);
+	
     }
 
     public void loadCertificationFromFolder(final String certificationDir) {

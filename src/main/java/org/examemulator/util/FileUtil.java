@@ -48,7 +48,8 @@ public class FileUtil {
 		    "All of the preceding steps are required", //
 		    "All of the preceding answers are correct", //
 		    "All of the preceding sentences are correct", //
-		    "All of the preceding sentences are wrong", "All of the options" //
+		    "All of the preceding sentences are wrong", // 
+		    "All of the options" //
     );
 
     public static final List<String> WORDS_NONE = List.of(//

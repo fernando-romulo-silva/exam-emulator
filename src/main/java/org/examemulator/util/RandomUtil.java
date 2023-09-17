@@ -5,6 +5,10 @@ import java.util.Collections;
 import java.util.List;
 
 public class RandomUtil {
+    
+    private RandomUtil() {
+	throw new IllegalStateException("Utility class");
+    }
 
     /**
      *

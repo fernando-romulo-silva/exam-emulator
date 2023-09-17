@@ -313,7 +313,7 @@ public class StatiticsController {
 	view.pQuestions.repaint();
     }
 
-    private static String getStatistic(final Exam exam) {
+    private String getStatistic(final Exam exam) {
 
 	final var qtyTotal = exam.getQuestions().stream() //
 			.count();

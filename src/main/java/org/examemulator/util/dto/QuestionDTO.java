@@ -1,9 +1,12 @@
 package org.examemulator.util.dto;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 import static java.math.BigDecimal.ZERO;
 import static java.math.BigDecimal.valueOf;
 import static org.apache.commons.lang3.math.NumberUtils.INTEGER_ZERO;
 import static org.examemulator.util.domain.DomainUtil.MATH_CONTEXT;
+import static org.examemulator.util.domain.DomainUtil.QUESTION_READY_VALUE;
 import static org.examemulator.util.domain.DomainUtil.VALUE_100;
 
 import java.math.BigDecimal;
@@ -19,7 +22,8 @@ public record QuestionDTO( //
 		BigDecimal percCorrect, //
 		Integer qtyIncorrect, //
 		BigDecimal percIncorrect, //
-		Integer qtyTotal) {
+		Integer qtyTotal,
+		Boolean ready) {
 
     public QuestionDTO {
 	qtyTotal = qtyCorrect + qtyIncorrect;
@@ -31,6 +35,10 @@ public record QuestionDTO( //
 	percIncorrect = qtyTotal > 0 ? new BigDecimal(qtyIncorrect) //
 			.divide(valueOf(qtyTotal), MATH_CONTEXT) //
 			.multiply(VALUE_100) : ZERO;
+	
+	if (percCorrect.compareTo(QUESTION_READY_VALUE) >= 0) {
+	    ready = TRUE;
+	}
     }
 
     public QuestionDTO(//
@@ -43,6 +51,6 @@ public record QuestionDTO( //
 		    Integer qtyCorrect, //
 		    Integer qtyIncorrect) {
 
-	this(questionnaireSetName, questionnaireName, idQuestion, value, questionOrder, qtyMarked, qtyCorrect, ZERO, qtyIncorrect, ZERO, INTEGER_ZERO);
+	this(questionnaireSetName, questionnaireName, idQuestion, value, questionOrder, qtyMarked, qtyCorrect, ZERO, qtyIncorrect, ZERO, INTEGER_ZERO, FALSE);
     }
 }

@@ -6,6 +6,7 @@ import static java.util.Collections.unmodifiableList;
 import static java.util.Optional.ofNullable;
 import static org.examemulator.domain.exam.ExamResult.FAILED;
 import static org.examemulator.domain.exam.ExamResult.PASSED;
+import static org.examemulator.domain.exam.ExamResult.UNDEFINED;
 import static org.examemulator.util.domain.DomainUtil.MATH_CONTEXT;
 import static org.examemulator.util.domain.DomainUtil.VALUE_100;
 
@@ -239,7 +240,19 @@ public class Exam {
     public ExamStatus getStatus() {
 	return status;
     }
-
+    
+    public boolean isPassed() {
+	return Objects.equals(result, PASSED);
+    }
+    
+    public boolean isFailed() {
+	return Objects.equals(result, FAILED);
+    }
+    
+    public boolean isUndefined() {
+	return Objects.equals(result, UNDEFINED);
+    }       
+    
     public boolean isShuffleQuestions() {
 	return shuffleQuestions;
     }

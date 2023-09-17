@@ -55,7 +55,7 @@ class MainView extends JFrame {
 
     JPanel pMain, contentPane, pFirstData, pCertifications, pStatistic, pStatisticLabel, pStatisticData;
 
-    JLabel lblCertifications, lblCertificationStatistics;
+    JLabel lblCertifications, lblCertificationStatistics, lblStatistic;
 
     JTable examTable, questionsTable;
 
@@ -104,7 +104,10 @@ class MainView extends JFrame {
 	lblCertificationStatistics = new JLabel(StringUtils.rightPad("Statistics", 100));
 	pStatisticLabel.add(lblCertificationStatistics);
 	
-	pStatisticData = new JPanel();
+	pStatisticData = new JPanel(new FlowLayout(LEFT, 5, 5));
+	lblStatistic = new JLabel("New label");
+	pStatisticData.add(lblStatistic);	
+	
 	pStatistic.add(pStatisticData, BorderLayout.CENTER);
 
 	pCertifications = new JPanel();
