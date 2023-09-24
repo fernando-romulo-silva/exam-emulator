@@ -1,16 +1,16 @@
 What colour is the Grape?
 
 A)
-Orange
+Orange.
 
 B)
-Green
+Green.
 
 C)
-Brown
+Brown.
 
 D)
-Red
+Red.
 
 
 

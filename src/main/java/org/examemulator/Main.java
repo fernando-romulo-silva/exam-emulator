@@ -24,6 +24,7 @@ public class Main {
 
 	final var mainController = container.select(MainController.class).get();
 
+//	mainController.loadCertificationFromFolder("/home/fernando/Development/workspaces/eclipse-workspace/exam-emulator/src/test/resources/certifications/food-certification");
 	mainController.loadCertificationFromFolder("/home/fernando/Development/workspaces/eclipse-workspace/certifications-technologies/docker-dca-certification");
 	mainController.show();
 

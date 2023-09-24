@@ -4,6 +4,9 @@ import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.collections4.CollectionUtils.containsAny;
 import static org.apache.commons.collections4.CollectionUtils.isEqualCollection;
+import static org.apache.commons.lang3.StringUtils.chop;
+import static org.apache.commons.lang3.StringUtils.endsWith;
+import static org.apache.commons.lang3.StringUtils.trim;
 import static org.examemulator.domain.exam.ExamQuestionStatus.ANSWERED;
 import static org.examemulator.domain.exam.ExamQuestionStatus.FINISHED;
 import static org.examemulator.util.FileUtil.WORDS_ALL;
@@ -104,6 +107,7 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
 
 	final var answersOptional = options.stream() //
 			.map(ExamOption::getValue) //
+			.map(answer -> extracted(answer))
 			.filter(answer -> containsAny(List.of(answer), words)) //
 			.findAny();
 
@@ -111,9 +115,13 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
 
 	if (answersOptional.isPresent()) {
 
-	    lastOptions.addAll(options.stream().filter(option -> containsAny(List.of(option.getValue()), words)).toList());
+	    final var list = options.stream()
+			    .filter(option -> containsAny(List.of(extracted(option.getValue())), words))
+			    .toList();
+	    
+	    lastOptions.addAll(list);
 
-	    options.removeIf(option -> containsAny(List.of(option.getValue()), words));
+	    options.removeIf(option -> containsAny(List.of(extracted(option.getValue())), words));
 	}
 
 	Collections.shuffle(options, new Random(System.nanoTime()));
@@ -128,6 +136,10 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
 	    option.setLetter(Character.toString((char) number));
 	    number++;
 	}
+    }
+
+    private String extracted(String answer) {
+	return endsWith(trim(answer), ".") ? chop(trim(answer)) : answer;
     }
 
     private void defineType(final boolean discrete) {
@@ -407,8 +419,6 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
 	public boolean discrete = false;
 
 	public Integer order;
-
-//	private QuestionType type = QuestionType.UNDEFINED;
 
 	private List<ExamOption> options;
 

@@ -1,16 +1,16 @@
 Which vegetable has the highest water content?
 
 A)
-Tomato
+Tomato.
 
 B)
-Lettuce
+Lettuce.
 
 C)
-Cucumber
+Cucumber.
 
 D)
-Cabbage
+Cabbage.
 
 
 Answer(s) C

@@ -263,7 +263,7 @@ public class QuestionnaireController {
 
 	final var options = selectedQuestion.getOptions() //
 			.stream() //
-			.map(option -> option.getLetter().concat(") ").concat(TAG_BR).concat(convertTextToHtml(option.getValue()))) //
+			.map(option -> TAG_OPEN_B.concat(option.getLetter().concat(") ")).concat(TAG_CLOSE_B).concat(TAG_BR).concat(convertTextToHtml(option.getValue()))) //
 			.collect(joining(TAG_BR_BR));
 
 	final var correctOptions = TAG_OPEN_B.concat("Correct Answer(s): ").concat(TAG_CLOSE_B).concat(extractedOptions(selectedQuestion.getCorrectOptions()));
