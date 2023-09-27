@@ -107,7 +107,7 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
 
 	final var answersOptional = options.stream() //
 			.map(ExamOption::getValue) //
-			.map(answer -> extracted(answer))
+			.map(this::extractedDots)
 			.filter(answer -> containsAny(List.of(answer), words)) //
 			.findAny();
 
@@ -116,12 +116,12 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
 	if (answersOptional.isPresent()) {
 
 	    final var list = options.stream()
-			    .filter(option -> containsAny(List.of(extracted(option.getValue())), words))
+			    .filter(option -> containsAny(List.of(extractedDots(option.getValue())), words))
 			    .toList();
 	    
 	    lastOptions.addAll(list);
 
-	    options.removeIf(option -> containsAny(List.of(extracted(option.getValue())), words));
+	    options.removeIf(option -> containsAny(List.of(extractedDots(option.getValue())), words));
 	}
 
 	Collections.shuffle(options, new Random(System.nanoTime()));
@@ -138,7 +138,7 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
 	}
     }
 
-    private String extracted(String answer) {
+    private String extractedDots(String answer) {
 	return endsWith(trim(answer), ".") ? chop(trim(answer)) : answer;
     }
 
@@ -348,6 +348,7 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
 
 	final var answersText = options.stream() //
 			.map(ExamOption::getValue) //
+			.map(this::extractedDots) //
 			.toList();
 
 	if (CollectionUtils.containsAny(answersText, WORDS_ALL)) {
