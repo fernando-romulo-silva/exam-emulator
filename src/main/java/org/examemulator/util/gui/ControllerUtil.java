@@ -30,6 +30,7 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.examemulator.domain.questionnaire.question.Question;
@@ -198,7 +199,13 @@ public final class ControllerUtil {
 		    return Object.class;
 		}
 		
-	        return getValueAt(0, columnIndex).getClass();
+	        final var value = getValueAt(0, columnIndex);
+	        
+	        if (ObjectUtils.isEmpty(value)) {
+		    return Objects.class;
+		}
+	        
+		return value.getClass();
 	    }	    
 
 	    @Override
