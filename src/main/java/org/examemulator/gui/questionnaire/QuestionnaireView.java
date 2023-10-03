@@ -4,7 +4,6 @@ import static java.awt.BorderLayout.CENTER;
 import static java.awt.FlowLayout.LEFT;
 import static javax.swing.BorderFactory.createTitledBorder;
 import static javax.swing.BoxLayout.Y_AXIS;
-import static javax.swing.border.EtchedBorder.LOWERED;
 import static org.examemulator.infra.util.gui.GuiUtil.APP_NAME;
 
 import java.awt.BorderLayout;
@@ -19,7 +18,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
-import javax.swing.border.EtchedBorder;
 
 import org.examemulator.gui.components.WrapLayout;
 

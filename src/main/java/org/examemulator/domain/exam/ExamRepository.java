@@ -11,24 +11,24 @@ import jakarta.data.repository.CrudRepository;
 import jakarta.data.repository.Repository;
 
 @Repository
-public interface ExamRepository extends CrudRepository<Exam, Long>{
+public interface ExamRepository extends CrudRepository<Exam, Long> {
 
-    Stream<Exam> findExamBy(Certification certification);
+    Stream<Exam> findExamBy(final Certification certification);
 
-    Stream<Exam> findExamBy(Certification certification, QuestionnaireSet questionnaireSet);
+    Stream<Exam> findExamBy(final Certification certification, final QuestionnaireSet questionnaireSet);
 
-    Stream<Exam> findExamBy(Certification certification, QuestionnaireSet questionnaireSet, Questionnaire questionnaire);
+    Stream<Exam> findExamBy(final Certification certification, final QuestionnaireSet questionnaireSet, final Questionnaire questionnaire);
 
-    BigDecimal getNextExamNumberBy(String baseName);
+    BigDecimal getNextExamNumberBy(final String baseName);
 
-    BigDecimal getNextExamRetryNumberBy(String baseName);
+    BigDecimal getNextExamRetryNumberBy(final String baseName);
 
-    int deleteExamQuestionsOptions(Long idExam);
+    int deleteExamQuestionsOptions(final Long idExam);
 
-    int deleteExamQuestions(Long idExam);
+    int deleteExamQuestions(final Long idExam);
 
-    int deleteExam(Long idExam);
-    
-    Exam update(Exam entity);
+    int deleteExam(final Long idExam);
+
+    Exam update(final Exam entity);
 
 }

@@ -2,33 +2,12 @@ package org.examemulator.domain.cerfication;
 
 import java.util.Optional;
 
-import org.examemulator.infra.persistence.GenericRepository;
-
+import jakarta.data.repository.CrudRepository;
 import jakarta.data.repository.Repository;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.NoResultException;
 
 @Repository
-@ApplicationScoped
-public class CertificationRepository extends GenericRepository<Certification, Long> {
+public interface CertificationRepository extends CrudRepository<Certification, Long> {
 
-    public Optional<Certification> findByName(final String name) {
+    Optional<Certification> findByName(final String name);
 
-	final var qlString = """
-				select c 
-				  from Certification c 
-				 where c.name = :name
-					""";
-	
-	final var query = entityManager.createQuery(qlString, Certification.class);
-	query.setParameter("name", name);
-
-	try {
-	    
-	    return Optional.of(query.getSingleResult());
-
-	} catch (final NoResultException ex) {
-	    return Optional.empty();
-	}
-    }
 }
