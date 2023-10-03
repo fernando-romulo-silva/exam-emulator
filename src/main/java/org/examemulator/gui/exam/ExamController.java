@@ -25,17 +25,17 @@ import static org.examemulator.domain.exam.ExamStatus.PAUSED;
 import static org.examemulator.domain.exam.ExamStatus.RUNNING;
 import static org.examemulator.domain.exam.ExamType.EXAM;
 import static org.examemulator.domain.exam.ExamType.PRACTICE;
-import static org.examemulator.util.domain.DomainUtil.DISCRET_LIST;
-import static org.examemulator.util.gui.ControllerUtil.hasNextQuestion;
-import static org.examemulator.util.gui.ControllerUtil.hasPreviousQuestion;
-import static org.examemulator.util.gui.ControllerUtil.nextQuestion;
-import static org.examemulator.util.gui.ControllerUtil.previousQuestion;
-import static org.examemulator.util.gui.GuiUtil.MILLISECOND;
-import static org.examemulator.util.gui.GuiUtil.createDiscreteOptions;
-import static org.examemulator.util.gui.GuiUtil.createIndiscreteOptions;
-import static org.examemulator.util.gui.GuiUtil.createScrollTextToShow;
-import static org.examemulator.util.gui.GuiUtil.createTimerAction;
-import static org.examemulator.util.gui.GuiUtil.extractedOptions;
+import static org.examemulator.infra.util.domain.DomainUtil.DISCRET_LIST;
+import static org.examemulator.infra.util.gui.ControllerUtil.hasNextQuestion;
+import static org.examemulator.infra.util.gui.ControllerUtil.hasPreviousQuestion;
+import static org.examemulator.infra.util.gui.ControllerUtil.nextQuestion;
+import static org.examemulator.infra.util.gui.ControllerUtil.previousQuestion;
+import static org.examemulator.infra.util.gui.GuiUtil.MILLISECOND;
+import static org.examemulator.infra.util.gui.GuiUtil.createDiscreteOptions;
+import static org.examemulator.infra.util.gui.GuiUtil.createIndiscreteOptions;
+import static org.examemulator.infra.util.gui.GuiUtil.createScrollTextToShow;
+import static org.examemulator.infra.util.gui.GuiUtil.createTimerAction;
+import static org.examemulator.infra.util.gui.GuiUtil.extractedOptions;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -61,6 +62,7 @@ import javax.swing.Timer;
 import javax.swing.border.TitledBorder;
 
 import org.apache.commons.lang3.StringUtils;
+import org.examemulator.application.ExamService;
 import org.examemulator.domain.exam.Exam;
 import org.examemulator.domain.exam.ExamOption;
 import org.examemulator.domain.exam.ExamQuestion;
@@ -68,7 +70,6 @@ import org.examemulator.domain.inquiry.InquiryInterface;
 import org.examemulator.gui.exam.ExamView.ExamGui;
 import org.examemulator.gui.main.MainController;
 import org.examemulator.gui.statitics.StatiticsController;
-import org.examemulator.service.ExamService;
 import org.slf4j.Logger;
 
 import jakarta.annotation.PostConstruct;
@@ -477,6 +478,7 @@ public class ExamController {
 	    okButton.setMnemonic(KeyEvent.VK_O);
 
 	    final var panel = new JPanel(new FlowLayout());
+	    panel.setBorder(BorderFactory.createEtchedBorder());
 	    panel.add(okButton);
 
 	    dialogContainer.add(panel, SOUTH);

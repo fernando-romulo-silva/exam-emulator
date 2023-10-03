@@ -6,7 +6,6 @@ import static java.awt.Color.BLUE;
 import static java.awt.Color.GREEN;
 import static java.awt.Color.RED;
 import static java.math.BigDecimal.valueOf;
-import static java.math.RoundingMode.HALF_UP;
 import static java.util.stream.Collectors.joining;
 import static javax.swing.BorderFactory.createTitledBorder;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
@@ -18,19 +17,19 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.leftPad;
 import static org.apache.commons.lang3.math.NumberUtils.toInt;
-import static org.examemulator.util.domain.DomainUtil.MATH_CONTEXT;
-import static org.examemulator.util.domain.DomainUtil.VALUE_100;
-import static org.examemulator.util.gui.ControllerUtil.hasNextQuestion;
-import static org.examemulator.util.gui.ControllerUtil.hasPreviousQuestion;
-import static org.examemulator.util.gui.ControllerUtil.nextQuestion;
-import static org.examemulator.util.gui.ControllerUtil.previousQuestion;
-import static org.examemulator.util.gui.GuiUtil.TAG_BR;
-import static org.examemulator.util.gui.GuiUtil.TAG_BR_BR;
-import static org.examemulator.util.gui.GuiUtil.TAG_CLOSE_B;
-import static org.examemulator.util.gui.GuiUtil.TAG_OPEN_B;
-import static org.examemulator.util.gui.GuiUtil.convertTextToHtml;
-import static org.examemulator.util.gui.GuiUtil.createScrollHtmlTextToShow;
-import static org.examemulator.util.gui.GuiUtil.extractedOptions;
+import static org.examemulator.infra.util.domain.DomainUtil.MATH_CONTEXT;
+import static org.examemulator.infra.util.domain.DomainUtil.VALUE_100;
+import static org.examemulator.infra.util.gui.ControllerUtil.hasNextQuestion;
+import static org.examemulator.infra.util.gui.ControllerUtil.hasPreviousQuestion;
+import static org.examemulator.infra.util.gui.ControllerUtil.nextQuestion;
+import static org.examemulator.infra.util.gui.ControllerUtil.previousQuestion;
+import static org.examemulator.infra.util.gui.GuiUtil.TAG_BR;
+import static org.examemulator.infra.util.gui.GuiUtil.TAG_BR_BR;
+import static org.examemulator.infra.util.gui.GuiUtil.TAG_CLOSE_B;
+import static org.examemulator.infra.util.gui.GuiUtil.TAG_OPEN_B;
+import static org.examemulator.infra.util.gui.GuiUtil.convertTextToHtml;
+import static org.examemulator.infra.util.gui.GuiUtil.createScrollHtmlTextToShow;
+import static org.examemulator.infra.util.gui.GuiUtil.extractedOptions;
 
 import java.awt.Component;
 import java.awt.event.ItemListener;
@@ -39,7 +38,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,11 +47,11 @@ import java.util.TreeSet;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
+import org.examemulator.application.ExamService;
 import org.examemulator.domain.exam.Exam;
 import org.examemulator.domain.exam.ExamQuestion;
 import org.examemulator.gui.exam.ExamController;
 import org.examemulator.gui.main.MainController;
-import org.examemulator.service.ExamService;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -158,6 +156,19 @@ public class StatiticsController {
 	    mainController.show(view);
 	});
 
+	view.btnDeleteExam.addActionListener(event -> {
+	    
+	    if (showConfirmDialog(view, //
+				"Are you sure you want to delete this this Exam?", "Delete Exam", //
+				YES_NO_OPTION, //
+				QUESTION_MESSAGE) == YES_OPTION) {
+		
+		examService.delete(exam);
+		view.btnMain.doClick();
+	    }
+	    
+	});
+	
 	view.addWindowListener(new WindowAdapter() {
 	    @Override
 	    public void windowClosing(final WindowEvent windowEvent) {
@@ -170,7 +181,7 @@ public class StatiticsController {
 		    view.btnMain.doClick();
 		}
 	    }
-	});
+	});	
 
 	view.chckbxCorrects.addItemListener(itemListener);
 	view.chckbxIncorrects.addItemListener(itemListener);

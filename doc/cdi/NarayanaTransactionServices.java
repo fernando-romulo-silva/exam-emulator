@@ -1,4 +1,4 @@
-package org.examemulator.util.transaction.jta;
+package org.examemulator.infra.transaction.jta;
 
 import org.jboss.weld.transaction.spi.TransactionServices;
 

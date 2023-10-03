@@ -3,7 +3,7 @@ package org.examemulator.domain.questionnaire.question;
 import java.util.Optional;
 
 import org.examemulator.domain.cerfication.Certification;
-import org.examemulator.util.domain.GenericRepository;
+import org.examemulator.infra.util.domain.GenericRepository;
 
 import jakarta.data.repository.Repository;
 import jakarta.enterprise.context.ApplicationScoped;

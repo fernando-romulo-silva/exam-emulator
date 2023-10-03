@@ -9,7 +9,7 @@
 		</named-query>
 		
 		<sql-result-set-mapping name="QuestionResult">
-			<constructor-result target-class="org.examemulator.util.dto.QuestionDTO">
+			<constructor-result target-class="org.examemulator.infra.dto.QuestionDTO">
 				<column name="QUESTIONNARIE_SET_NAME" class="java.lang.String" />
 				<column name="QUESTIONNARIE_NAME" class="java.lang.String" />
 				<column name="QUESTION_ID" class="java.lang.String" />

@@ -7,7 +7,7 @@
     <!-- @session don't work on bean-discovery-mode annoted  -->   
      
 	<interceptors>
-        <class>org.examemulator.util.transaction.nonjta.TransactionInterceptor</class>
+        <class>org.examemulator.infra.transaction.nonjta.TransactionInterceptor</class>
     </interceptors>
     
        <!--

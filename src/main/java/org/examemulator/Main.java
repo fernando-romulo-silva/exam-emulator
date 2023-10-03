@@ -3,8 +3,8 @@ package org.examemulator;
 import static java.lang.Runtime.getRuntime;
 
 import org.examemulator.gui.main.MainController;
-import org.examemulator.util.database.HsqldbServer;
-import org.examemulator.util.datasource.JndiHelper;
+import org.examemulator.infra.database.HsqldbServer;
+import org.examemulator.infra.datasource.JndiHelper;
 
 import com.formdev.flatlaf.FlatLightLaf;
 

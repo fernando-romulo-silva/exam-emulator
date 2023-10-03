@@ -4,7 +4,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.examemulator.domain.questionnaire.set.QuestionnaireSet;
-import org.examemulator.util.domain.GenericRepository;
+import org.examemulator.infra.util.domain.GenericRepository;
 
 import jakarta.data.repository.Repository;
 import jakarta.enterprise.context.ApplicationScoped;

@@ -2,7 +2,7 @@ package org.examemulator.gui.main;
 
 import static java.awt.FlowLayout.LEFT;
 import static javax.swing.SwingConstants.TOP;
-import static org.examemulator.util.gui.GuiUtil.APP_NAME;
+import static org.examemulator.infra.util.gui.GuiUtil.APP_NAME;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;

@@ -4,7 +4,7 @@ import static java.awt.BorderLayout.CENTER;
 import static java.awt.FlowLayout.LEFT;
 import static javax.swing.BorderFactory.createTitledBorder;
 import static javax.swing.BoxLayout.Y_AXIS;
-import static org.examemulator.util.gui.GuiUtil.APP_NAME;
+import static org.examemulator.infra.util.gui.GuiUtil.APP_NAME;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;

@@ -5,7 +5,7 @@ import static java.awt.BorderLayout.SOUTH;
 import static java.awt.FlowLayout.LEFT;
 import static javax.swing.BorderFactory.createTitledBorder;
 import static javax.swing.BoxLayout.Y_AXIS;
-import static org.examemulator.util.gui.GuiUtil.APP_NAME;
+import static org.examemulator.infra.util.gui.GuiUtil.APP_NAME;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -40,7 +40,7 @@ class StatiticsView extends JFrame {
 
     JLabel lblStatistic;
 
-    JButton btnNext, btnPrevious, btnMain, btnNewExam;
+    JButton btnNext, btnPrevious, btnMain, btnNewExam, btnDeleteExam;
 
     StatiticsView() {
 	super();
@@ -112,12 +112,16 @@ class StatiticsView extends JFrame {
 	btnMain = new JButton("Go Main");
 	btnMain.setMnemonic(KeyEvent.VK_M);
 	
-	btnNewExam = new JButton("Retry Exam");
+	btnNewExam = new JButton("Retry");
 	btnNewExam.setMnemonic(KeyEvent.VK_E);
+	
+	btnDeleteExam = new JButton("Delete");
+	btnDeleteExam.setMnemonic(KeyEvent.VK_D);	
 	
 	final var panelButtons = new JPanel(new FlowLayout());
 	panelButtons.add(btnMain);
 	panelButtons.add(btnNewExam);
+	panelButtons.add(btnDeleteExam);
 	
 	getContentPane().add(panelButtons, SOUTH);
     }

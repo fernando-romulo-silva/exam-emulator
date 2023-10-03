@@ -7,8 +7,8 @@ import static java.util.Optional.ofNullable;
 import static org.examemulator.domain.exam.ExamResult.FAILED;
 import static org.examemulator.domain.exam.ExamResult.PASSED;
 import static org.examemulator.domain.exam.ExamResult.UNDEFINED;
-import static org.examemulator.util.domain.DomainUtil.MATH_CONTEXT;
-import static org.examemulator.util.domain.DomainUtil.VALUE_100;
+import static org.examemulator.infra.util.domain.DomainUtil.MATH_CONTEXT;
+import static org.examemulator.infra.util.domain.DomainUtil.VALUE_100;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.examemulator.domain.inquiry.InquiryInterface;
-import org.examemulator.util.RandomUtil;
+import org.examemulator.infra.util.RandomUtil;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
