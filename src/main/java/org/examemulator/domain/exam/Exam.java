@@ -7,8 +7,8 @@ import static java.util.Optional.ofNullable;
 import static org.examemulator.domain.exam.ExamResult.FAILED;
 import static org.examemulator.domain.exam.ExamResult.PASSED;
 import static org.examemulator.domain.exam.ExamResult.UNDEFINED;
-import static org.examemulator.infra.util.domain.DomainUtil.MATH_CONTEXT;
-import static org.examemulator.infra.util.domain.DomainUtil.VALUE_100;
+import static org.examemulator.infra.util.DomainUtil.MATH_CONTEXT;
+import static org.examemulator.infra.util.DomainUtil.VALUE_100;
 
 import java.math.BigDecimal;
 import java.math.MathContext;

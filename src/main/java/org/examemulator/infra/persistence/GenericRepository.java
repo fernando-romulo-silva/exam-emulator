@@ -1,4 +1,4 @@
-package org.examemulator.infra.util.domain;
+package org.examemulator.infra.persistence;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.Objects;
@@ -25,10 +25,6 @@ public abstract class GenericRepository<T, K> implements CrudRepository<T, K> {
     @Override
     public <S extends T> S save(final S entity) {
 
-	if (entityManager.contains(entity)) {
-	    return entityManager.merge(entity);    
-	}
-	
 	entityManager.persist(entity);
 
 	return entity;

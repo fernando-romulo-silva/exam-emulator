@@ -7,7 +7,7 @@ import org.examemulator.domain.cerfication.Certification;
 import org.examemulator.domain.questionnaire.Questionnaire;
 import org.examemulator.domain.questionnaire.set.QuestionnaireSet;
 import org.examemulator.infra.dto.QuestionDTO;
-import org.examemulator.infra.util.domain.GenericRepository;
+import org.examemulator.infra.persistence.GenericRepository;
 
 import jakarta.data.repository.Repository;
 import jakarta.enterprise.context.ApplicationScoped;

@@ -8,7 +8,6 @@ import org.examemulator.domain.exam.Exam;
 import org.examemulator.domain.exam.ExamRepository;
 import org.examemulator.domain.questionnaire.Questionnaire;
 import org.examemulator.domain.questionnaire.set.QuestionnaireSet;
-import org.examemulator.infra.util.domain.GenericRepository;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -162,5 +161,11 @@ public class ExamRepositoryImp extends GenericRepository<Exam, Long> implements 
 	dml.setParameter(1, idExam);
 	
 	return dml.executeUpdate();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Exam update(Exam entity) {
+	return super.update(entity);
     }    
 }

@@ -5,9 +5,9 @@ import static java.lang.Boolean.TRUE;
 import static java.math.BigDecimal.ZERO;
 import static java.math.BigDecimal.valueOf;
 import static org.apache.commons.lang3.math.NumberUtils.INTEGER_ZERO;
-import static org.examemulator.infra.util.domain.DomainUtil.MATH_CONTEXT;
-import static org.examemulator.infra.util.domain.DomainUtil.QUESTION_READY_VALUE;
-import static org.examemulator.infra.util.domain.DomainUtil.VALUE_100;
+import static org.examemulator.infra.util.DomainUtil.MATH_CONTEXT;
+import static org.examemulator.infra.util.DomainUtil.QUESTION_READY_VALUE;
+import static org.examemulator.infra.util.DomainUtil.VALUE_100;
 
 import java.math.BigDecimal;
 

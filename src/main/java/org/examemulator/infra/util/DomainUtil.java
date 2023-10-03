@@ -1,4 +1,4 @@
-package org.examemulator.infra.util.domain;
+package org.examemulator.infra.util;
 
 import static java.math.RoundingMode.HALF_UP;
 import static org.examemulator.domain.exam.QuestionType.DISCRETE_MULTIPLE_CHOICE;

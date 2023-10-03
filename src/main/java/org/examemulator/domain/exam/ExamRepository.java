@@ -28,5 +28,7 @@ public interface ExamRepository extends CrudRepository<Exam, Long>{
     int deleteExamQuestions(Long idExam);
 
     int deleteExam(Long idExam);
+    
+    Exam update(Exam entity);
 
 }

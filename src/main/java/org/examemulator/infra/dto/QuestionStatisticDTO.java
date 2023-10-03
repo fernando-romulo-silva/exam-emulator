@@ -2,8 +2,8 @@ package org.examemulator.infra.dto;
 
 import static java.math.BigDecimal.ZERO;
 import static java.math.BigDecimal.valueOf;
-import static org.examemulator.infra.util.domain.DomainUtil.MATH_CONTEXT;
-import static org.examemulator.infra.util.domain.DomainUtil.VALUE_100;
+import static org.examemulator.infra.util.DomainUtil.MATH_CONTEXT;
+import static org.examemulator.infra.util.DomainUtil.VALUE_100;
 
 import java.math.BigDecimal;
 

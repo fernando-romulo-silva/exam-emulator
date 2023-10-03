@@ -9,9 +9,9 @@ import static org.apache.commons.lang3.StringUtils.endsWith;
 import static org.apache.commons.lang3.StringUtils.trim;
 import static org.examemulator.domain.exam.ExamQuestionStatus.ANSWERED;
 import static org.examemulator.domain.exam.ExamQuestionStatus.FINISHED;
+import static org.examemulator.infra.util.DomainUtil.DISCRET_LIST;
 import static org.examemulator.infra.util.FileUtil.WORDS_ALL;
 import static org.examemulator.infra.util.FileUtil.WORDS_NONE;
-import static org.examemulator.infra.util.domain.DomainUtil.DISCRET_LIST;
 
 import java.util.ArrayList;
 import java.util.Collections;

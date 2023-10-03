@@ -25,7 +25,7 @@ import static org.examemulator.domain.exam.ExamStatus.PAUSED;
 import static org.examemulator.domain.exam.ExamStatus.RUNNING;
 import static org.examemulator.domain.exam.ExamType.EXAM;
 import static org.examemulator.domain.exam.ExamType.PRACTICE;
-import static org.examemulator.infra.util.domain.DomainUtil.DISCRET_LIST;
+import static org.examemulator.infra.util.DomainUtil.DISCRET_LIST;
 import static org.examemulator.infra.util.gui.ControllerUtil.hasNextQuestion;
 import static org.examemulator.infra.util.gui.ControllerUtil.hasPreviousQuestion;
 import static org.examemulator.infra.util.gui.ControllerUtil.nextQuestion;

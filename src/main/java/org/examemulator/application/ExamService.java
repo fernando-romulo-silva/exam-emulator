@@ -41,11 +41,11 @@ public class ExamService {
 	    return;
 	}
 
-//	if (Objects.isNull(exam.getId())) {
+	if (Objects.isNull(exam.getId())) {
 	    examRepository.save(exam);
-//	} else {
-//	    examRepository.update(exam);
-//	}
+	} else {
+	    examRepository.update(exam);
+	}
     }
     
     @Transactional(REQUIRED)
