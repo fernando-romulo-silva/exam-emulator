@@ -220,7 +220,15 @@ public class QuestionnaireController {
 	    }	    
 	    
 	    view.setVisible(false);
-	    examController.show(examService.getExamNameBy(questionnaire), view, toExamQuestions);
+	    
+	    final var questionnaireSet = questionnaire.getSet();
+	    final var certification = questionnaireSet.getCertification();
+	    
+	    final var examName = toExamQuestions.size() == questionnaire.getQuestions().size() 
+			    ? examService.getExamNameBy(questionnaire)
+			    : examService.getNextExamDynamicNameBy(certification, questionnaireSet, questionnaire);
+	    
+	    examController.show(examName, view, toExamQuestions);
 	});
 	
 	view.rdbtnAll.addActionListener(event -> {

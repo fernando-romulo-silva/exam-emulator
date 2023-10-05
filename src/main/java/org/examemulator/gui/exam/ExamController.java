@@ -63,10 +63,10 @@ import javax.swing.border.TitledBorder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.examemulator.application.ExamService;
+import org.examemulator.domain.InquiryInterface;
 import org.examemulator.domain.exam.Exam;
 import org.examemulator.domain.exam.ExamOption;
 import org.examemulator.domain.exam.ExamQuestion;
-import org.examemulator.domain.inquiry.InquiryInterface;
 import org.examemulator.gui.exam.ExamView.ExamGui;
 import org.examemulator.gui.main.MainController;
 import org.examemulator.gui.statitics.StatiticsController;

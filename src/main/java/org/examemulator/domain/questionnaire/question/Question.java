@@ -14,7 +14,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.examemulator.domain.inquiry.InquiryInterface;
+import org.examemulator.domain.InquiryInterface;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

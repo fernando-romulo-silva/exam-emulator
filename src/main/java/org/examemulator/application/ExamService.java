@@ -11,6 +11,7 @@ import static org.apache.commons.lang3.StringUtils.trim;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.examemulator.domain.cerfication.Certification;
 import org.examemulator.domain.exam.Exam;
@@ -55,11 +56,11 @@ public class ExamService {
 	    return;
 	}
 	
-//	examRepository.deleteExamQuestionsOptions(exam.getId());
-//	examRepository.deleteExamQuestions(exam.getId());
-//	examRepository.deleteExam(exam.getId());
+	examRepository.deleteExamQuestionsOptions(exam.getId());
+	examRepository.deleteExamQuestions(exam.getId());
+	examRepository.deleteExam(exam.getId());
 	
-	examRepository.delete(exam);
+//	examRepository.delete(exam);
     }
 
     public Stream<Exam> getAll() {
@@ -102,12 +103,28 @@ public class ExamService {
 	}
     }
     
-    public String getNextExamDynamicNameBy() {
+    public String getNextExamDynamicNameBy(final Certification certification, final QuestionnaireSet questionnaireSet, final Questionnaire questionnaire) {
 
-	final var name = "Dynamic";
+	final var preNameBuilder = new StringBuilder();
+	
+	if (ObjectUtils.allNotNull(certification, questionnaireSet, questionnaire)) {
+	    
+	    preNameBuilder.append(questionnaireSet.getName()).append(" - ").append(questionnaire.getName()).append(" - ");
+	    
+	} else if (ObjectUtils.allNotNull(certification, questionnaireSet)) {
+	    
+	    preNameBuilder.append(questionnaireSet.getName()).append(" - ");
+	    
+	} else if (Objects.nonNull(certification)) {
+	    preNameBuilder.append(certification.getName()).append(" - ");
+	} 
+	
+	final var preName = preNameBuilder.toString();
+	
+	final var name = preName.concat("Dynamic");
 	
 	final var attempt = examRepository.getNextExamNumberBy(name);
 	
 	return name + SPACE + leftPad(attempt.toString(), 2, '0');
-    }
+    }    
 }

@@ -410,7 +410,7 @@ public class MainController {
 
 		    final var questionsFromDb = questionnaireService.findByIds(selectedIds).toList();
 		    view.setVisible(false);
-		    examController.show(examService.getNextExamDynamicNameBy(), view, questionsFromDb);
+		    examController.show(examService.getNextExamDynamicNameBy(selectedCertification, selectedQuestionnaireSet, selectedQuestionnaire), view, questionsFromDb);
 		}
 	    }
 

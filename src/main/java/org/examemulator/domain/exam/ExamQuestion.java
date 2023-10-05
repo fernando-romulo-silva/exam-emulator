@@ -25,7 +25,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.examemulator.domain.inquiry.InquiryInterface;
+import org.examemulator.domain.InquiryInterface;
 import org.examemulator.domain.questionnaire.question.Question;
 
 import jakarta.persistence.CascadeType;

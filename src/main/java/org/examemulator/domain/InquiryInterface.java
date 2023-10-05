@@ -1,4 +1,4 @@
-package org.examemulator.domain.inquiry;
+package org.examemulator.domain;
 
 public interface InquiryInterface {
 

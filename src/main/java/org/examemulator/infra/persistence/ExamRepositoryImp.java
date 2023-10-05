@@ -18,6 +18,9 @@ public class ExamRepositoryImp extends GenericRepository<Exam, Long> implements 
     @SuppressWarnings("unchecked")
     public Stream<Exam> findExamBy(final Certification certification) {
 	
+	final var certificationName = certification.getName();
+	final var certificationNameSize = certificationName.length();
+	
 	final var sqlString = """
 			SELECT DISTINCT ex.*
 			  FROM EXAM ex
@@ -126,7 +129,7 @@ public class ExamRepositoryImp extends GenericRepository<Exam, Long> implements 
                                   		    FROM EXAM_QUESTION AS eq
                                   		   WHERE EQ.ID = eqo.EXAM_QUESTION_ID
                                   		     AND eq.EXAM_ID = ?
-                                               )					
+                                                )					
 			""";
 	
 	final var dml = entityManager.createNativeQuery(dmlString);

@@ -21,7 +21,7 @@ import java.util.Random;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.examemulator.domain.inquiry.InquiryInterface;
+import org.examemulator.domain.InquiryInterface;
 import org.examemulator.infra.util.RandomUtil;
 
 import jakarta.persistence.CascadeType;
