@@ -1,5 +1,7 @@
 package org.examemulator.infra.persistence;
 
+import static org.apache.commons.lang3.StringUtils.replace;
+
 import java.math.BigDecimal;
 import java.util.stream.Stream;
 
@@ -19,7 +21,7 @@ public class ExamRepositoryImp extends GenericRepository<Exam, Long> implements 
     public Stream<Exam> findExamBy(final Certification certification) {
 	
 	final var certificationName = certification.getName();
-	final var certificationNameSize = certificationName.length();
+	final var selectionNameSize = Integer.toString(certificationName.length() + 4);
 	
 	final var sqlString = """
 			SELECT DISTINCT ex.*
@@ -28,22 +30,24 @@ public class ExamRepositoryImp extends GenericRepository<Exam, Long> implements 
 		         INNER JOIN QUESTION q on q.id = exq.QUESTION_ID
 		         INNER JOIN QUESTIONNARIE qre on qre.id = q.QUESTIONNAIRE_ID
 		         WHERE qre.CERTIFICATION_ID = ?
-		         ORDER BY CASE LEFT(UPPER(ex.name), 7) 
+		         ORDER BY CASE SUBSTRING(UPPER(ex.name), $1, 7) 
 			             WHEN 'DYNAMIC' THEN 0
         		             ELSE 1
     		                  END ASC,
 		               ex.name		         
 			""";
 
-	final var query = entityManager.createNativeQuery(sqlString, Exam.class);
+	final var query = entityManager.createNativeQuery(replace(sqlString, "$1", selectionNameSize), Exam.class);
 	query.setParameter(1, certification.getId());
-
 	return query.getResultStream();
     }
     
     @Override
     @SuppressWarnings("unchecked")
     public Stream<Exam> findExamBy(final Certification certification, final QuestionnaireSet questionnaireSet) {
+	
+	final var questionnaireSetName = questionnaireSet.getName();
+	final var selectionNameSize = Integer.toString(questionnaireSetName.length() + 4);	
 	
 	final var sqlString = """
 			SELECT DISTINCT ex.*
@@ -53,10 +57,14 @@ public class ExamRepositoryImp extends GenericRepository<Exam, Long> implements 
 		         INNER JOIN QUESTIONNARIE qre on qre.id = q.QUESTIONNAIRE_ID
 		         WHERE qre.CERTIFICATION_ID = ?
 		           AND UPPER(ex.name) LIKE UPPER(?)
-		         ORDER BY ex.name
+		         ORDER BY CASE SUBSTRING(UPPER(ex.name), $1, 7) 
+			             WHEN 'DYNAMIC' THEN 0
+        		             ELSE 1
+    		                  END ASC,
+		               ex.name
 			""";
 
-	final var query = entityManager.createNativeQuery(sqlString, Exam.class);
+	final var query = entityManager.createNativeQuery(replace(sqlString, "$1", selectionNameSize), Exam.class);
 	query.setParameter(1, certification.getId());
 	query.setParameter(2, '%' + questionnaireSet.getName() + '%');
 
@@ -66,6 +74,10 @@ public class ExamRepositoryImp extends GenericRepository<Exam, Long> implements 
     @Override
     @SuppressWarnings("unchecked")
     public Stream<Exam> findExamBy(final Certification certification, final QuestionnaireSet questionnaireSet, final Questionnaire questionnaire) {
+
+	final var questionnaireSetName = questionnaireSet.getName();
+	final var questionnaireName = questionnaire.getName();
+	final var selectionNameSize = Integer.toString(questionnaireSetName.length() + 4 + questionnaireName.length() + 4);
 	
 	final var sqlString = """
 			SELECT DISTINCT ex.*
@@ -76,10 +88,14 @@ public class ExamRepositoryImp extends GenericRepository<Exam, Long> implements 
 		         WHERE qre.CERTIFICATION_ID = ?
 		           AND UPPER(ex.name) LIKE UPPER(?)
 		           AND UPPER(ex.name) LIKE UPPER(?)
-		         ORDER BY ex.NAME
+		         ORDER BY CASE SUBSTRING(UPPER(ex.name), $1, 7) 
+			             WHEN 'DYNAMIC' THEN 0
+        		             ELSE 1
+    		                  END ASC,
+		               ex.name
 			""";
 
-	final var query = entityManager.createNativeQuery(sqlString, Exam.class);
+	final var query = entityManager.createNativeQuery(replace(sqlString, "$1", selectionNameSize), Exam.class);
 	query.setParameter(1, certification.getId());
 	query.setParameter(2, '%' + questionnaireSet.getName() + '%');
 	query.setParameter(3, '%' + questionnaire.getName() + '%');

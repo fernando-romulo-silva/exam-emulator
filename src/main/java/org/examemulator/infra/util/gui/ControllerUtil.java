@@ -215,7 +215,13 @@ public final class ControllerUtil {
 		try {
 		    final var method = getters.get(columnIndex);
 		    final var object = list.get(rowIndex);
-		    return method.invoke(object);
+		    final var value = method.invoke(object);
+		    
+		    if (value instanceof String valueString) {
+			return StringUtils.capitalize(valueString);
+		    }
+		    
+		    return value;
 		} catch (final IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
 		    throw new IllegalArgumentException(ex);
 		}
