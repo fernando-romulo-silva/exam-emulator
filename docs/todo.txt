@@ -1,8 +1,9 @@
 ---------------------------------------------------------
+* Validade folders names (like a questionnaire set with two sets with same id, '02 - Questionnaire B' and '02 - Questionnaire C'
+
+* Validade the files (file normalizer)
 
 * Remove the excess of space
-
-* Filtering exams according to certification tree data
 
 * Fix the size, text are hidden when first load
 
@@ -12,16 +13,15 @@
 
 * Set colors to Exam table and Question table
 
-* Set colors for dark theme
-
 * Change text for icons if possible 
 
 * Calculate the time correctly
 
 * Automated Tests
 
-* Doc
+* Docs
 
+* Set colors for dark theme
                    
                    
 https://medium.com/@keeptoo/spicing-up-your-java-swingui-using-custom-look-and-feel-113501dd5920

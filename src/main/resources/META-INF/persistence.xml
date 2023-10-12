@@ -13,9 +13,13 @@
   
 		<properties>
 			<property name="jakarta.persistence.validation.mode" value="NONE" />
-			<property name="eclipselink.session.customizer" value="org.examemulator.infra.datasource.JPAEclipseLinkSessionCustomizer"/> 
    			<property name="jakarta.persistence.nonJtaDataSource" value="HikariDataSource"/>
 			
+			<property name="eclipselink.logging.level.sql" value="FINE"/>
+ 			<property name="eclipselink.logging.parameters" value="true"/>
+			<property name="eclipselink.session.customizer" value="org.examemulator.infra.datasource.JPAEclipseLinkSessionCustomizer"/>
+			
+			 
 			<!-- 
             <property name="jakarta.persistence.jdbc.driver" value="org.hsqldb.jdbc.JDBCDriver"/>
             <property name="jakarta.persistence.jdbc.url" value="jdbc:hsqldb:hsql://localhost:9137/examEmulator"/> 
