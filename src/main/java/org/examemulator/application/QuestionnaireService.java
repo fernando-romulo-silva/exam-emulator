@@ -12,6 +12,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.examemulator.domain.cerfication.Certification;
+import org.examemulator.domain.exam.Exam;
+import org.examemulator.domain.exam.ExamRepository;
 import org.examemulator.domain.questionnaire.Questionnaire;
 import org.examemulator.domain.questionnaire.QuestionnaireRepository;
 import org.examemulator.domain.questionnaire.question.Question;
@@ -34,16 +36,20 @@ public class QuestionnaireService {
     private final QuestionRepository questionRepository;
 
     private final QuestionConceptRepository questionConceptRepository;
+    
+    private final ExamRepository examRepository; 
 
     @Inject
     QuestionnaireService( //
-		    final QuestionnaireRepository questionnaireRepository, //
-		    final QuestionRepository questionRepository, //
-		    final QuestionConceptRepository questionConceptRepository) {
+		    final QuestionnaireRepository questionnaireRepository,
+		    final QuestionRepository questionRepository,
+		    final QuestionConceptRepository questionConceptRepository,
+		    final ExamRepository examRepository) {
 	super();
 	this.questionnaireRepository = questionnaireRepository;
 	this.questionRepository = questionRepository;
 	this.questionConceptRepository = questionConceptRepository;
+	this.examRepository = examRepository;
     }
 
     public record QuestionnaireDTO(Integer order, String name, String description) {
@@ -87,7 +93,16 @@ public class QuestionnaireService {
     
     @Transactional(REQUIRED)
     public Question updateQuestion(final Question question) {
-	return questionRepository.update(question);
+	
+	final var questionUpdate = questionRepository.update(question);
+	
+	final var exams = examRepository.findAllFinishedExamsHasQuestion(question);
+	
+	exams.forEach(Exam::recalculate);
+	
+	examRepository.saveAll(exams);
+	
+	return questionUpdate;
     }
 
     public Stream<Questionnaire> findByQuestionnaireSet(final QuestionnaireSet questionnaireSet) {
@@ -118,7 +133,7 @@ public class QuestionnaireService {
 	    return Stream.<Question>of();
 	}
 
-	return questionRepository.findByIds(ids);
+	return questionRepository.findAllById(ids);
     }
 
     public Stream<QuestionDTO> findByCertificationAndQuestionnaireSetAndQuestionnaire(final Certification certification, final QuestionnaireSet questionnaireSet, final Questionnaire questionnaire) {

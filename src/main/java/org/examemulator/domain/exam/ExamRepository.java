@@ -1,10 +1,12 @@
 package org.examemulator.domain.exam;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.examemulator.domain.cerfication.Certification;
 import org.examemulator.domain.questionnaire.Questionnaire;
+import org.examemulator.domain.questionnaire.question.Question;
 import org.examemulator.domain.questionnaire.set.QuestionnaireSet;
 
 import jakarta.data.repository.CrudRepository;
@@ -30,5 +32,7 @@ public interface ExamRepository extends CrudRepository<Exam, Long> {
     int deleteExam(final Long idExam);
 
     Exam update(final Exam entity);
+
+    List<Exam> findAllFinishedExamsHasQuestion(final Question question);
 
 }

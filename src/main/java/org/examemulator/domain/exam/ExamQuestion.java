@@ -263,6 +263,10 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
 	status = FINISHED;
 	correct = isCorrect();
     }
+    
+    void updateResult() {
+	correct = isCorrect();
+    }
 
     // ------------------------------------------------------------------------------
     

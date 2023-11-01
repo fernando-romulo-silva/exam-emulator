@@ -135,6 +135,24 @@ public class Exam {
 
 	questions.forEach(ExamQuestion::finalizeExamQuestion);
     }
+    
+    public void recalculate() {
+	if (status != ExamStatus.FINISHED) {
+	    throw new IllegalStateException("You can recalculate a exam only on Finished status!");
+	}
+	
+	final var qtyTotal = questions.size();
+
+	final var qtyCorrect = getQtyCorrect();
+
+	final var minScoreValue = minScorePercent
+			.divide(VALUE_100, MATH_CONTEXT)
+			.multiply(new BigDecimal(qtyTotal), MATH_CONTEXT);
+
+	result = BigDecimal.valueOf(qtyCorrect).compareTo(minScoreValue) >= 0 ? PASSED : FAILED;
+	
+	questions.forEach(ExamQuestion::updateResult);
+    }
 
     public void pause() {
 

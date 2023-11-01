@@ -1,9 +1,10 @@
-package org.examemulator.domain.questionnaire.question;
+package org.examemulator.infra.persistence;
 
 import java.util.Optional;
 
 import org.examemulator.domain.cerfication.Certification;
-import org.examemulator.infra.persistence.GenericRepository;
+import org.examemulator.domain.questionnaire.question.QuestionConcept;
+import org.examemulator.domain.questionnaire.question.QuestionConceptRepository;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.NoResultException;

@@ -8,7 +8,7 @@ import jakarta.data.repository.CrudRepository;
 import jakarta.data.repository.Repository;
 
 @Repository
-public interface QuestionConceptRepository  extends CrudRepository<QuestionConcept, Long> {
+public interface QuestionConceptRepository extends CrudRepository<QuestionConcept, Long> {
 
     Optional<QuestionConcept> findByCertificationAndName(final Certification certification, final String name);
 

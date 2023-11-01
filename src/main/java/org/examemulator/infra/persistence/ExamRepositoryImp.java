@@ -3,12 +3,14 @@ package org.examemulator.infra.persistence;
 import static org.apache.commons.lang3.StringUtils.replace;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.examemulator.domain.cerfication.Certification;
 import org.examemulator.domain.exam.Exam;
 import org.examemulator.domain.exam.ExamRepository;
 import org.examemulator.domain.questionnaire.Questionnaire;
+import org.examemulator.domain.questionnaire.question.Question;
 import org.examemulator.domain.questionnaire.set.QuestionnaireSet;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -16,6 +18,24 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class ExamRepositoryImp extends GenericRepository<Exam, Long> implements ExamRepository {
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Exam> findAllFinishedExamsHasQuestion(final Question question) {
+	
+	final var sqlString = """
+                            SELECT EX.*
+                              FROM QUESTION Q 
+                             INNER JOIN EXAM_QUESTION EQ ON (EQ.QUESTION_ID = Q.ID AND EQ.STATUS = 'FINISHED')
+                             INNER JOIN EXAM EX ON (EX.ID = EQ.EXAM_ID)
+                             WHERE EX.STATUS = 'FINISHED'
+                               AND Q.ID = ?					
+					""";
+	
+	final var query = entityManager.createNativeQuery(sqlString, Exam.class);
+	query.setParameter(1, question.getId());
+	return query.getResultList();
+    }   
+    
     @Override
     @SuppressWarnings("unchecked")
     public Stream<Exam> findExamBy(final Certification certification) {
@@ -186,5 +206,6 @@ public class ExamRepositoryImp extends GenericRepository<Exam, Long> implements 
     @Override
     public Exam update(Exam entity) {
 	return super.update(entity);
-    }    
+    }
+ 
 }
