@@ -4,6 +4,7 @@ import static java.awt.BorderLayout.CENTER;
 import static java.awt.Color.BLACK;
 import static java.awt.Color.BLUE;
 import static java.awt.Color.GREEN;
+import static java.awt.Color.ORANGE;
 import static java.awt.Color.RED;
 import static java.math.BigDecimal.valueOf;
 import static java.util.stream.Collectors.joining;
@@ -238,7 +239,9 @@ public class StatiticsController {
 			.concat(correctOptions).concat(TAG_BR_BR) //
 			.concat(explanation);
 
-	final var font = selectedQuestion.isCorrect() ? "<font color='green'>" : "<font color='red'>";
+	final var font = !selectedQuestion.getQuestion().isActive() 
+			 ? "<font color='orange'>"
+			 : selectedQuestion.isCorrect() ? "<font color='green'>" : "<font color='red'>";
 
 	final var currentOrder = leftPad(selectedQuestion.getOrder().toString(), 2, '0');
 	final var originalOrder = selectedQuestion.isSameOrderQuestion() ? EMPTY : " (".concat(leftPad(selectedQuestion.getQuestion().getOrder().toString(), 2, '0')).concat(")");
@@ -303,7 +306,7 @@ public class StatiticsController {
 	    final var label = new JLabel(leftPad(question.getOrder().toString(), 2, '0'));
 
 	    label.setForeground(BLACK);
-
+	    
 	    if (question.isCorrect()) {
 		label.setForeground(GREEN);
 	    }
@@ -314,6 +317,10 @@ public class StatiticsController {
 
 	    if (!question.isCorrect()) {
 		label.setForeground(RED);
+	    }
+	    
+	    if (!question.getQuestion().isActive()) {
+		label.setForeground(ORANGE);
 	    }
 
 	    view.pQuestions.add(label);

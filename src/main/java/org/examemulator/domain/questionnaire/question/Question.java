@@ -2,6 +2,7 @@ package org.examemulator.domain.questionnaire.question;
 
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.FetchType.EAGER;
+import static java.lang.Boolean.TRUE;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
@@ -51,6 +52,9 @@ public class Question implements Comparable<Question>, InquiryInterface {
 
     @Column(name = "NUM_ORDER")
     private Integer order;
+    
+    @Column(name = "ACTIVE")
+    private Boolean active = TRUE;
 
     @JoinColumn(name = "QUESTION_ID")
     @OneToMany(fetch = EAGER, cascade = ALL, orphanRemoval = true)
@@ -172,6 +176,18 @@ public class Question implements Comparable<Question>, InquiryInterface {
 
     public Optional<QuestionConcept> getConcept() {
 	return ofNullable(concept);
+    }
+    
+    public boolean isActive() {
+        return Objects.equals(TRUE, active);
+    }
+
+    public void active() {
+	active = true;
+    }
+    
+    public void inactive() {
+	active = false;
     }
 
     // ------------------------------------------------------------------------------

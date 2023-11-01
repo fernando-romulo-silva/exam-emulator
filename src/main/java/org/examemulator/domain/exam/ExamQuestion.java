@@ -1,5 +1,7 @@
 package org.examemulator.domain.exam;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.collections4.CollectionUtils.containsAny;
@@ -57,7 +59,7 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
     private final List<ExamOption> options = new ArrayList<>();
 
     @Column(name = "SHUFFLE_OPTIONS")
-    private boolean shuffleOptions;
+    private Boolean shuffleOptions = FALSE;
 
     @Column(name = "TYPE")
     @Enumerated(EnumType.STRING)
@@ -67,10 +69,10 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
     private Integer order;
 
     @Column(name = "MARKED")
-    private boolean marked = Boolean.FALSE;
+    private Boolean marked = FALSE;
     
     @Column(name = "CORRECT")
-    private boolean correct = Boolean.FALSE;
+    private Boolean correct = FALSE;
     
     @Column(name = "STATUS")
     @Enumerated(EnumType.STRING)
@@ -330,11 +332,15 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
 
     public boolean isCorrect() {
 	
-	if (!isAnswered()) {
+	if (!question.isActive()) {
+	    return true;
+	}
+	
+	if (Objects.equals(FALSE, isAnswered())) {
 	    return false;
 	}
 
-	if (isAnswered() && getAnswers().isEmpty()) {
+	if (Objects.equals(TRUE, isAnswered()) && getAnswers().isEmpty()) {
 	    return false;
 	}
 

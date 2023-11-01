@@ -71,7 +71,7 @@ class MainView extends JFrame {
     
     MainView() {
 	setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-	setBounds(100, 100, 871, 723);
+	setBounds(100, 100, 900, 1000);
 
 	setTitle(APP_NAME);
 
@@ -81,7 +81,7 @@ class MainView extends JFrame {
 
 	pMain = new JPanel();
 	pMain.setLayout(new BorderLayout());
-	pMain.setPreferredSize(new Dimension(80, 200));
+	pMain.setPreferredSize(new Dimension(900, 200));
 	contentPane.add(pMain, BorderLayout.NORTH);
 
 	menuItemLoadCertification = new JMenuItem("Load from file");

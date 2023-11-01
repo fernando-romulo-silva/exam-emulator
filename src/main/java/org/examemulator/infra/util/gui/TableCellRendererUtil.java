@@ -12,13 +12,15 @@ import java.time.format.DateTimeFormatter;
 
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.examemulator.gui.components.CustomCellRenderer;
+
 public final class TableCellRendererUtil {
 
     private TableCellRendererUtil() {
 	throw new IllegalStateException("You can't instanciate this class");
     }
 
-    public static final DefaultTableCellRenderer PERCENT_TABLE_CELL_RENDERER = new DefaultTableCellRenderer() {
+    public static final DefaultTableCellRenderer PERCENT_TABLE_CELL_RENDERER = new CustomCellRenderer() {
 
 	private static final long serialVersionUID = 1L;
 
@@ -41,7 +43,7 @@ public final class TableCellRendererUtil {
 	}
     };
 
-    public static final DefaultTableCellRenderer ENUM_TABLE_CELL_RENDERER = new DefaultTableCellRenderer() {
+    public static final DefaultTableCellRenderer ENUM_TABLE_CELL_RENDERER = new CustomCellRenderer() {
 
 	private static final long serialVersionUID = 1L;
 
@@ -61,7 +63,7 @@ public final class TableCellRendererUtil {
 	}
     };
 
-    public static final DefaultTableCellRenderer NUMBER_TABLE_CELL_RENDERER = new DefaultTableCellRenderer() {
+    public static final DefaultTableCellRenderer NUMBER_TABLE_CELL_RENDERER = new CustomCellRenderer() {
 
 	private static final long serialVersionUID = 1L;
 
@@ -83,7 +85,7 @@ public final class TableCellRendererUtil {
 	}
     };
 
-    public static final DefaultTableCellRenderer DATE_TIME_TABLE_CELL_RENDERER = new DefaultTableCellRenderer() {
+    public static final DefaultTableCellRenderer DATE_TIME_TABLE_CELL_RENDERER = new CustomCellRenderer() {
 
 	private static final long serialVersionUID = 1L;
 
@@ -106,7 +108,7 @@ public final class TableCellRendererUtil {
 	}
     };
     
-    public static final DefaultTableCellRenderer ORDER_TABLE_CELL_RENDERER = new DefaultTableCellRenderer() {
+    public static final DefaultTableCellRenderer ORDER_TABLE_CELL_RENDERER = new CustomCellRenderer() {
 
 	private static final long serialVersionUID = 1L;
 

@@ -60,7 +60,7 @@ public class ExamService {
 	examRepository.deleteExamQuestions(exam.getId());
 	examRepository.deleteExam(exam.getId());
 	
-//	examRepository.delete(exam);
+	// examRepository.delete(exam);
     }
 
     public Stream<Exam> getAll() {

@@ -1,5 +1,6 @@
 package org.examemulator.domain.exam;
 
+import static java.lang.Boolean.FALSE;
 import static java.math.RoundingMode.HALF_UP;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.util.Collections.unmodifiableList;
@@ -60,7 +61,7 @@ public class Exam {
     private ExamType type;
 
     @Column(name = "SHUFFLE_QUESTIONS")
-    private boolean shuffleQuestions;
+    private Boolean shuffleQuestions = FALSE;
 
     @JoinColumn(name = "EXAM_ID")
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -197,8 +198,8 @@ public class Exam {
     }
 
     public Long getQtyCorrect() {
-	return questions.stream() //
-			.filter(q -> q.isCorrect()) //
+	return questions.stream()
+			.filter(q -> q.isCorrect())
 			.count();
     }
 

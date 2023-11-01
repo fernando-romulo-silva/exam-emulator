@@ -79,10 +79,10 @@ public class QuestionnaireController {
     private Question selectedQuestion;
 
     @Inject
-    QuestionnaireController( //
-		    final PreExameGui gui, //
-		    final ExamController examController, //
-		    final MainController mainController,//
+    QuestionnaireController(
+		    final PreExameGui gui,
+		    final ExamController examController,
+		    final MainController mainController,
 		    final ExamService examService,
 		    final Logger logger) {
 	super();

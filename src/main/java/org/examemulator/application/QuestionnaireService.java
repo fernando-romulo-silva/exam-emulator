@@ -84,6 +84,11 @@ public class QuestionnaireService {
 
 	return optionalQuestionConcept.get();
     }
+    
+    @Transactional(REQUIRED)
+    public Question updateQuestion(final Question question) {
+	return questionRepository.update(question);
+    }
 
     public Stream<Questionnaire> findByQuestionnaireSet(final QuestionnaireSet questionnaireSet) {
 	return questionnaireRepository.findByQuestionnaireSet(questionnaireSet);

@@ -3,7 +3,6 @@
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_1.xsd"
              version="3.1">
-             
 	
 	<persistence-unit name="defaultPU" transaction-type="RESOURCE_LOCAL">
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
@@ -15,7 +14,7 @@
 			<property name="jakarta.persistence.validation.mode" value="NONE" />
    			<property name="jakarta.persistence.nonJtaDataSource" value="HikariDataSource"/>
 			
-			<property name="eclipselink.logging.level.sql" value="FINE"/>
+			<property name="eclipselink.logging.level.sql" value="INFO"/> <!-- INFO, FINE -->
  			<property name="eclipselink.logging.parameters" value="true"/>
 			<property name="eclipselink.session.customizer" value="org.examemulator.infra.datasource.JPAEclipseLinkSessionCustomizer"/>
 			

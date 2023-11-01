@@ -146,9 +146,13 @@ public class MainController {
     public void show() {
 	initView();
 	invokeLaterView();
+	
+	view.pack();
+	view.setLocationRelativeTo(null);
     }
 
     public void show(final Component lastView) {
+	view.pack();
 	view.setLocationRelativeTo(lastView);
 	invokeLaterView();
     }
@@ -337,10 +341,25 @@ public class MainController {
 			return;
 		    }
 
-		    createQuestionDialog(view, questionOptional.get());
-		}
-
-		if (isRightMouseButton(event) && event.getClickCount() == 2) {
+		    final var question = questionOptional.get();
+		    
+		    final var currentActiveQuestion = question.isActive();
+		    
+		    final var activeQuestion = createQuestionDialog(view, questionOptional.get());
+		    
+		    if (currentActiveQuestion == activeQuestion) {
+			return;
+		    }
+		    
+		    if (activeQuestion) {
+			question.active();
+		    } else {
+			question.inactive();
+		    }
+		    
+		    questionnaireService.updateQuestion(question);
+		    
+		} else if (isRightMouseButton(event) && event.getClickCount() == 2) {
 
 		    if (questions.isEmpty()) {
 			showMessageDialog(view, "You need select at least one question!", "Error!", ERROR_MESSAGE);
@@ -485,7 +504,9 @@ public class MainController {
 	final var tableFields = List.of( //
 			fieldOf("id", NUMBER_TABLE_CELL_RENDERER), //
 			fieldOf("name", true), //
-			fieldOf("start", DATE_TIME_TABLE_CELL_RENDERER), fieldOf("finish", DATE_TIME_TABLE_CELL_RENDERER), fieldOf("status", ENUM_TABLE_CELL_RENDERER), //
+			fieldOf("start", DATE_TIME_TABLE_CELL_RENDERER), // 
+			fieldOf("finish", DATE_TIME_TABLE_CELL_RENDERER), // 
+			fieldOf("status", ENUM_TABLE_CELL_RENDERER), //
 			fieldOf("type", ENUM_TABLE_CELL_RENDERER), //
 			fieldOf("shuffleQuestions", "Shuffled"), //
 			fieldOf("result", ENUM_TABLE_CELL_RENDERER)//

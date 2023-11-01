@@ -13,6 +13,7 @@ import static org.examemulator.infra.util.gui.GuiUtil.createScrollHtmlTextToShow
 import static org.examemulator.infra.util.gui.GuiUtil.extractedOptions;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.event.KeyEvent;
@@ -26,9 +27,12 @@ import java.util.stream.Stream;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -229,7 +233,7 @@ public final class ControllerUtil {
 	};
     }
     
-    public static void createQuestionDialog(final Frame owner, final Question question) {
+    public static boolean createQuestionDialog(final Frame owner, final Question question) {
 
 	final var optionalConcept = question.getConcept();
 	final var conceptName = optionalConcept.isPresent() //
@@ -253,7 +257,6 @@ public final class ControllerUtil {
 		    .concat(explanation);
 
 	final var dialogQuestion = new JDialog(owner, question.getName().concat(conceptName), true);
-	dialogQuestion.setLocationRelativeTo(owner);
 	
 	final var panelQuestionPanel = dialogQuestion.getContentPane();
 	panelQuestionPanel.setLayout(new BorderLayout());
@@ -267,8 +270,22 @@ public final class ControllerUtil {
 	okButton.addActionListener(okEvent -> dialogQuestion.setVisible(false));
 	okButton.setMnemonic(KeyEvent.VK_O);
 	panel.add(okButton);
-
+	
+	final var chckbxActive = new JCheckBox("Active");
+	chckbxActive.setHorizontalTextPosition(SwingConstants.LEFT);
+	panel.add(chckbxActive);
+	
+	panel.add(new JLabel("If inactive (unchecked), it will appear in exams but compute as always as correct"));
+	
+	chckbxActive.setSelected(question.isActive());
+	
+	final var dimension = new Dimension(800, 600);
+	dialogQuestion.setPreferredSize(dimension);
+	
 	dialogQuestion.pack();
+	dialogQuestion.setLocationRelativeTo(owner);
 	dialogQuestion.setVisible(true);
+	
+	return chckbxActive.isSelected();
     }
 }
