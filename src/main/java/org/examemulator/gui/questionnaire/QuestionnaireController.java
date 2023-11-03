@@ -228,7 +228,7 @@ public class QuestionnaireController {
 			    ? examService.getExamNameBy(questionnaire)
 			    : examService.getNextExamDynamicNameBy(certification, questionnaireSet, questionnaire);
 	    
-	    examController.show(examName, view, toExamQuestions);
+	    examController.show(examName, certification.getMinScorePercent(), toExamQuestions, view);
 	});
 	
 	view.rdbtnAll.addActionListener(event -> {

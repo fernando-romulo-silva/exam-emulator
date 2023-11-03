@@ -2,6 +2,7 @@ package org.examemulator;
 
 import static java.lang.Runtime.getRuntime;
 
+import org.examemulator.application.ExamService;
 import org.examemulator.gui.main.MainController;
 import org.examemulator.infra.database.HsqldbServer;
 import org.examemulator.infra.datasource.JndiHelper;
@@ -22,9 +23,11 @@ public class Main {
 
 	final var container = SeContainerInitializer.newInstance().initialize();
 
+	final var service = container.select(ExamService.class).get();
+	service.updateAll();
+	
 	final var mainController = container.select(MainController.class).get();
-
-//	mainController.loadCertificationFromFolder("/home/fernando/Development/workspaces/eclipse-workspace/exam-emulator/src/test/resources/certifications/food-certification");
+	//mainController.loadCertificationFromFolder("/home/fernando/Development/workspaces/eclipse-workspace/exam-emulator/src/test/resources/certifications/food-certification");
 	mainController.loadCertificationFromFolder("/home/fernando/Development/workspaces/eclipse-workspace/certifications-technologies/docker-certified-associate");
 	mainController.show();
 

@@ -429,7 +429,9 @@ public class MainController {
 
 		    final var questionsFromDb = questionnaireService.findByIds(selectedIds).toList();
 		    view.setVisible(false);
-		    examController.show(examService.getNextExamDynamicNameBy(selectedCertification, selectedQuestionnaireSet, selectedQuestionnaire), view, questionsFromDb);
+		    
+		    final var examName = examService.getNextExamDynamicNameBy(selectedCertification, selectedQuestionnaireSet, selectedQuestionnaire);
+		    examController.show(examName, selectedCertification.getMinScorePercent(), questionsFromDb, view);
 		}
 	    }
 

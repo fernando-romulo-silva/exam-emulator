@@ -94,12 +94,15 @@ public class ExamController {
     private List<? extends InquiryInterface> availableQuestions;
 
     private String name;
+    
+    private BigDecimal certMinScorePercent;
 
     private Exam exam;
 
     private ExamQuestion selectedQuestion;
 
     private Timer timer;
+
 
     @Inject
     ExamController(//
@@ -121,10 +124,11 @@ public class ExamController {
 	initActions();
     }
 
-    public void show(final String name, final Component lastView, final List<? extends InquiryInterface> availableQuestions) {
+    public void show(final String name, final BigDecimal certMinScorePercent, final List<? extends InquiryInterface> availableQuestions, final Component lastView) {
 
 	this.availableQuestions = new ArrayList<>(availableQuestions);
 	this.name = name;
+	this.certMinScorePercent = certMinScorePercent;
 
 	view.contentPane.setBorder(createTitledBorder(name));
 
@@ -270,6 +274,7 @@ public class ExamController {
 
 	    exam = new Exam.Builder().with($ -> {
 		$.name = this.name;
+		$.certMinScorePercent = this.certMinScorePercent;
 		$.type = practiceMode ? PRACTICE : EXAM;
 		$.discretPercent = discretPercent;
 		$.minScorePercent = minScorePercent;
@@ -625,7 +630,7 @@ public class ExamController {
 
 	tempPanel.repaint();
     }
-
+    
     private final class QuestionLabelListener extends MouseAdapter {
 
 	@Override

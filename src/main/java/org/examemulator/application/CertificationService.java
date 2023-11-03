@@ -3,6 +3,7 @@ package org.examemulator.application;
 import static jakarta.transaction.Transactional.TxType.REQUIRED;
 import static jakarta.transaction.Transactional.TxType.SUPPORTS;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -30,7 +31,7 @@ public class CertificationService {
 	final var optionalCertification = certificationRepository.findByName(name);
 
 	if (optionalCertification.isEmpty()) {
-	    final var certificationTemp = new Certification(name);
+	    final var certificationTemp = new Certification(name, new BigDecimal(70), 60);
 	    return certificationRepository.save(certificationTemp);
 	}
 	

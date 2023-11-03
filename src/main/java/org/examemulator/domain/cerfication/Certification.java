@@ -1,5 +1,6 @@
 package org.examemulator.domain.cerfication;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -25,7 +26,10 @@ public class Certification {
     private String name;
 
     @Column(name = "MAX_MINUTES")
-    private Integer maxMinutes;
+    private Integer maxMinutes = 60;
+    
+    @Column(name = "MIN_SCORE_PERCENT", precision = 19, scale = 2)
+    private BigDecimal minScorePercent = new BigDecimal(70);
 
     // ------------------------------------------
     
@@ -33,9 +37,11 @@ public class Certification {
 	super();
     }
 
-    public Certification(final String name) {
+    public Certification(final String name, final BigDecimal minScorePercent, final Integer maxMinutes) {
 	super();
 	this.name = name;
+	this.minScorePercent = minScorePercent;
+	this.maxMinutes = maxMinutes;
     }
     
     // ------------------------------------------
@@ -51,8 +57,13 @@ public class Certification {
     public Integer getMaxMinutes() {
 	return maxMinutes;
     }
+    
+    public BigDecimal getMinScorePercent() {
+        return minScorePercent;
+    }
 
     // ------------------------------------------
+    
     @Override
     public int hashCode() {
 	return Objects.hash(id);

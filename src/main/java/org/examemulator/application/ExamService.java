@@ -62,6 +62,13 @@ public class ExamService {
 	
 	// examRepository.delete(exam);
     }
+    
+    @Transactional(REQUIRED)
+    public void updateAll() {
+	final var allExamStream = getAll();
+	
+	allExamStream.forEach(Exam::recalculate);
+    }
 
     public Stream<Exam> getAll() {
 	return examRepository.findAll();

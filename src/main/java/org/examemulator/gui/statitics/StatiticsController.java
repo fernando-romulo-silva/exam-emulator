@@ -6,7 +6,6 @@ import static java.awt.Color.BLUE;
 import static java.awt.Color.GREEN;
 import static java.awt.Color.ORANGE;
 import static java.awt.Color.RED;
-import static java.math.BigDecimal.valueOf;
 import static java.util.stream.Collectors.joining;
 import static javax.swing.BorderFactory.createTitledBorder;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
@@ -18,8 +17,6 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.leftPad;
 import static org.apache.commons.lang3.math.NumberUtils.toInt;
-import static org.examemulator.infra.util.DomainUtil.MATH_CONTEXT;
-import static org.examemulator.infra.util.DomainUtil.VALUE_100;
 import static org.examemulator.infra.util.gui.ControllerUtil.hasNextQuestion;
 import static org.examemulator.infra.util.gui.ControllerUtil.hasPreviousQuestion;
 import static org.examemulator.infra.util.gui.ControllerUtil.nextQuestion;
@@ -38,7 +35,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -149,7 +145,11 @@ public class StatiticsController {
 	    }
 	    
 	    view.setVisible(false);
-	    examController.show(examService.getExamNameByBy(exam.getName()), view, questions);
+	    
+	    final var examName = examService.getExamNameByBy(exam.getName());
+	    final var certMinScorePercent = exam.getCertMinScorePercent();
+	    
+	    examController.show(examName, certMinScorePercent, questions, view);
 	});
 
 	view.btnMain.addActionListener(event -> {
@@ -239,10 +239,16 @@ public class StatiticsController {
 			.concat(correctOptions).concat(TAG_BR_BR) //
 			.concat(explanation);
 
-	final var font = !selectedQuestion.getQuestion().isActive() 
-			 ? "<font color='orange'>"
-			 : selectedQuestion.isCorrect() ? "<font color='green'>" : "<font color='red'>";
 
+	final String font;
+	if (!selectedQuestion.getQuestion().isActive()) {
+	    font = "<font color='orange'>";
+	} else if (selectedQuestion.isCorrect()) {
+	    font = "<font color='green'>";
+	} else {
+	    font = "<font color='red'>";
+	}
+	
 	final var currentOrder = leftPad(selectedQuestion.getOrder().toString(), 2, '0');
 	final var originalOrder = selectedQuestion.isSameOrderQuestion() ? EMPTY : " (".concat(leftPad(selectedQuestion.getQuestion().getOrder().toString(), 2, '0')).concat(")");
 
@@ -333,39 +339,38 @@ public class StatiticsController {
 
     private String getStatistic(final Exam exam) {
 
-	final var qtyTotal = exam.getQuestions().stream() //
-			.count();
+	final var qtyTotal = exam.getQtyQuestion();
 
-	final var qtyCorrect = exam.getQuestions().stream() //
-			.filter(q -> q.isCorrect()) //
-			.count();
+	final var qtyCorrect = exam.getQtyCorrect();
 
-	final var qtyIncorrect = qtyTotal - qtyCorrect;
+	final var qtyIncorrect = exam.getQtyIncorrect();
 
-	final var minScoreValue = exam.getMinScorePercent()
-			.divide(VALUE_100, MATH_CONTEXT)
-			.multiply(new BigDecimal(qtyTotal), MATH_CONTEXT);
+	final var minScoreValue = exam.getMinScore();
+	
+	final var certMinScoreValue = exam.getCertMinScore();	
 			
-	final var percCorrect = new BigDecimal(qtyCorrect) //
-			.divide(valueOf(qtyTotal), MATH_CONTEXT) //
-			.multiply(VALUE_100);
+	final var percCorrect = exam.getPercCorret();
 
-	final var percIncorrect = new BigDecimal(qtyIncorrect) //
-			.divide(valueOf(qtyTotal), MATH_CONTEXT) //
-			.multiply(VALUE_100);
-
-	final var result = BigDecimal.valueOf(qtyCorrect).compareTo(minScoreValue) >= 0 // 
-			? "<font color='green'>PASSED</font>" // 
-			: "<font color='red'>FAILED</font>";
-
+	final var percIncorrect = exam.getPercIncorrect(); 
+			
+	final String result;
+	if(exam.isPassed()) {
+	    result = "<font color='green'>PASSED</font>";
+	} else if (exam.isAlmost()) {
+	    result = "<font color='orange'>ALMOST</font>";
+	} else {
+	    result = "<font color='red'>FAILED</font>";
+	}
+	
 	final var duration = exam.getDuration();
 
 	final var msg = """
 			<html>
 			You {0} on this exam! <br />
 			You had {1} questions with min score {2} ({3}%). <br />
-			You answered {4} ({5}%) correct(s) and {6} ({7}%) incorrect(s). <br />
-			The test duration was {8} minutes.
+			The certification min score is {4} ({5}%). <br />
+			You answered {6} ({7}%) correct(s) and {8} ({9}%) incorrect(s). <br />
+			The test duration was {10} minutes.
 			</html>
 			""";
 
@@ -375,11 +380,13 @@ public class StatiticsController {
 			qtyTotal, // 1
 			minScoreValue, // 2
 			exam.getMinScorePercent(), // 3
-			qtyCorrect, // 4
-			percCorrect, // 5
-			qtyIncorrect, // 6
-			percIncorrect, // 7
-			duration // 8
+			certMinScoreValue, // 4
+			exam.getCertMinScorePercent(), // 5
+			qtyCorrect, // 6
+			percCorrect, // 7
+			qtyIncorrect, // 8
+			percIncorrect, // 9
+			duration // 10
 	);
     }
 

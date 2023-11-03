@@ -1,13 +1,16 @@
 package org.examemulator.domain.exam;
 
 import static java.lang.Boolean.FALSE;
+import static java.math.BigDecimal.valueOf;
 import static java.math.RoundingMode.HALF_UP;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Optional.ofNullable;
+import static org.examemulator.domain.exam.ExamResult.ALMOST;
 import static org.examemulator.domain.exam.ExamResult.FAILED;
 import static org.examemulator.domain.exam.ExamResult.PASSED;
 import static org.examemulator.domain.exam.ExamResult.UNDEFINED;
+import static org.examemulator.domain.exam.ExamStatus.FINISHED;
 import static org.examemulator.infra.util.DomainUtil.MATH_CONTEXT;
 import static org.examemulator.infra.util.DomainUtil.VALUE_100;
 
@@ -52,6 +55,9 @@ public class Exam {
 
     @Column(name = "MIN_SCORE_PERCENT", precision = 19, scale = 2)
     private BigDecimal minScorePercent;
+    
+    @Column(name = "CERTIFICATION_MIN_SCORE_PERCENT", precision = 19, scale = 2)
+    private BigDecimal certMinScorePercent;
 
     @Column(name = "DISCRETE_PERCENT", precision = 19, scale = 2)
     private BigDecimal discretPercent;
@@ -94,6 +100,7 @@ public class Exam {
 	this.name = builder.name;
 	this.type = ofNullable(builder.type).orElse(ExamType.PRACTICE);
 	this.minScorePercent = builder.minScorePercent;
+	this.certMinScorePercent = builder.certMinScorePercent;
 	this.discretPercent = builder.discretPercent;
 	this.shuffleQuestions = builder.shuffleQuestions;
 	this.questions.addAll(builder.questionsIntern);
@@ -123,35 +130,43 @@ public class Exam {
 	finish = LocalDateTime.now();
 	status = ExamStatus.FINISHED;
 
-	final var qtyTotal = questions.size();
-
-	final var qtyCorrect = getQtyCorrect();
-
-	final var minScoreValue = minScorePercent
-			.divide(VALUE_100, MATH_CONTEXT)
-			.multiply(new BigDecimal(qtyTotal), MATH_CONTEXT);
-
-	result = BigDecimal.valueOf(qtyCorrect).compareTo(minScoreValue) >= 0 ? PASSED : FAILED;
+	defineResult();
 
 	questions.forEach(ExamQuestion::finalizeExamQuestion);
     }
-    
+
     public void recalculate() {
 	if (status != ExamStatus.FINISHED) {
 	    throw new IllegalStateException("You can recalculate a exam only on Finished status!");
 	}
 	
+	defineResult();
+	
+	questions.forEach(ExamQuestion::updateResult);
+    }
+    
+    private void defineResult() {
 	final var qtyTotal = questions.size();
 
 	final var qtyCorrect = getQtyCorrect();
-
+	
 	final var minScoreValue = minScorePercent
 			.divide(VALUE_100, MATH_CONTEXT)
 			.multiply(new BigDecimal(qtyTotal), MATH_CONTEXT);
-
-	result = BigDecimal.valueOf(qtyCorrect).compareTo(minScoreValue) >= 0 ? PASSED : FAILED;
 	
-	questions.forEach(ExamQuestion::updateResult);
+	final var certMinScoreValue = certMinScorePercent
+			.divide(VALUE_100, MATH_CONTEXT)
+			.multiply(new BigDecimal(qtyTotal), MATH_CONTEXT);
+	
+	final var resultBigDecimal = BigDecimal.valueOf(qtyCorrect);
+	
+	if (resultBigDecimal.compareTo(minScoreValue) >= 0) {
+	    result = PASSED;
+	} else if (resultBigDecimal.compareTo(certMinScoreValue) >= 0) {
+	    result = ALMOST;
+	} else {
+	    result = FAILED;
+	}
     }
 
     public void pause() {
@@ -215,6 +230,10 @@ public class Exam {
 	return result;
     }
 
+    public Long getQtyQuestion() {
+	return questions.stream().count();
+    }
+    
     public Long getQtyCorrect() {
 	return questions.stream()
 			.filter(q -> q.isCorrect())
@@ -222,16 +241,70 @@ public class Exam {
     }
 
     public Long getQtyIncorrect() {
-	return questions.stream() //
-			.filter(q -> !q.isCorrect()) //
+	return questions.stream()
+			.filter(q -> !q.isCorrect())
 			.count();
     }
+    
+    public BigDecimal getMinScore() {
+	
+	if (status != FINISHED) {
+	    return BigDecimal.ZERO;
+	}
+	
+	final var qtyTotal = getQtyQuestion();
+	
+	return minScorePercent
+			.divide(VALUE_100, MATH_CONTEXT)
+			.multiply(new BigDecimal(qtyTotal), MATH_CONTEXT);
+    }
 
+    public BigDecimal getCertMinScore() {
+	
+	if (status != FINISHED) {
+	    return BigDecimal.ZERO;
+	}
+	
+	final var qtyTotal = getQtyQuestion();
+	
+	return certMinScorePercent
+			.divide(VALUE_100, MATH_CONTEXT)
+			.multiply(new BigDecimal(qtyTotal), MATH_CONTEXT);	
+    }
+
+    public BigDecimal getPercCorret() {
+	
+	if (status != FINISHED) {
+	    return BigDecimal.ZERO;
+	}
+	
+	final var qtyTotal = getQtyQuestion();
+	final var qtyCorrect = getQtyCorrect();
+	
+	return new BigDecimal(qtyCorrect) //
+			.divide(valueOf(qtyTotal), MATH_CONTEXT) //
+			.multiply(VALUE_100);
+    }
+			
+    public BigDecimal getPercIncorrect() {
+	
+	if (status != FINISHED) {
+	    return BigDecimal.ZERO;
+	}
+	
+	final var qtyTotal = getQtyQuestion();
+	final var qtyIncorrect = getQtyIncorrect();
+
+	return new BigDecimal(qtyIncorrect) //
+			.divide(valueOf(qtyTotal), MATH_CONTEXT) //
+			.multiply(VALUE_100);
+    }
+    
     public List<ExamQuestion> getQuestions() {
-	return unmodifiableList( //
-			questions.stream() //
-					.sorted((q1, q2) -> q1.getOrder().compareTo(q2.getOrder())) //
-					.toList() //
+	return unmodifiableList(
+			questions.stream()
+				.sorted((q1, q2) -> q1.getOrder().compareTo(q2.getOrder()))
+				.toList()
 	);
     }
 
@@ -255,6 +328,10 @@ public class Exam {
     public BigDecimal getMinScorePercent() {
 	return minScorePercent;
     }
+    
+    public BigDecimal getCertMinScorePercent() {
+        return certMinScorePercent;
+    }
 
     public ExamStatus getStatus() {
 	return status;
@@ -267,6 +344,10 @@ public class Exam {
     public boolean isFailed() {
 	return Objects.equals(result, FAILED);
     }
+    
+    public boolean isAlmost() {
+	return Objects.equals(result, ALMOST);
+    }    
     
     public boolean isUndefined() {
 	return Objects.equals(result, UNDEFINED);
@@ -296,10 +377,10 @@ public class Exam {
 
     @Override
     public String toString() {
-	return new ToStringBuilder(this) //
-			.append("id", id) //
-			.append("name", name) //
-			.append("type", type) //
+	return new ToStringBuilder(this)
+			.append("id", id)
+			.append("name", name)
+			.append("type", type)
 			.toString();
     }
 
@@ -309,7 +390,7 @@ public class Exam {
 
 	public String name;
 
-	public BigDecimal minScorePercent, discretPercent;
+	public BigDecimal minScorePercent, discretPercent, certMinScorePercent;
 
 	public ExamType type;
 
@@ -326,9 +407,11 @@ public class Exam {
 
 	public Exam build() {
 	    minScorePercent = ofNullable(minScorePercent).orElse(BigDecimal.valueOf(70));
+	    certMinScorePercent = ofNullable(certMinScorePercent).orElse(BigDecimal.valueOf(70));
 	    discretPercent = ofNullable(discretPercent).orElse(BigDecimal.ZERO);
 
 	    if (shuffleQuestions) {
+		// RandomGenerator 
 		Collections.shuffle(questions, new Random(questions.size()));
 	    }
 
