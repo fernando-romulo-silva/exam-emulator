@@ -339,36 +339,20 @@ public class StatiticsController {
 
     private String getStatistic(final Exam exam) {
 
-	final var qtyTotal = exam.getQtyQuestion();
-
-	final var qtyCorrect = exam.getQtyCorrect();
-
-	final var qtyIncorrect = exam.getQtyIncorrect();
-
-	final var minScoreValue = exam.getMinScore();
-	
-	final var certMinScoreValue = exam.getCertMinScore();	
-			
-	final var percCorrect = exam.getPercCorret();
-
-	final var percIncorrect = exam.getPercIncorrect(); 
-			
 	final String result;
 	if(exam.isPassed()) {
 	    result = "<font color='green'>PASSED</font>";
 	} else if (exam.isAlmost()) {
-	    result = "<font color='orange'>ALMOST</font>";
+	    result = "<font color='orange'>ALMOST PASSED</font>";
 	} else {
 	    result = "<font color='red'>FAILED</font>";
 	}
 	
-	final var duration = exam.getDuration();
-
 	final var msg = """
 			<html>
 			You {0} on this exam! <br />
 			You had {1} questions with min score {2} ({3}%). <br />
-			The certification min score is {4} ({5}%). <br />
+			Certification min score is {4} ({5}%). <br />
 			You answered {6} ({7}%) correct(s) and {8} ({9}%) incorrect(s). <br />
 			The test duration was {10} minutes.
 			</html>
@@ -377,16 +361,16 @@ public class StatiticsController {
 	return MessageFormat.format( //
 			msg, //
 			result, // 0
-			qtyTotal, // 1
-			minScoreValue, // 2
+			exam.getQtyQuestion(), // 1
+			exam.getMinScore(), // 2
 			exam.getMinScorePercent(), // 3
-			certMinScoreValue, // 4
+			exam.getCertMinScore(), // 4
 			exam.getCertMinScorePercent(), // 5
-			qtyCorrect, // 6
-			percCorrect, // 7
-			qtyIncorrect, // 8
-			percIncorrect, // 9
-			duration // 10
+			exam.getQtyCorrect(), // 6
+			exam.getPercCorret(), // 7
+			exam.getQtyIncorrect(), // 8
+			exam.getPercIncorrect(), // 9
+			exam.getDuration() // 10
 	);
     }
 
