@@ -40,7 +40,7 @@ public class QuestionnaireService {
     private final ExamRepository examRepository; 
 
     @Inject
-    QuestionnaireService( //
+    QuestionnaireService(
 		    final QuestionnaireRepository questionnaireRepository,
 		    final QuestionRepository questionRepository,
 		    final QuestionConceptRepository questionConceptRepository,

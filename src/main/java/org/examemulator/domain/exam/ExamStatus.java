@@ -4,8 +4,6 @@ public enum ExamStatus {
     
     INITIAL,
 
-    LOADED,
-    
     RUNNING,
     
     PAUSED,

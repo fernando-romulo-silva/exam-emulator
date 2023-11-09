@@ -9,11 +9,11 @@ import org.examemulator.domain.questionnaire.Questionnaire;
 import org.examemulator.domain.questionnaire.question.Question;
 import org.examemulator.domain.questionnaire.set.QuestionnaireSet;
 
-import jakarta.data.repository.CrudRepository;
+import jakarta.data.repository.PageableRepository;
 import jakarta.data.repository.Repository;
 
 @Repository
-public interface ExamRepository extends CrudRepository<Exam, Long> {
+public interface ExamRepository extends PageableRepository<Exam, Long> {
 
     Stream<Exam> findExamBy(final Certification certification);
 

@@ -337,6 +337,10 @@ public class Exam {
 	return status;
     }
     
+    public boolean isFinished() {
+	return Objects.equals(status, FINISHED);
+    }
+    
     public boolean isPassed() {
 	return Objects.equals(result, PASSED);
     }

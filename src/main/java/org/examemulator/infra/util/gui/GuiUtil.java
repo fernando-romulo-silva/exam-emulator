@@ -233,7 +233,7 @@ public class GuiUtil {
 	final var titleBorder = new TitledBorder("Option ".concat(substringBefore(optionsLabels.get(0), "|")));
 	optionsQuestionPanel.setBorder(titleBorder);
 
-	final var buttonYesListener = new ActionListener() {
+	final var buttonListener = new ActionListener() {
 
 	    String current = optionsLabels.get(0);
 
@@ -243,7 +243,11 @@ public class GuiUtil {
 		final var button = (JButton) event.getSource();
 
 		if (equalsIgnoreCase("yes", button.getText())) {
+		    
 		    question.selectAnswer(substringBefore(current, "|"));
+		    
+		} else if (question.getAnswers().isEmpty())  {
+		    question.selectAnswer("N/A");
 		}
 
 		optionPanel.removeAll();
@@ -276,8 +280,8 @@ public class GuiUtil {
 	    }
 	};
 
-	yesButton.addActionListener(buttonYesListener);
-	noButton.addActionListener(buttonYesListener);
+	yesButton.addActionListener(buttonListener);
+	noButton.addActionListener(buttonListener);
 
 	optionsQuestionPanel.add(buttonPanel, NORTH);
 	optionsQuestionPanel.add(optionPanel, CENTER);

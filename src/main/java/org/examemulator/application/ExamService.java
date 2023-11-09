@@ -67,7 +67,7 @@ public class ExamService {
     public void updateAll() {
 	final var allExamStream = getAll();
 	
-	allExamStream.forEach(Exam::recalculate);
+	allExamStream.filter(Exam::isFinished).forEach(Exam::recalculate);
     }
 
     public Stream<Exam> getAll() {

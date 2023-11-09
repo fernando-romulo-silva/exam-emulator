@@ -13,6 +13,8 @@ import org.examemulator.domain.questionnaire.Questionnaire;
 import org.examemulator.domain.questionnaire.question.Question;
 import org.examemulator.domain.questionnaire.set.QuestionnaireSet;
 
+import jakarta.data.repository.Page;
+import jakarta.data.repository.Pageable;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
@@ -206,6 +208,11 @@ public class ExamRepositoryImp extends GenericRepository<Exam, Long> implements 
     @Override
     public Exam update(Exam entity) {
 	return super.update(entity);
+    }
+
+    @Override
+    public Page<Exam> findAll(Pageable pageable) {
+	return null;
     }
  
 }

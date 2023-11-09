@@ -196,11 +196,11 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
 	    throw new IllegalArgumentException("Empty answer is not allowed!");
 	}
 	
+	final var answers = getAnswers();
+	
 	if (Objects.equals(answer, "N/A")) {
 	    status = ANSWERED;
-	}
-
-	final var answers = getAnswers();
+	} 
 
 	if (answers.contains(answer)) {
 	    return;

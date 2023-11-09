@@ -5,6 +5,8 @@ import java.util.Optional;
 import org.examemulator.domain.cerfication.Certification;
 import org.examemulator.domain.cerfication.CertificationRepository;
 
+import jakarta.data.repository.Page;
+import jakarta.data.repository.Pageable;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.NoResultException;
 
@@ -30,5 +32,10 @@ public class CertificationRepositoryImp extends GenericRepository<Certification,
 	} catch (final NoResultException ex) {
 	    return Optional.empty();
 	}
+    }
+
+    @Override
+    public Page<Certification> findAll(Pageable pageable) {
+	return null;
     }
 }
