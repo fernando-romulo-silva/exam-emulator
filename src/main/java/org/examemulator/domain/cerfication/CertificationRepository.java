@@ -2,7 +2,6 @@ package org.examemulator.domain.cerfication;
 
 import java.util.Optional;
 
-import jakarta.data.repository.CrudRepository;
 import jakarta.data.repository.PageableRepository;
 import jakarta.data.repository.Repository;
 

@@ -105,12 +105,12 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
 	    return;
 	}
 
-	final var words = ListUtils.union(WORDS_ALL, WORDS_NONE);
+	final var words = ListUtils.union(WORDS_ALL, WORDS_NONE).stream().map(String::toLowerCase).toList();
 
 	final var answersOptional = options.stream() //
 			.map(ExamOption::getValue) //
 			.map(this::extractedDots)
-			.filter(answer -> containsAny(List.of(answer), words)) //
+			.filter(answer -> containsAny(List.of(answer.toLowerCase()), words)) //
 			.findAny();
 
 	final var lastOptions = new ArrayList<ExamOption>();
@@ -118,12 +118,12 @@ public final class ExamQuestion implements InquiryInterface, Comparable<ExamQues
 	if (answersOptional.isPresent()) {
 
 	    final var list = options.stream()
-			    .filter(option -> containsAny(List.of(extractedDots(option.getValue())), words))
+			    .filter(option -> containsAny(List.of(extractedDots(option.getValue().toLowerCase())), words))
 			    .toList();
 	    
 	    lastOptions.addAll(list);
 
-	    options.removeIf(option -> containsAny(List.of(extractedDots(option.getValue())), words));
+	    options.removeIf(option -> containsAny(List.of(extractedDots(option.getValue()).toLowerCase()), words));
 	}
 
 	Collections.shuffle(options, new Random(System.nanoTime()));
