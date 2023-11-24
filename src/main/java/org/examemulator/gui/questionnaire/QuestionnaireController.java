@@ -6,6 +6,7 @@ import static java.awt.Color.BLUE;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
 import static javax.swing.BorderFactory.createTitledBorder;
+import static javax.swing.JOptionPane.NO_OPTION;
 import static javax.swing.JOptionPane.QUESTION_MESSAGE;
 import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.JOptionPane.YES_OPTION;
@@ -48,6 +49,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 
 import org.examemulator.application.ExamService;
+import org.examemulator.application.QuestionnaireService;
 import org.examemulator.domain.questionnaire.Questionnaire;
 import org.examemulator.domain.questionnaire.question.Question;
 import org.examemulator.gui.exam.ExamController;
@@ -69,6 +71,8 @@ public class QuestionnaireController {
     private final MainController mainController;
     
     private final ExamService examService;
+    
+    private final QuestionnaireService questionnaireService;
 
     private final Logger logger;
 
@@ -84,12 +88,14 @@ public class QuestionnaireController {
 		    final ExamController examController,
 		    final MainController mainController,
 		    final ExamService examService,
+		    final QuestionnaireService questionnaireService,
 		    final Logger logger) {
 	super();
 	this.view = gui.getView();
 	this.examController = examController;
 	this.mainController = mainController;
 	this.examService = examService;
+	this.questionnaireService = questionnaireService;
 	this.logger = logger;
     }
 
@@ -177,6 +183,24 @@ public class QuestionnaireController {
 		selectedQuestion = previousQuestionOptional.get();
 	    }
 	    loadPanelQuestion();
+	});
+	
+	view.btnDelete.addActionListener(event -> {
+	    
+	    if (showConfirmDialog(view, //
+				"Are you sure you want to delete this questionnaire?", "Delete Questionnaire", //
+				YES_NO_OPTION, //
+				QUESTION_MESSAGE) == NO_OPTION) {
+		    
+		    return;
+	    }
+	    
+	    questionnaireService.delete(questionnaire);
+	    
+	    view.setVisible(false);
+	    
+	    view.btnMain.doClick();
+	    
 	});
 
 //	view.btnLoad.addActionListener(event -> {

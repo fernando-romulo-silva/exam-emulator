@@ -15,6 +15,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
+@Transactional(SUPPORTS)
 public class CertificationService {
     
     private final CertificationRepository certificationRepository;
@@ -38,7 +39,6 @@ public class CertificationService {
 	return optionalCertification.get();
     }
     
-    @Transactional(SUPPORTS)
     public Stream<Certification> findAll() {
 	return certificationRepository.findAll();
     }

@@ -1,5 +1,6 @@
 package org.examemulator.application;
 
+import static jakarta.transaction.Transactional.TxType.SUPPORTS;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.StringUtils.containsAny;
@@ -38,8 +39,10 @@ import org.examemulator.domain.questionnaire.set.QuestionnaireSet;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 @ApplicationScoped
+@Transactional(SUPPORTS)
 public class LoadFromFileService {
 
     private final CertificationService certificationService;

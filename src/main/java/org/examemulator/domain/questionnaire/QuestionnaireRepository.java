@@ -16,5 +16,4 @@ public interface QuestionnaireRepository extends CrudRepository<Questionnaire, L
     Stream<Questionnaire> findByQuestionnaireSet(final QuestionnaireSet questionnaireSet);
 
     Questionnaire update(final Questionnaire questionnaire);
-
 }

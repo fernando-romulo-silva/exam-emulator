@@ -523,7 +523,7 @@ public class MainController {
 	questions.clear();
 
 	final List<TableModelField> tableFields;
-
+	
 	final var fieldOfValue = fieldOf("value", true);
 
 	final var fieldOfQuestionOrder = fieldOf("questionOrder", LABEL_TABLE_ORDER, ORDER_TABLE_CELL_RENDERER);
@@ -535,16 +535,19 @@ public class MainController {
 	final var fieldOfPercCorrect = fieldOf("percCorrect", "% Correct", PERCENT_TABLE_CELL_RENDERER);
 	final var fieldOfPercIncorrect = fieldOf("percIncorrect", "% Incorrect", PERCENT_TABLE_CELL_RENDERER);
 
+	//final var fieldOfId = fieldOf("idQuestion");
+	
 	if (ObjectUtils.allNotNull(selectedCertification, selectedQuestionnaireSet, selectedQuestionnaire)) {
 
 	    tableFields = List.of( //
 			    fieldOfValue, //
 			    fieldOfQuestionOrder, //
-			    fieldOfQtyMarked, fieldOfQtyCorrect, //
+			    fieldOfQtyMarked, // 
+			    fieldOfQtyCorrect, //
 			    fieldOfQtyIncorrect, //
 			    fieldOfQtyTotal, //
 			    fieldOfPercCorrect, //
-			    fieldOfPercIncorrect //
+			    fieldOfPercIncorrect
 	    );
 
 	    questions.addAll(questionnaireService.findByCertificationAndQuestionnaireSetAndQuestionnaire(selectedCertification, selectedQuestionnaireSet, selectedQuestionnaire).toList());
@@ -563,7 +566,7 @@ public class MainController {
 				fieldOfQtyIncorrect, //
 				fieldOfQtyTotal, //
 				fieldOfPercCorrect, //
-				fieldOfPercIncorrect //
+				fieldOfPercIncorrect
 		);
 
 		questions.addAll(questionnaireService.findByCertificationAndQuestionnaireSet(selectedCertification, selectedQuestionnaireSet).toList());
@@ -579,7 +582,7 @@ public class MainController {
 				fieldOfQtyIncorrect, //
 				fieldOfQtyTotal, //
 				fieldOfPercCorrect, //
-				fieldOfPercIncorrect //
+				fieldOfPercIncorrect
 		);
 
 		questions.addAll(questionnaireService.findByCertification(selectedCertification).toList());

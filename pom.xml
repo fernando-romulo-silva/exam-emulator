@@ -21,8 +21,7 @@
 		<maven.jar.plugin.main.class>org.examemulator.Main</maven.jar.plugin.main.class>
 	</properties>
 
-	<!-- allset.config.extensions.version - configs for plugins like pmd,
-	spotbugs and checkstyle -->
+	<!-- allset.config.extensions.version - configs for plugins like pmd, spotbugs and checkstyle -->
 
 	<build>
 		<plugins>
@@ -207,7 +206,6 @@
 			<version>1.9.4</version>
 		</dependency>
 
-		
 		<!-- Tests -->
 		<dependency>
 		    <groupId>org.jboss.weld</groupId>

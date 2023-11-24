@@ -79,7 +79,7 @@ public abstract class GenericRepository<T, K> implements CrudRepository<T, K> {
     public Stream<T> findAllById(final Iterable<K> ids) {
 	final var entityClazz = getEntityClazz();
 
-	final var sqlString = "select o from ".concat(entityClazz.getSimpleName()).concat(" o where id in (:ids)");
+	final var sqlString = "select o from ".concat(entityClazz.getSimpleName()).concat(" o where o.id in :ids ");
 
 	final var query = entityManager.createQuery(sqlString, entityClazz).setParameter("ids", ids);
 
@@ -115,7 +115,7 @@ public abstract class GenericRepository<T, K> implements CrudRepository<T, K> {
     public void deleteAllById(final Iterable<K> ids) {
 	final var entityClazz = getEntityClazz();
 
-	final var queryString = "delete from ".concat(entityClazz.getSimpleName()).concat(" o WHERE o.ids in (:ids)");
+	final var queryString = "delete from ".concat(entityClazz.getSimpleName()).concat(" o WHERE o.ids in :ids");
 
 	final var query = entityManager.createQuery(queryString);
 	query.setParameter("ids", ids);

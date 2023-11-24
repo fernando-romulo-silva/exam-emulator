@@ -2,6 +2,7 @@ package org.examemulator.application;
 
 import static jakarta.transaction.Transactional.TxType.REQUIRED;
 import static jakarta.transaction.Transactional.TxType.SUPPORTS;
+import static java.util.Comparator.comparing;
 
 import java.util.List;
 import java.util.Objects;
@@ -104,6 +105,14 @@ public class QuestionnaireService {
 	
 	return questionUpdate;
     }
+    
+    @Transactional(REQUIRED)
+    public void delete(final Questionnaire questionnaire) {
+	
+	// TODO check if theres a questions on this questionnaire used on some exam
+	
+	questionnaireRepository.delete(questionnaire);
+    }
 
     public Stream<Questionnaire> findByQuestionnaireSet(final QuestionnaireSet questionnaireSet) {
 	return questionnaireRepository.findByQuestionnaireSet(questionnaireSet);
@@ -142,7 +151,7 @@ public class QuestionnaireService {
 	    return Stream.of();
 	}
 
-	return questionRepository.findByCertificationAndQuestionnaireSetAndQuestionnaire(certification, questionnaireSet, questionnaire);
+	return questionRepository.findByCertificationAndQuestionnaireSetAndQuestionnaire(certification, questionnaireSet, questionnaire).sorted(comparing(QuestionDTO::percCorrect));
     }
 
     public Stream<QuestionDTO> findByCertificationAndQuestionnaireSet(final Certification certification, final QuestionnaireSet questionnaireSet) {
@@ -151,7 +160,7 @@ public class QuestionnaireService {
 	    return Stream.of();
 	}
 
-	return questionRepository.findByCertificationAndQuestionnaireSet(certification, questionnaireSet);
+	return questionRepository.findByCertificationAndQuestionnaireSet(certification, questionnaireSet).sorted(comparing(QuestionDTO::percCorrect));
     }
 
     public Stream<QuestionDTO> findByCertification(final Certification certification) {
@@ -160,7 +169,7 @@ public class QuestionnaireService {
 	    return Stream.of();
 	}
 
-	return questionRepository.findByCertification(certification);
+	return questionRepository.findByCertification(certification).sorted(comparing(QuestionDTO::percCorrect));
     }
 
 }
