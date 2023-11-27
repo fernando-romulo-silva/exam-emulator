@@ -7,6 +7,8 @@ import org.examemulator.domain.cerfication.Certification;
 import org.examemulator.domain.questionnaire.set.QuestionnaireSet;
 import org.examemulator.domain.questionnaire.set.QuestionnaireSetRespository;
 
+import jakarta.data.repository.Page;
+import jakarta.data.repository.Pageable;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.NoResultException;
 
@@ -79,4 +81,9 @@ public class QuestionnaireSetRespositoryImp extends GenericRepository<Questionna
     public QuestionnaireSet update(QuestionnaireSet entity) {
 	return super.update(entity);
     } 
+    
+    @Override
+    public Page<QuestionnaireSet> findAll(Pageable pageable) {
+	return null;
+    }
 }

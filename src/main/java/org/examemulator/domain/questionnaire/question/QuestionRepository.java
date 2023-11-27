@@ -7,11 +7,11 @@ import org.examemulator.domain.questionnaire.Questionnaire;
 import org.examemulator.domain.questionnaire.set.QuestionnaireSet;
 import org.examemulator.infra.dto.QuestionDTO;
 
-import jakarta.data.repository.CrudRepository;
+import jakarta.data.repository.PageableRepository;
 import jakarta.data.repository.Repository;
 
 @Repository
-public interface QuestionRepository extends CrudRepository<Question, String> {
+public interface QuestionRepository extends PageableRepository<Question, String> {
 
     Stream<QuestionDTO> findByCertificationAndQuestionnaireSetAndQuestionnaire(final Certification certification, final QuestionnaireSet questionnaireSet, final Questionnaire questionnaire);
 

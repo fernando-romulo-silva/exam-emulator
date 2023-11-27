@@ -5,11 +5,11 @@ import java.util.stream.Stream;
 
 import org.examemulator.domain.cerfication.Certification;
 
-import jakarta.data.repository.CrudRepository;
+import jakarta.data.repository.PageableRepository;
 import jakarta.data.repository.Repository;
 
 @Repository
-public interface QuestionnaireSetRespository extends CrudRepository<QuestionnaireSet, Long> {
+public interface QuestionnaireSetRespository extends PageableRepository<QuestionnaireSet, Long> {
 
     Optional<QuestionnaireSet> findByNameAndCertification(final String name, final Certification certification);
 

@@ -6,6 +6,8 @@ import org.examemulator.domain.cerfication.Certification;
 import org.examemulator.domain.questionnaire.question.QuestionConcept;
 import org.examemulator.domain.questionnaire.question.QuestionConceptRepository;
 
+import jakarta.data.repository.Page;
+import jakarta.data.repository.Pageable;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.NoResultException;
 
@@ -33,5 +35,10 @@ public class QuestionConceptRepositoryImp extends GenericRepository<QuestionConc
 	} catch (final NoResultException ex) {
 	    return Optional.empty();
 	}
+    }
+    
+    @Override
+    public Page<QuestionConcept> findAll(Pageable pageable) {
+	return null;
     }
 }
