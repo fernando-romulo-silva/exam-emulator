@@ -2,6 +2,7 @@ package org.examemulator.application;
 
 import static jakarta.transaction.Transactional.TxType.REQUIRED;
 import static jakarta.transaction.Transactional.TxType.SUPPORTS;
+import static java.util.Comparator.comparing;
 import static org.apache.commons.lang3.StringUtils.SPACE;
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 import static org.apache.commons.lang3.StringUtils.leftPad;
@@ -83,7 +84,9 @@ public class ExamService {
     }
     
     public Stream<Exam> findExamBy(final Certification selectedCertification, final QuestionnaireSet questionnaireSet, final Questionnaire questionnaire) {
-	return examRepository.findExamBy(selectedCertification, questionnaireSet, questionnaire);
+	return examRepository.findExamBy(selectedCertification, questionnaireSet, questionnaire)
+			.sorted(comparing(Exam::getStart)
+			.reversed());
     }
 
     public String getExamNameBy(final Questionnaire questionnaire) {

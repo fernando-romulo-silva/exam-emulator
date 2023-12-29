@@ -510,10 +510,9 @@ public class MainController {
 			fieldOf("finish", DATE_TIME_TABLE_CELL_RENDERER), // 
 			fieldOf("status", ENUM_TABLE_CELL_RENDERER), //
 			fieldOf("type", ENUM_TABLE_CELL_RENDERER), //
-			fieldOf("shuffleQuestions", "Shuffled"), //
-			fieldOf("result", ENUM_TABLE_CELL_RENDERER)//
+			fieldOf("result", ENUM_TABLE_CELL_RENDERER)
 	);
-
+	
 	alignTableModel(view.examTable, Exam.class, exams, tableFields);
 	view.examTable.getSelectionModel().setSelectionMode(SINGLE_SELECTION);
     }
@@ -528,10 +527,11 @@ public class MainController {
 
 	final var fieldOfQuestionOrder = fieldOf("questionOrder", LABEL_TABLE_ORDER, ORDER_TABLE_CELL_RENDERER);
 	final var fieldOfQtyCorrect = fieldOf("qtyCorrect", "Correct", NUMBER_TABLE_CELL_RENDERER);
+	
+	final var fieldOfQtyTotal = fieldOf("qtyTotal", "Attempts", NUMBER_TABLE_CELL_RENDERER);
 	final var fieldOfQtyIncorrect = fieldOf("qtyIncorrect", "Incorrect", NUMBER_TABLE_CELL_RENDERER);
 	final var fieldOfQtyMarked = fieldOf("qtyMarked", "Marked", NUMBER_TABLE_CELL_RENDERER);
 
-	final var fieldOfQtyTotal = fieldOf("qtyTotal", "Attempts", NUMBER_TABLE_CELL_RENDERER);
 	final var fieldOfPercCorrect = fieldOf("percCorrect", "% Correct", PERCENT_TABLE_CELL_RENDERER);
 	final var fieldOfPercIncorrect = fieldOf("percIncorrect", "% Incorrect", PERCENT_TABLE_CELL_RENDERER);
 
@@ -543,9 +543,9 @@ public class MainController {
 			    fieldOfValue, //
 			    fieldOfQuestionOrder, //
 			    fieldOfQtyMarked, // 
+			    fieldOfQtyTotal, //
 			    fieldOfQtyCorrect, //
 			    fieldOfQtyIncorrect, //
-			    fieldOfQtyTotal, //
 			    fieldOfPercCorrect, //
 			    fieldOfPercIncorrect
 	    );
@@ -562,9 +562,10 @@ public class MainController {
 				fieldOfQuestionnaireName, //
 				fieldOfValue, //
 				fieldOfQuestionOrder, //
-				fieldOfQtyMarked, fieldOfQtyCorrect, //
-				fieldOfQtyIncorrect, //
+				fieldOfQtyMarked, // 
 				fieldOfQtyTotal, //
+				fieldOfQtyCorrect, //
+				fieldOfQtyIncorrect, //
 				fieldOfPercCorrect, //
 				fieldOfPercIncorrect
 		);
@@ -578,9 +579,9 @@ public class MainController {
 				fieldOfValue, //
 				fieldOfQuestionOrder, //
 				fieldOfQtyMarked, //
+				fieldOfQtyTotal, //
 				fieldOfQtyCorrect, //
 				fieldOfQtyIncorrect, //
-				fieldOfQtyTotal, //
 				fieldOfPercCorrect, //
 				fieldOfPercIncorrect
 		);
@@ -642,7 +643,6 @@ public class MainController {
 	);
 	
 	view.lblStatistic.setText(msg);
-	
     }
 
     public void loadCertificationFromFolder(final String certificationDir) {

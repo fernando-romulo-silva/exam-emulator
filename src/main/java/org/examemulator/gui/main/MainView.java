@@ -5,9 +5,13 @@ import static javax.swing.SwingConstants.TOP;
 import static org.examemulator.infra.util.gui.GuiUtil.APP_NAME;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -18,6 +22,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
 import org.apache.commons.lang3.StringUtils;
@@ -37,11 +42,20 @@ class MainView extends JFrame {
 	private ExtendedJTable(final TableModel dm) {
 	    super(dm);
 	    setAutoCreateRowSorter(true);
+	    setShowGrid(false);
 	}
 
 	@Override
 	public boolean editCellAt(int row, int column, java.util.EventObject e) {
 	    return false;
+	}
+
+	@Override
+	public Component prepareRenderer(final TableCellRenderer renderer, int row, int column) {
+	    final var jc = (JComponent) super.prepareRenderer(renderer, row, column);
+//	    final var border = BorderFactory.createLineBorder(Color.BLACK, 1, true);
+//	    jc.setBorder(border);
+	    return jc;
 	}
     }
 
@@ -68,7 +82,7 @@ class MainView extends JFrame {
     JMenuItem menuItemLoadCertification, menuItemStatiticsCertification;
 
     JTree trData;
-    
+
     MainView() {
 	setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 	setBounds(100, 100, 900, 1000);
@@ -92,22 +106,22 @@ class MainView extends JFrame {
 	popupMenuCertification.add(menuItemStatiticsCertification);
 
 	pFirstData = new JPanel();
-	
+
 	pStatistic = new JPanel();
 	pStatistic.setLayout(new BorderLayout(0, 0));
 	pMain.add(pStatistic, BorderLayout.EAST);
 	pStatistic.setSize(new Dimension(180, 80));
-	
+
 	pStatisticLabel = new JPanel();
 	pStatistic.add(pStatisticLabel, BorderLayout.NORTH);
-	
+
 	lblCertificationStatistics = new JLabel(StringUtils.rightPad("Statistics", 100));
 	pStatisticLabel.add(lblCertificationStatistics);
-	
+
 	pStatisticData = new JPanel(new FlowLayout(LEFT, 5, 5));
 	lblStatistic = new JLabel("New label");
-	pStatisticData.add(lblStatistic);	
-	
+	pStatisticData.add(lblStatistic);
+
 	pStatistic.add(pStatisticData, BorderLayout.CENTER);
 
 	pCertifications = new JPanel();
@@ -136,10 +150,10 @@ class MainView extends JFrame {
 	examTable = new ExtendedJTable(new DefaultTableModel(rowDataExam, columnNamesExam));
 	examTable.setCellSelectionEnabled(false);
 	examTable.setRowSelectionAllowed(true);
-	
+
 	spExams = new JScrollPane(examTable);
 	tabbedPane.addTab("Exams", null, spExams, null);
-	
+
 	Object[] columnNamesQuestion = { "id", "value", "Correct Answers" };
 	Object[][] rowDataQuestion = { { "1", "What your name?", "04" }, };
 
@@ -148,7 +162,7 @@ class MainView extends JFrame {
 	questionsTable.setRowSelectionAllowed(true);
 
 	spQuestions = new JScrollPane(questionsTable);
-	tabbedPane.addTab("Questions", null, spQuestions, null);	
+	tabbedPane.addTab("Questions", null, spQuestions, null);
 
     }
 }
