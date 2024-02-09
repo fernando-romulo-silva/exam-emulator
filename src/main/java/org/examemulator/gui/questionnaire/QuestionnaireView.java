@@ -37,7 +37,7 @@ class QuestionnaireView extends JFrame {
 
     JPanel questionInternPanel, examPanel, pQuestions, contentPane;
 
-    JButton btnNewExam, btnPrevious, btnNext, btnMain, btnDelete;
+    JButton btnNewExam, btnPrevious, btnNext, btnMain, btnDelete, btnMark, btnStatus;
 
     JLabel lblOrder, lblCertification;
 
@@ -176,6 +176,15 @@ class QuestionnaireView extends JFrame {
 	btnNext.setEnabled(false);
 	btnNext.setMnemonic(KeyEvent.VK_EQUALS);
 	quesitonControlPanel.add(btnNext);
+	
+	btnMark = new JButton("Mark");
+	btnMark.setEnabled(false);
+//	btnMark.setMnemonic(KeyEvent.VK_K);
+	quesitonControlPanel.add(btnMark);
+	
+	btnStatus = new JButton("Inactive");
+	btnStatus.setEnabled(false);
+	quesitonControlPanel.add(btnStatus);
 
 	// -------------------------------------------------------------------------------------------
 	// Question Panel

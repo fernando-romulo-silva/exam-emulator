@@ -20,6 +20,7 @@ import static org.apache.commons.lang3.math.NumberUtils.toInt;
 import static org.apache.commons.lang3.math.NumberUtils.toLong;
 import static org.examemulator.domain.exam.ExamStatus.FINISHED;
 import static org.examemulator.domain.exam.ExamStatus.INITIAL;
+import static org.examemulator.domain.exam.ExamStatus.PAUSED;
 import static org.examemulator.domain.exam.ExamStatus.RUNNING;
 import static org.examemulator.infra.util.DomainUtil.QUESTION_MIN_ATTEMPT;
 import static org.examemulator.infra.util.TableModelField.fieldOf;
@@ -277,7 +278,7 @@ public class MainController {
 			if (nonNull(selectedExam) && FINISHED.equals(selectedExam.getStatus())) {
 			    view.setVisible(false);
 			    statiticsController.show(selectedExam, view);
-			} else if (nonNull(selectedExam) && (Objects.equals(RUNNING, selectedExam.getStatus()) || Objects.equals(INITIAL, selectedExam.getStatus()))) {
+			} else if (nonNull(selectedExam) && (Objects.equals(RUNNING, selectedExam.getStatus()) || Objects.equals(INITIAL, selectedExam.getStatus())) || Objects.equals(PAUSED, selectedExam.getStatus())) {
 			    view.setVisible(false);
 			    examController.show(selectedExam, view);
 			}
@@ -290,6 +291,7 @@ public class MainController {
 
 	    @Override
 	    public void mousePressed(final MouseEvent event) {
+		
 		final var table = (JTable) event.getSource();
 		final var tableModel = (AbstractTableModel) table.getModel();
 
@@ -648,7 +650,6 @@ public class MainController {
     public void loadCertificationFromFolder(final String certificationDir) {
 
 	final var certificationPath = Paths.get(certificationDir);
-
 	if (Files.notExists(certificationPath)) {
 	    throw new IllegalArgumentException(MessageFormat.format("Certification folder ''{0}'' does not exist", certificationPath));
 	}

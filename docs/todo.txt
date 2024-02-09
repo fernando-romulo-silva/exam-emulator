@@ -1,13 +1,15 @@
 ---------------------------------------------------------
 * Enable/disable questions, disabled questions are allways computed as correct on exams (Question that you gave up).
 
+* Automatic flux, after answered a question, go to the next. 
+
 * Validade the status of the exam (check if each quesiton is answered correctly and compute the right score after disable and disable questions.
 
 * Validade folders names (like a questionnaire set with two sets with same id, '02 - Questionnaire B' and '02 - Questionnaire C'
 
 * Validade the files (file normalizer)
 
-* Remove the excess of space
+* Remove the file excess of space or tab
 
 * Fix the size, text are hidden when first load
 
