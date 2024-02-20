@@ -50,7 +50,7 @@ public final class HsqldbServer {
 	SERVER.setSilent(true);
 	SERVER.setTrace(false);
 
-	final var dataBasesFolder = "database";
+	final var dataBasesFolder = "/home/fernando/Development/workspaces/eclipse-workspace/certifications-technologies/examulator-database/database";
 
 	SERVER.setPort(HSQLDB_PORT);
 	SERVER.setDatabaseName(0, DATABASE_NAME);
