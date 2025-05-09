@@ -3,7 +3,6 @@ package org.examemulator;
 import static java.lang.Runtime.getRuntime;
 
 import org.examemulator.application.ExamService;
-import org.examemulator.domain.cerfication.Certification;
 import org.examemulator.gui.main.MainController;
 import org.examemulator.infra.database.HsqldbServer;
 import org.examemulator.infra.datasource.JndiHelper;
