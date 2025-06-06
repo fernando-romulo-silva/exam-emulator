@@ -11,31 +11,32 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.NoResultException;
 
 @ApplicationScoped
-public class CertificationRepositoryImp extends GenericRepository<Certification, Long> implements CertificationRepository {
+public class CertificationRepositoryImp extends GenericRepository<Certification, Long>
+		implements CertificationRepository {
 
-    @Override
-    public Optional<Certification> findByName(final String name) {
+	@Override
+	public Optional<Certification> findByName(final String name) {
 
-	final var qlString = """
-				select c 
-				  from Certification c 
+		final var qlString = """
+				select c
+				  from Certification c
 				 where c.name = :name
 					""";
-	
-	final var query = entityManager.createQuery(qlString, Certification.class);
-	query.setParameter("name", name);
 
-	try {
-	    
-	    return Optional.of(query.getSingleResult());
+		final var query = entityManager.createQuery(qlString, Certification.class);
+		query.setParameter("name", name);
 
-	} catch (final NoResultException ex) {
-	    return Optional.empty();
+		try {
+
+			return Optional.of(query.getSingleResult());
+
+		} catch (final NoResultException ex) {
+			return Optional.empty();
+		}
 	}
-    }
 
-    @Override
-    public Page<Certification> findAll(Pageable pageable) {
-	return null;
-    }
+	@Override
+	public Page<Certification> findAll(Pageable pageable) {
+		return null;
+	}
 }

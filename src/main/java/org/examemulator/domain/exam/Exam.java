@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 import java.util.function.Consumer;
 
@@ -45,425 +46,425 @@ import jakarta.persistence.Table;
 @Table(name = "EXAM")
 public class Exam {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "ID", nullable = false)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "ID", nullable = false)
+	private Long id;
 
-    @Column(name = "NAME")
-    private String name;
+	@Column(name = "NAME")
+	private String name;
 
-    @Column(name = "MIN_SCORE_PERCENT", precision = 19, scale = 2)
-    private BigDecimal minScorePercent;
-    
-    @Column(name = "CERTIFICATION_MIN_SCORE_PERCENT", precision = 19, scale = 2)
-    private BigDecimal certMinScorePercent;
+	@Column(name = "MIN_SCORE_PERCENT", precision = 19, scale = 2)
+	private BigDecimal minScorePercent;
 
-    @Column(name = "DISCRETE_PERCENT", precision = 19, scale = 2)
-    private BigDecimal discretPercent;
+	@Column(name = "CERTIFICATION_MIN_SCORE_PERCENT", precision = 19, scale = 2)
+	private BigDecimal certMinScorePercent;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "TYPE")
-    private ExamType type;
+	@Column(name = "DISCRETE_PERCENT", precision = 19, scale = 2)
+	private BigDecimal discretPercent;
 
-    @Column(name = "SHUFFLE_QUESTIONS")
-    private Boolean shuffleQuestions = FALSE;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "TYPE")
+	private ExamType type;
 
-    @JoinColumn(name = "EXAM_ID")
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<ExamQuestion> questions = new ArrayList<>();
+	@Column(name = "SHUFFLE_QUESTIONS")
+	private Boolean shuffleQuestions = FALSE;
 
-    @Column(name = "TIME_SPENT_MINUTES")
-    private Integer timeSpentMinutes;
+	@JoinColumn(name = "EXAM_ID")
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+	private final List<ExamQuestion> questions = new ArrayList<>();
 
-    @Column(name = "START")
-    private LocalDateTime start;
+	@Column(name = "TIME_SPENT_MINUTES")
+	private Integer timeSpentMinutes;
 
-    @Column(name = "FINISH")
-    private LocalDateTime finish;
+	@Column(name = "START")
+	private LocalDateTime start;
 
-    @Column(name = "STATUS")
-    @Enumerated(EnumType.STRING)
-    private ExamStatus status = ExamStatus.INITIAL;
+	@Column(name = "FINISH")
+	private LocalDateTime finish;
 
-    @Column(name = "RESULT")
-    @Enumerated(EnumType.STRING)
-    private ExamResult result = ExamResult.UNDEFINED;
+	@Column(name = "STATUS")
+	@Enumerated(EnumType.STRING)
+	private ExamStatus status = ExamStatus.INITIAL;
 
-    // -----------------------------------------------------------------
-    Exam() {
-	super();
-    }
+	@Column(name = "RESULT")
+	@Enumerated(EnumType.STRING)
+	private ExamResult result = ExamResult.UNDEFINED;
 
-    private Exam(final Builder builder) {
-	super();
-	this.name = builder.name;
-	this.type = ofNullable(builder.type).orElse(ExamType.PRACTICE);
-	this.minScorePercent = builder.minScorePercent;
-	this.certMinScorePercent = builder.certMinScorePercent;
-	this.discretPercent = builder.discretPercent;
-	this.shuffleQuestions = builder.shuffleQuestions;
-	this.questions.addAll(builder.questionsIntern);
-    }
-
-    // -----------------------------------------------------------------
-    public void begin() {
-
-	if (status != ExamStatus.INITIAL) {
-	    throw new IllegalStateException("You can begin a exam only on Initial status!");
+	// -----------------------------------------------------------------
+	Exam() {
+		super();
 	}
 
-	if (questions.isEmpty()) {
-	    throw new IllegalStateException("You can't begin a exam withou questions!");
+	private Exam(final Builder builder) {
+		super();
+		this.name = builder.name;
+		this.type = ofNullable(builder.type).orElse(ExamType.PRACTICE);
+		this.minScorePercent = builder.minScorePercent;
+		this.certMinScorePercent = builder.certMinScorePercent;
+		this.discretPercent = builder.discretPercent;
+		this.shuffleQuestions = builder.shuffleQuestions;
+		this.questions.addAll(builder.questionsIntern);
 	}
 
-	start = LocalDateTime.now();
-	status = ExamStatus.RUNNING;
-    }
+	// -----------------------------------------------------------------
+	public void begin() {
 
-    public void finish() {
+		if (status != ExamStatus.INITIAL) {
+			throw new IllegalStateException("You can begin a exam only on Initial status!");
+		}
 
-	if (status != ExamStatus.RUNNING) {
-	    throw new IllegalStateException("You can finish a exam only on Running status!");
+		if (questions.isEmpty()) {
+			throw new IllegalStateException("You can't begin a exam withou questions!");
+		}
+
+		start = LocalDateTime.now();
+		status = ExamStatus.RUNNING;
 	}
 
-	finish = LocalDateTime.now();
-	status = ExamStatus.FINISHED;
+	public void finish() {
 
-	defineResult();
+		if (status != ExamStatus.RUNNING) {
+			throw new IllegalStateException("You can finish a exam only on Running status!");
+		}
 
-	questions.forEach(ExamQuestion::finalizeExamQuestion);
-    }
+		finish = LocalDateTime.now();
+		status = ExamStatus.FINISHED;
 
-    public void recalculate() {
-	if (status != ExamStatus.FINISHED) {
-	    throw new IllegalStateException("You can recalculate a exam only on Finished status!");
-	}
-	
-	defineResult();
-	
-	questions.forEach(ExamQuestion::updateResult);
-    }
-    
-    private void defineResult() {
-	final var qtyTotal = questions.size();
+		defineResult();
 
-	final var qtyCorrect = getQtyCorrect();
-	
-	final var minScoreValue = minScorePercent
-			.divide(VALUE_100, MATH_CONTEXT)
-			.multiply(new BigDecimal(qtyTotal), MATH_CONTEXT);
-	
-	final var certMinScoreValue = certMinScorePercent
-			.divide(VALUE_100, MATH_CONTEXT)
-			.multiply(new BigDecimal(qtyTotal), MATH_CONTEXT);
-	
-	final var resultBigDecimal = BigDecimal.valueOf(qtyCorrect);
-	
-	if (resultBigDecimal.compareTo(minScoreValue) >= 0) {
-	    result = PASSED;
-	} else if (resultBigDecimal.compareTo(certMinScoreValue) >= 0) {
-	    result = ALMOST;
-	} else {
-	    result = FAILED;
-	}
-    }
-
-    public void pause() {
-
-	if (status != ExamStatus.RUNNING) {
-	    throw new IllegalStateException("You can pause a exam only on Running status!");
+		questions.forEach(ExamQuestion::finalizeExamQuestion);
 	}
 
-	status = ExamStatus.PAUSED;
-    }
+	public void recalculate() {
+		if (status != ExamStatus.FINISHED) {
+			throw new IllegalStateException("You can recalculate a exam only on Finished status!");
+		}
 
-    public void proceed() {
+		defineResult();
 
-	if (status != ExamStatus.PAUSED) {
-	    throw new IllegalStateException("You can proceed a exam only on Paused status!");
+		questions.forEach(ExamQuestion::updateResult);
 	}
 
-	status = ExamStatus.RUNNING;
-    }
+	private void defineResult() {
+		final var qtyTotal = questions.size();
 
-    public boolean allQuestionsAnswered() {
-	return questions.stream() //
-			.filter(q -> !q.isAnswered()) //
-			.findFirst() //
-			.isEmpty();
-    }
+		final var qtyCorrect = getQtyCorrect();
 
-    public List<String> questionsAnswered() {
-	return questions.stream() //
-			.filter(q -> q.isAnswered()) //
-			.map(q -> q.getOrder().toString()) //
-			.toList();
-    }
+		final var minScoreValue = minScorePercent
+				.divide(VALUE_100, MATH_CONTEXT)
+				.multiply(new BigDecimal(qtyTotal), MATH_CONTEXT);
 
-    public List<String> questionsNoAnswered() {
-	return questions.stream() //
-			.filter(q -> !q.isAnswered()) //
-			.map(q -> q.getOrder().toString()) //
-			.toList();
-    }
+		final var certMinScoreValue = certMinScorePercent
+				.divide(VALUE_100, MATH_CONTEXT)
+				.multiply(new BigDecimal(qtyTotal), MATH_CONTEXT);
 
-    // -----------------------------------------------------------------------------------------------------------------
+		final var resultBigDecimal = BigDecimal.valueOf(qtyCorrect);
 
-    public Long getId() {
-	return id;
-    }
-
-    public String getName() {
-	return name;
-    }
-
-    public BigDecimal getDiscretPercent() {
-	return discretPercent;
-    }
-
-    public ExamType getType() {
-	return type;
-    }
-
-    public ExamResult getResult() {
-	return result;
-    }
-
-    public Long getQtyQuestion() {
-	return questions.stream().count();
-    }
-    
-    public Long getQtyCorrect() {
-	return questions.stream()
-			.filter(q -> q.isCorrect())
-			.count();
-    }
-
-    public Long getQtyIncorrect() {
-	return questions.stream()
-			.filter(q -> !q.isCorrect())
-			.count();
-    }
-    
-    public BigDecimal getMinScore() {
-	
-	if (status != FINISHED) {
-	    return BigDecimal.ZERO;
-	}
-	
-	final var qtyTotal = getQtyQuestion();
-	
-	return minScorePercent
-			.divide(VALUE_100, MATH_CONTEXT)
-			.multiply(new BigDecimal(qtyTotal), MATH_CONTEXT);
-    }
-
-    public BigDecimal getCertMinScore() {
-	
-	if (status != FINISHED) {
-	    return BigDecimal.ZERO;
-	}
-	
-	final var qtyTotal = getQtyQuestion();
-	
-	return certMinScorePercent
-			.divide(VALUE_100, MATH_CONTEXT)
-			.multiply(new BigDecimal(qtyTotal), MATH_CONTEXT);	
-    }
-
-    public BigDecimal getPercCorret() {
-	
-	if (status != FINISHED) {
-	    return BigDecimal.ZERO;
-	}
-	
-	final var qtyTotal = getQtyQuestion();
-	final var qtyCorrect = getQtyCorrect();
-	
-	return new BigDecimal(qtyCorrect) //
-			.divide(valueOf(qtyTotal), MATH_CONTEXT) //
-			.multiply(VALUE_100);
-    }
-			
-    public BigDecimal getPercIncorrect() {
-	
-	if (status != FINISHED) {
-	    return BigDecimal.ZERO;
-	}
-	
-	final var qtyTotal = getQtyQuestion();
-	final var qtyIncorrect = getQtyIncorrect();
-
-	return new BigDecimal(qtyIncorrect) //
-			.divide(valueOf(qtyTotal), MATH_CONTEXT) //
-			.multiply(VALUE_100);
-    }
-    
-    public List<ExamQuestion> getQuestions() {
-	return unmodifiableList(
-			questions.stream()
-				.sorted((q1, q2) -> q1.getOrder().compareTo(q2.getOrder()))
-				.toList()
-	);
-    }
-
-    public Long getDuration() {
-
-	if (status != ExamStatus.FINISHED) {
-	    return 0L;
+		if (resultBigDecimal.compareTo(minScoreValue) >= 0) {
+			result = PASSED;
+		} else if (resultBigDecimal.compareTo(certMinScoreValue) >= 0) {
+			result = ALMOST;
+		} else {
+			result = FAILED;
+		}
 	}
 
-	return start.until(finish, MINUTES);
-    }
-    
-    public LocalDateTime getStart() {
-	return start;
-    }    
+	public void pause() {
 
-    public LocalDateTime getFinish() {
-	return finish;
-    }
+		if (status != ExamStatus.RUNNING) {
+			throw new IllegalStateException("You can pause a exam only on Running status!");
+		}
 
-    public BigDecimal getMinScorePercent() {
-	return minScorePercent;
-    }
-    
-    public BigDecimal getCertMinScorePercent() {
-        return certMinScorePercent;
-    }
-
-    public ExamStatus getStatus() {
-	return status;
-    }
-    
-    public boolean isFinished() {
-	return Objects.equals(status, FINISHED);
-    }
-    
-    public boolean isPassed() {
-	return Objects.equals(result, PASSED);
-    }
-    
-    public boolean isFailed() {
-	return Objects.equals(result, FAILED);
-    }
-    
-    public boolean isAlmost() {
-	return Objects.equals(result, ALMOST);
-    }    
-    
-    public boolean isUndefined() {
-	return Objects.equals(result, UNDEFINED);
-    }       
-    
-    public boolean isShuffleQuestions() {
-	return shuffleQuestions;
-    }
-
-    // -----------------------------------------------------------------------
-    @Override
-    public int hashCode() {
-	return Objects.hash(id);
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-
-	if (this == obj) {
-	    return true;
-	} else if (obj instanceof final Exam other) {
-	    return Objects.equals(id, other.id);
-	} else {
-	    return false;
-	}
-    }
-
-    @Override
-    public String toString() {
-	return new ToStringBuilder(this)
-			.append("id", id)
-			.append("name", name)
-			.append("type", type)
-			.toString();
-    }
-
-    // -----------------------------------------------------------------------------------------------------------------
-
-    public static final class Builder {
-
-	public String name;
-
-	public BigDecimal minScorePercent, discretPercent, certMinScorePercent;
-
-	public ExamType type;
-
-	public boolean shuffleQuestions, shuffleOptions = false;
-
-	public List<? extends InquiryInterface> questions;
-
-	private List<ExamQuestion> questionsIntern = new ArrayList<>();
-
-	public Builder with(final Consumer<Builder> function) {
-	    function.accept(this);
-	    return this;
+		status = ExamStatus.PAUSED;
 	}
 
-	public Exam build() {
-	    minScorePercent = ofNullable(minScorePercent).orElse(BigDecimal.valueOf(70));
-	    certMinScorePercent = ofNullable(certMinScorePercent).orElse(BigDecimal.valueOf(70));
-	    discretPercent = ofNullable(discretPercent).orElse(BigDecimal.ZERO);
+	public void proceed() {
 
-	    if (shuffleQuestions) {
-		// RandomGenerator 
-		Collections.shuffle(questions, new Random(questions.size()));
-	    }
+		if (status != ExamStatus.PAUSED) {
+			throw new IllegalStateException("You can proceed a exam only on Paused status!");
+		}
 
-	    final List<? extends InquiryInterface> discretPercentList;
+		status = ExamStatus.RUNNING;
+	}
 
-	    if (discretPercent.intValue() > 0) {
-		final var discreteAvaliableList = questions.stream() //
-				.filter(question -> question.getOptionsAmount() > 2) //
+	public boolean allQuestionsAnswered() {
+		return questions.stream() //
+				.filter(q -> !q.isAnswered()) //
+				.findFirst() //
+				.isEmpty();
+	}
+
+	public List<String> questionsAnswered() {
+		return questions.stream() //
+				.filter(q -> q.isAnswered()) //
+				.map(q -> q.getOrder().toString()) //
 				.toList();
-
-		final var matchContext = new MathContext(3, HALF_UP); // 2 precision
-
-		final var perc = discretPercent.divide(BigDecimal.valueOf(100l)).round(matchContext).doubleValue();
-
-		discretPercentList = RandomUtil.getRandomSubList(discreteAvaliableList, perc);
-	    } else {
-		discretPercentList = List.of();
-	    }
-
-	    int i = 1;
-
-	    for (final var qTemp : questions) {
-
-		final var number = Integer.valueOf(i);
-
-		questionsIntern.add(new ExamQuestion.Builder() //
-				.with(qTemp) //
-				.with($ -> {
-				    $.discrete = discretPercentList.contains(qTemp);
-				    $.shuffleOptions = shuffleOptions;
-				    $.order = number;
-				}) //
-				.build());
-
-		i++;
-	    }
-
-//	    origin = findOrigin();
-//	    
-//	    name = switch (origin) {
-//
-//	    	case FROM_RETAKE -> "Retake from ";
-//	    	case FROM_PRETEST -> "Exame from pre test";
-//	    	
-//	    	default -> throw new IllegalArgumentException("Unexpected value: ".concat(origin.toString()));
-//	    };
-
-	    return new Exam(this);
 	}
-    }
+
+	public List<String> questionsNoAnswered() {
+		return questions.stream() //
+				.filter(q -> !q.isAnswered()) //
+				.map(q -> q.getOrder().toString()) //
+				.toList();
+	}
+
+	// -----------------------------------------------------------------------------------------------------------------
+
+	public Long getId() {
+		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public BigDecimal getDiscretPercent() {
+		return discretPercent;
+	}
+
+	public ExamType getType() {
+		return type;
+	}
+
+	public ExamResult getResult() {
+		return result;
+	}
+
+	public Long getQtyQuestion() {
+		return questions.stream().count();
+	}
+
+	public Long getQtyCorrect() {
+		return questions.stream()
+				.filter(q -> q.isCorrect())
+				.count();
+	}
+
+	public Long getQtyIncorrect() {
+		return questions.stream()
+				.filter(q -> !q.isCorrect())
+				.count();
+	}
+
+	public BigDecimal getMinScore() {
+
+		if (status != FINISHED) {
+			return BigDecimal.ZERO;
+		}
+
+		final var qtyTotal = getQtyQuestion();
+
+		return minScorePercent
+				.divide(VALUE_100, MATH_CONTEXT)
+				.multiply(new BigDecimal(qtyTotal), MATH_CONTEXT);
+	}
+
+	public BigDecimal getCertMinScore() {
+
+		if (status != FINISHED) {
+			return BigDecimal.ZERO;
+		}
+
+		final var qtyTotal = getQtyQuestion();
+
+		return certMinScorePercent
+				.divide(VALUE_100, MATH_CONTEXT)
+				.multiply(new BigDecimal(qtyTotal), MATH_CONTEXT);
+	}
+
+	public BigDecimal getPercCorret() {
+
+		if (status != FINISHED) {
+			return BigDecimal.ZERO;
+		}
+
+		final var qtyTotal = getQtyQuestion();
+		final var qtyCorrect = getQtyCorrect();
+
+		return new BigDecimal(qtyCorrect) //
+				.divide(valueOf(qtyTotal), MATH_CONTEXT) //
+				.multiply(VALUE_100);
+	}
+
+	public BigDecimal getPercIncorrect() {
+
+		if (status != FINISHED) {
+			return BigDecimal.ZERO;
+		}
+
+		final var qtyTotal = getQtyQuestion();
+		final var qtyIncorrect = getQtyIncorrect();
+
+		return new BigDecimal(qtyIncorrect) //
+				.divide(valueOf(qtyTotal), MATH_CONTEXT) //
+				.multiply(VALUE_100);
+	}
+
+	public List<ExamQuestion> getQuestions() {
+		return unmodifiableList(
+				questions.stream()
+						.sorted((q1, q2) -> q1.getOrder().compareTo(q2.getOrder()))
+						.toList());
+	}
+
+	public Long getDuration() {
+
+		if (status != ExamStatus.FINISHED) {
+			return 0L;
+		}
+
+		return start.until(finish, MINUTES);
+	}
+
+	public LocalDateTime getStart() {
+		return Optional.ofNullable(start).orElse(LocalDateTime.now());
+	}
+
+	public LocalDateTime getFinish() {
+		return finish;
+	}
+
+	public BigDecimal getMinScorePercent() {
+		return minScorePercent;
+	}
+
+	public BigDecimal getCertMinScorePercent() {
+		return certMinScorePercent;
+	}
+
+	public ExamStatus getStatus() {
+		return status;
+	}
+
+	public boolean isFinished() {
+		return Objects.equals(status, FINISHED);
+	}
+
+	public boolean isPassed() {
+		return Objects.equals(result, PASSED);
+	}
+
+	public boolean isFailed() {
+		return Objects.equals(result, FAILED);
+	}
+
+	public boolean isAlmost() {
+		return Objects.equals(result, ALMOST);
+	}
+
+	public boolean isUndefined() {
+		return Objects.equals(result, UNDEFINED);
+	}
+
+	public boolean isShuffleQuestions() {
+		return shuffleQuestions;
+	}
+
+	// -----------------------------------------------------------------------
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+
+		if (this == obj) {
+			return true;
+		} else if (obj instanceof final Exam other) {
+			return Objects.equals(id, other.id);
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this)
+				.append("id", id)
+				.append("name", name)
+				.append("type", type)
+				.toString();
+	}
+
+	// -----------------------------------------------------------------------------------------------------------------
+
+	public static final class Builder {
+
+		public String name;
+
+		public BigDecimal minScorePercent, discretPercent, certMinScorePercent;
+
+		public ExamType type;
+
+		public boolean shuffleQuestions, shuffleOptions = false;
+
+		public List<? extends InquiryInterface> questions;
+
+		private List<ExamQuestion> questionsIntern = new ArrayList<>();
+
+		public Builder with(final Consumer<Builder> function) {
+			function.accept(this);
+			return this;
+		}
+
+		public Exam build() {
+			minScorePercent = ofNullable(minScorePercent).orElse(BigDecimal.valueOf(70));
+			certMinScorePercent = ofNullable(certMinScorePercent).orElse(BigDecimal.valueOf(70));
+			discretPercent = ofNullable(discretPercent).orElse(BigDecimal.ZERO);
+
+			if (shuffleQuestions) {
+				// RandomGenerator
+				Collections.shuffle(questions, new Random(questions.size()));
+			}
+
+			final List<? extends InquiryInterface> discretPercentList;
+
+			if (discretPercent.intValue() > 0) {
+				final var discreteAvaliableList = questions.stream() //
+						.filter(question -> question.getOptionsAmount() > 2) //
+						.toList();
+
+				final var matchContext = new MathContext(3, HALF_UP); // 2 precision
+
+				final var perc = discretPercent.divide(BigDecimal.valueOf(100l)).round(matchContext).doubleValue();
+
+				discretPercentList = RandomUtil.getRandomSubList(discreteAvaliableList, perc);
+			} else {
+				discretPercentList = List.of();
+			}
+
+			int i = 1;
+
+			for (final var qTemp : questions) {
+
+				final var number = Integer.valueOf(i);
+
+				questionsIntern.add(new ExamQuestion.Builder() //
+						.with(qTemp) //
+						.with($ -> {
+							$.discrete = discretPercentList.contains(qTemp);
+							$.shuffleOptions = shuffleOptions;
+							$.order = number;
+						}) //
+						.build());
+
+				i++;
+			}
+
+			// origin = findOrigin();
+			//
+			// name = switch (origin) {
+			//
+			// case FROM_RETAKE -> "Retake from ";
+			// case FROM_PRETEST -> "Exame from pre test";
+			//
+			// default -> throw new IllegalArgumentException("Unexpected value:
+			// ".concat(origin.toString()));
+			// };
+
+			return new Exam(this);
+		}
+	}
 }

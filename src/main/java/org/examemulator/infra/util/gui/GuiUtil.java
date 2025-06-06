@@ -48,367 +48,376 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.html.HTMLEditorKit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.examemulator.domain.exam.ExamQuestion;
 import org.examemulator.gui.components.MultiLineLabelUI;
 import org.examemulator.gui.components.WrapLayout;
 
 public class GuiUtil {
 
-    private static final int SIXTY_VALUE = 60;
+	private static final int SIXTY_VALUE = 60;
 
-    public static final Font DEFAULT_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
+	public static final Font DEFAULT_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
 
-    public static final int MILLISECOND = 1000;
+	public static final int MILLISECOND = 1000;
 
-    public static final String TAG_BR = "<br />";
+	public static final String TAG_BR = "<br />";
 
-    public static final String TAG_BR_BR = "<br /> <br />";
+	public static final String TAG_BR_BR = "<br /> <br />";
 
-    public static final String TAG_OPEN_B = "<b>";
+	public static final String TAG_OPEN_B = "<b>";
 
-    public static final String TAG_CLOSE_B = "</b>";
+	public static final String TAG_CLOSE_B = "</b>";
 
-    public static final String TAG_OPEN_HTML = "<html>";
+	public static final String TAG_OPEN_HTML = "<html>";
 
-    public static final String APP_NAME = "ExamEmulator";
+	public static final String APP_NAME = "ExamEmulator";
 
-    public static final String TAG_CLOSE_HTML = "</html>";
+	public static final String TAG_CLOSE_HTML = "</html>";
 
-    private GuiUtil() {
-	throw new IllegalStateException("You can't instance this class!");
-    }
-
-    @FunctionalInterface
-    public static interface Action {
-	void execute();
-    }
-
-    private static String treatOptionText(final String id, final String text) {
-
-	// convert text to px
-	// calculate mim text size
-	if (containsAny(text, "\n")) { // large text option
-	    return TAG_OPEN_HTML + id + ")" + TAG_BR + replaceAll(text, "[\\n]", TAG_BR) + TAG_CLOSE_HTML;
+	private GuiUtil() {
+		throw new IllegalStateException("You can't instance this class!");
 	}
 
-	final var tagOpenP = (text.length() > 150) ? "<p style=\"width:640px\"> " : "<p>";
-	final var tagCloseP = "</p>";
-
-	// short text option
-	return TAG_OPEN_HTML + id + ")" + TAG_BR + tagOpenP + text + tagCloseP + TAG_CLOSE_HTML;
-    }
-
-    public static String convertTextToHtml(final String text) {
-	var textTemp = text.trim();
-
-	final var formatteds = substringsBetween(textTemp, "```", "´´´");
-	if (nonNull(formatteds)) {
-	    int i = 1;
-	    for (final var formatted : formatteds) {
-		textTemp = replace(textTemp, formatted, "$" + i);
-		i++;
-	    }
+	@FunctionalInterface
+	public static interface Action {
+		void execute();
 	}
 
-	textTemp = replace(textTemp, "```", "");
-	textTemp = replace(textTemp, "´´´", "");
-	textTemp = replace(textTemp, "&", "&amp;");
-	textTemp = replace(textTemp, "<", "&lt;");
-	textTemp = replace(textTemp, ">", "&gt;");
-	textTemp = replace(textTemp, "\n", " <br />");
+	private static String treatOptionText(final String id, final String text) {
 
-	if (nonNull(formatteds)) {
-	    int i = 1;
-	    for (final var formatted : formatteds) {
-		textTemp = replace(textTemp, "$" + i, "<pre>" + formatted + "</pre>");
-		i++;
-	    }
+		// convert text to px
+		// calculate mim text size
+		if (containsAny(text, "\n")) { // large text option
+			return TAG_OPEN_HTML + id + ")" + TAG_BR + replaceAll(text, "[\\n]", TAG_BR) + TAG_CLOSE_HTML;
+		}
+
+		final var tagOpenP = (text.length() > 150) ? "<p style=\"width:640px\"> " : "<p>";
+		final var tagCloseP = "</p>";
+
+		// short text option
+		return TAG_OPEN_HTML + id + ")" + TAG_BR + tagOpenP + text + tagCloseP + TAG_CLOSE_HTML;
 	}
 
-	return textTemp;
-    }
+	public static String convertTextToHtml(final String text) {
 
-    public static JComponent createScrollHtmlTextToShow(final String text) {
-	
-	final var textComponent = new JEditorPane();
-	textComponent.setEditable(false);
-	
-	final var kit = new HTMLEditorKit();
-	textComponent.setEditorKit(kit);
-	
-	textComponent.setDocument(kit.createDefaultDocument());
-	textComponent.setText("<html> <body style=\"font-family:" + DEFAULT_FONT.getName() + " \">" + text + " </body> </html>");
-	textComponent.setMinimumSize(new Dimension(100, 100));
-	textComponent.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
-	textComponent.setFont(DEFAULT_FONT);
-	
-	textComponent.setSelectionStart(0);
-	textComponent.setSelectionEnd(0); 
+		if (StringUtils.isBlank(text)) {
+			return StringUtils.EMPTY;
+		}
 
-	final var jScrollPane = new JScrollPane(textComponent, VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_NEVER);
-	jScrollPane.setBorder(null);
-	
-	return jScrollPane;
-    }
+		var textTemp = text.trim();
 
-    public static JComponent createScrollTextToShow(final String text) {
+		final var formatteds = substringsBetween(textTemp, "```", "´´´");
+		if (nonNull(formatteds)) {
+			int i = 1;
+			for (final var formatted : formatteds) {
+				textTemp = replace(textTemp, formatted, "$" + i);
+				i++;
+			}
+		}
 
-	var textTemp = replace(text, "```", "");
-	textTemp = replace(textTemp, "´´´", "");
+		textTemp = replace(textTemp, "```", "");
+		textTemp = replace(textTemp, "´´´", "");
+		textTemp = replace(textTemp, "&", "&amp;");
+		textTemp = replace(textTemp, "<", "&lt;");
+		textTemp = replace(textTemp, ">", "&gt;");
+		textTemp = replace(textTemp, "\n", " <br />");
 
-	final var textComponent = new JTextArea();
-	textComponent.setMargin(new Insets(2,5,2,2));
-	textComponent.setText(textTemp);
-	textComponent.setEditable(false);
-	textComponent.setLineWrap(true);
-	textComponent.setWrapStyleWord(true);
-	textComponent.setFont(DEFAULT_FONT);
-	textComponent.setCaretPosition(0);
-	textComponent.setSelectionStart(0);
-	textComponent.setSelectionEnd(0); 
-	final var compoundBorder = createCompoundBorder(textComponent.getBorder(), BorderFactory.createEmptyBorder(0, 2, 2, 2));
-	textComponent.setBorder(compoundBorder);
+		if (nonNull(formatteds)) {
+			int i = 1;
+			for (final var formatted : formatteds) {
+				textTemp = replace(textTemp, "$" + i, "<pre>" + formatted + "</pre>");
+				i++;
+			}
+		}
 
-	final var jScrollPane = new JScrollPane(textComponent, VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_NEVER);
-	jScrollPane.setBorder(null);
-	
-	textComponent.revalidate();
-	jScrollPane.revalidate();
-	
-	return jScrollPane;
-    }
+		return textTemp;
+	}
 
-    public static ActionListener createTimerAction(final Integer duration, final JLabel jlabel, final Action action) {
+	public static JComponent createScrollHtmlTextToShow(final String text) {
 
-	return new ActionListener() {
+		final var textComponent = new JEditorPane();
+		textComponent.setEditable(false);
 
-	    private long time = (long) duration * MILLISECOND * SIXTY_VALUE;
+		final var kit = new HTMLEditorKit();
+		textComponent.setEditorKit(kit);
 
-	    public void actionPerformed(final ActionEvent e) {
+		textComponent.setDocument(kit.createDefaultDocument());
+		textComponent.setText(
+				"<html> <body style=\"font-family:" + DEFAULT_FONT.getName() + " \">" + text + " </body> </html>");
+		textComponent.setMinimumSize(new Dimension(100, 100));
+		textComponent.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
+		textComponent.setFont(DEFAULT_FONT);
 
-		if (time >= 0) {
-		    final long s = ((time / MILLISECOND) % SIXTY_VALUE);
-		    final long m = (((time / MILLISECOND) / SIXTY_VALUE) % SIXTY_VALUE);
-		    final long h = ((((time / MILLISECOND) / SIXTY_VALUE) / SIXTY_VALUE) % SIXTY_VALUE);
+		textComponent.setSelectionStart(0);
+		textComponent.setSelectionEnd(0);
 
-		    final var hours = leftPad(Long.toString(h), 2, "0");
-		    final var minutes = leftPad(Long.toString(m), 2, "0");
-		    final var seconds = leftPad(Long.toString(s), 2, "0");
+		final var jScrollPane = new JScrollPane(textComponent, VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_NEVER);
+		jScrollPane.setBorder(null);
 
-		    jlabel.setText("Time: " + hours + ":" + minutes + ":" + seconds);
-		    time -= MILLISECOND;
+		return jScrollPane;
+	}
 
+	public static JComponent createScrollTextToShow(final String text) {
+
+		var textTemp = replace(text, "```", "");
+		textTemp = replace(textTemp, "´´´", "");
+
+		final var textComponent = new JTextArea();
+		textComponent.setMargin(new Insets(2, 5, 2, 2));
+		textComponent.setText(textTemp);
+		textComponent.setEditable(false);
+		textComponent.setLineWrap(true);
+		textComponent.setWrapStyleWord(true);
+		textComponent.setFont(DEFAULT_FONT);
+		textComponent.setCaretPosition(0);
+		textComponent.setSelectionStart(0);
+		textComponent.setSelectionEnd(0);
+		final var compoundBorder = createCompoundBorder(textComponent.getBorder(),
+				BorderFactory.createEmptyBorder(0, 2, 2, 2));
+		textComponent.setBorder(compoundBorder);
+
+		final var jScrollPane = new JScrollPane(textComponent, VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_NEVER);
+		jScrollPane.setBorder(null);
+
+		textComponent.revalidate();
+		jScrollPane.revalidate();
+
+		return jScrollPane;
+	}
+
+	public static ActionListener createTimerAction(final Integer duration, final JLabel jlabel, final Action action) {
+
+		return new ActionListener() {
+
+			private long time = (long) duration * MILLISECOND * SIXTY_VALUE;
+
+			public void actionPerformed(final ActionEvent e) {
+
+				if (time >= 0) {
+					final long s = ((time / MILLISECOND) % SIXTY_VALUE);
+					final long m = (((time / MILLISECOND) / SIXTY_VALUE) % SIXTY_VALUE);
+					final long h = ((((time / MILLISECOND) / SIXTY_VALUE) / SIXTY_VALUE) % SIXTY_VALUE);
+
+					final var hours = leftPad(Long.toString(h), 2, "0");
+					final var minutes = leftPad(Long.toString(m), 2, "0");
+					final var seconds = leftPad(Long.toString(s), 2, "0");
+
+					jlabel.setText("Time: " + hours + ":" + minutes + ":" + seconds);
+					time -= MILLISECOND;
+
+				} else {
+					action.execute();
+				}
+			}
+		};
+	}
+
+	public static JPanel createDiscreteOptions(final ExamQuestion question) {
+		final var optionsQuestionPanel = new JPanel();
+		optionsQuestionPanel.setLayout(new BorderLayout());
+
+		final var yesButton = new JButton("Yes");
+		yesButton.setMnemonic(KeyEvent.VK_Y);
+		final var noButton = new JButton("No");
+		noButton.setMnemonic(KeyEvent.VK_N);
+
+		final var buttonPanel = new JPanel(new WrapLayout(LEFT, 5, 5));
+		buttonPanel.add(yesButton);
+		buttonPanel.add(noButton);
+
+		final var optionsLabels = new ArrayList<String>();
+
+		final var optionPanel = new JPanel(new WrapLayout(LEFT, 5, 5));
+
+		for (final var option : question.getOptions()) {
+			final var letter = option.getLetter();
+			optionsLabels.add(letter + "|" + option.getValue());
+		}
+
+		final var substringAfter = substringAfter(optionsLabels.get(0), "|");
+		optionPanel.add(createTextToShow(substringAfter));
+
+		final var titleBorder = new TitledBorder("Option ".concat(substringBefore(optionsLabels.get(0), "|")));
+		optionsQuestionPanel.setBorder(titleBorder);
+
+		final var buttonListener = new ActionListener() {
+
+			String current = optionsLabels.get(0);
+
+			@Override
+			public void actionPerformed(final ActionEvent event) {
+
+				final var button = (JButton) event.getSource();
+
+				if (equalsIgnoreCase("yes", button.getText())) {
+
+					question.selectAnswer(substringBefore(current, "|"));
+
+				} else if (question.getAnswers().isEmpty()) {
+					question.selectAnswer("N/A");
+				}
+
+				optionPanel.removeAll();
+
+				final var currentIndex = optionsLabels.indexOf(current);
+				final var iterator = optionsLabels.listIterator(currentIndex + 1);
+
+				if (iterator.hasNext()) {
+					current = optionsLabels.get(currentIndex + 1);
+					optionPanel.add(createTextToShow(substringAfter(current, "|")));
+
+					final var titleBorder = new TitledBorder("Option ".concat(substringBefore(current, "|")));
+					optionsQuestionPanel.setBorder(titleBorder);
+				} else {
+					final var label = new JLabel("You finalized this question");
+					label.setFont(DEFAULT_FONT);
+					optionPanel.add(label);
+					buttonPanel.setVisible(false);
+
+					if (question.getAnswers().isEmpty()) {
+						question.selectAnswer("N/A");
+					}
+
+					final var titleBorder = new TitledBorder("Finished");
+					optionsQuestionPanel.setBorder(titleBorder);
+				}
+
+				optionPanel.revalidate();
+				optionPanel.repaint();
+			}
+		};
+
+		yesButton.addActionListener(buttonListener);
+		noButton.addActionListener(buttonListener);
+
+		optionsQuestionPanel.add(buttonPanel, NORTH);
+		optionsQuestionPanel.add(optionPanel, CENTER);
+
+		return optionsQuestionPanel;
+	}
+
+	public static JPanel createIndiscreteOptions(final ExamQuestion question) {
+
+		final var optionsQuestionPanel = new JPanel();
+		optionsQuestionPanel.setBorder(createTitledBorder("Options"));
+		optionsQuestionPanel.setLayout(new BoxLayout(optionsQuestionPanel, Y_AXIS));
+
+		if (question.getCorrectOptions().size() == 1) { // One selection
+
+			final var bg = new ButtonGroup();
+
+			final ItemListener radioItemListener = event -> {
+				final var radioEvent = (JRadioButton) event.getSource();
+				final var option = substringBefore(remove(radioEvent.getText(), TAG_OPEN_HTML), ")");
+
+				if (radioEvent.isSelected()) {
+					question.selectAnswer(option);
+				} else {
+					question.deselectAnswer(option);
+				}
+			};
+
+			for (final var questionOption : question.getOptions()) {
+
+				final var radio = new JRadioButton(
+						treatOptionText(questionOption.getLetter(), convertTextToHtml(questionOption.getValue())));
+				radio.setBorder(createEmptyBorder());
+				radio.setFont(DEFAULT_FONT);
+				radio.setMnemonic(getShort(questionOption.getLetter()));
+
+				if (question.getAnswers().contains(questionOption.getLetter())) {
+					radio.setSelected(true);
+				}
+
+				radio.addItemListener(radioItemListener);
+
+				bg.add(radio);
+
+				final var radioScrollPane = new JScrollPane(radio);
+				radioScrollPane.setBorder(createEmptyBorder());
+				optionsQuestionPanel.add(radioScrollPane);
+			}
+
+			return optionsQuestionPanel;
+
+		} else { // Multi selection
+
+			final var box = new Box(Y_AXIS);
+
+			final ItemListener checkItemListener = event -> {
+
+				final var checkEvent = (JCheckBox) event.getSource();
+				final var option = substringBefore(remove(checkEvent.getText(), TAG_OPEN_HTML), ")");
+
+				if (checkEvent.isSelected()) {
+					question.selectAnswer(option);
+				} else {
+					question.deselectAnswer(option);
+				}
+			};
+
+			for (final var questionOption : question.getOptions()) {
+
+				final var check = new JCheckBox(
+						treatOptionText(questionOption.getLetter(), convertTextToHtml(questionOption.getValue())));
+				check.setBorder(createEmptyBorder());
+				check.setMnemonic(getShort(questionOption.getLetter()));
+				check.setFont(DEFAULT_FONT);
+
+				if (question.getAnswers().contains(questionOption.getLetter())) {
+					check.setSelected(true);
+				}
+
+				check.addItemListener(checkItemListener);
+
+				box.add(new JScrollPane(check));
+				box.setBorder(createEmptyBorder());
+			}
+
+			optionsQuestionPanel.add(box);
+			return optionsQuestionPanel;
+		}
+	}
+
+	private static int getShort(final String letter) {
+
+		return switch (letter) {
+			case "A" -> KeyEvent.VK_A;
+			case "B" -> KeyEvent.VK_B;
+			case "C" -> KeyEvent.VK_C;
+			case "D" -> KeyEvent.VK_D;
+			case "E" -> KeyEvent.VK_E;
+			case "F" -> KeyEvent.VK_F;
+			default -> throw new IllegalArgumentException("Unexpected value: " + letter);
+		};
+	}
+
+	public static String extractedOptions(final List<String> list) {
+
+		final String joined;
+		if (list.isEmpty()) {
+			joined = "N/A";
+		} else if (list.size() > 1) {
+			int last = list.size() - 1;
+			joined = String.join(" and ", String.join(", ", list.subList(0, last)), list.get(last));
 		} else {
-		    action.execute();
+			joined = list.get(0);
 		}
-	    }
-	};
-    }
 
-    public static JPanel createDiscreteOptions(final ExamQuestion question) {
-	final var optionsQuestionPanel = new JPanel();
-	optionsQuestionPanel.setLayout(new BorderLayout());
-
-	final var yesButton = new JButton("Yes");
-	yesButton.setMnemonic(KeyEvent.VK_Y);
-	final var noButton = new JButton("No");
-	noButton.setMnemonic(KeyEvent.VK_N);
-
-	final var buttonPanel = new JPanel(new WrapLayout(LEFT, 5, 5));
-	buttonPanel.add(yesButton);
-	buttonPanel.add(noButton);
-
-	final var optionsLabels = new ArrayList<String>();
-
-	final var optionPanel = new JPanel(new WrapLayout(LEFT, 5, 5));
-
-	for (final var option : question.getOptions()) {
-	    final var letter = option.getLetter();
-	    optionsLabels.add(letter + "|" + option.getValue());
+		return joined;
 	}
 
-	final var substringAfter = substringAfter(optionsLabels.get(0), "|");
-	optionPanel.add(createTextToShow(substringAfter));
-	
-	final var titleBorder = new TitledBorder("Option ".concat(substringBefore(optionsLabels.get(0), "|")));
-	optionsQuestionPanel.setBorder(titleBorder);
+	private static JComponent createTextToShow(final String text) {
 
-	final var buttonListener = new ActionListener() {
+		var textTemp = replace(text, "```", "");
+		textTemp = replace(textTemp, "´´´", "");
 
-	    String current = optionsLabels.get(0);
-
-	    @Override
-	    public void actionPerformed(final ActionEvent event) {
-
-		final var button = (JButton) event.getSource();
-
-		if (equalsIgnoreCase("yes", button.getText())) {
-		    
-		    question.selectAnswer(substringBefore(current, "|"));
-		    
-		} else if (question.getAnswers().isEmpty())  {
-		    question.selectAnswer("N/A");
-		}
-
-		optionPanel.removeAll();
-
-		final var currentIndex = optionsLabels.indexOf(current);
-		final var iterator = optionsLabels.listIterator(currentIndex + 1);
-
-		if (iterator.hasNext()) {
-		    current = optionsLabels.get(currentIndex + 1);
-		    optionPanel.add(createTextToShow(substringAfter(current, "|")));
-		    
-		    final var titleBorder = new TitledBorder("Option ".concat(substringBefore(current, "|")));
-		    optionsQuestionPanel.setBorder(titleBorder);
-		} else {
-		    final var label = new JLabel("You finalized this question");
-		    label.setFont(DEFAULT_FONT);
-		    optionPanel.add(label);
-		    buttonPanel.setVisible(false);
-
-		    if (question.getAnswers().isEmpty()) {
-			question.selectAnswer("N/A");
-		    }
-		    
-		    final var titleBorder = new TitledBorder("Finished");
-		    optionsQuestionPanel.setBorder(titleBorder);
-		}
-
-		optionPanel.revalidate();
-		optionPanel.repaint();
-	    }
-	};
-
-	yesButton.addActionListener(buttonListener);
-	noButton.addActionListener(buttonListener);
-
-	optionsQuestionPanel.add(buttonPanel, NORTH);
-	optionsQuestionPanel.add(optionPanel, CENTER);
-
-	return optionsQuestionPanel;
-    }
-
-    public static JPanel createIndiscreteOptions(final ExamQuestion question) {
-
-	final var optionsQuestionPanel = new JPanel();
-	optionsQuestionPanel.setBorder(createTitledBorder("Options"));
-	optionsQuestionPanel.setLayout(new BoxLayout(optionsQuestionPanel, Y_AXIS));
-
-	if (question.getCorrectOptions().size() == 1) { // One selection
-
-	    final var bg = new ButtonGroup();
-
-	    final ItemListener radioItemListener = event -> {
-		final var radioEvent = (JRadioButton) event.getSource();
-		final var option = substringBefore(remove(radioEvent.getText(), TAG_OPEN_HTML), ")");
-
-		if (radioEvent.isSelected()) {
-		    question.selectAnswer(option);
-		} else {
-		    question.deselectAnswer(option);
-		}
-	    };
-
-	    for (final var questionOption : question.getOptions()) {
-
-		final var radio = new JRadioButton(treatOptionText(questionOption.getLetter(), questionOption.getValue()));
-		radio.setBorder(createEmptyBorder());
-		radio.setFont(DEFAULT_FONT);
-		radio.setMnemonic(getShort(questionOption.getLetter()));
-
-		if (question.getAnswers().contains(questionOption.getLetter())) {
-		    radio.setSelected(true);
-		}
-
-		radio.addItemListener(radioItemListener);
-
-		bg.add(radio);
-		
-
-		final var radioScrollPane = new JScrollPane(radio);
-		radioScrollPane.setBorder(createEmptyBorder());
-		optionsQuestionPanel.add(radioScrollPane);
-	    }
-	    
-	    return optionsQuestionPanel;
-
-	} else { // Multi selection
-
-	    final var box = new Box(Y_AXIS);
-
-	    final ItemListener checkItemListener = event -> {
-
-		final var checkEvent = (JCheckBox) event.getSource();
-		final var option = substringBefore(remove(checkEvent.getText(), TAG_OPEN_HTML), ")");
-
-		if (checkEvent.isSelected()) {
-		    question.selectAnswer(option);
-		} else {
-		    question.deselectAnswer(option);
-		}
-	    };
-
-	    for (final var questionOption : question.getOptions()) {
-
-		final var check = new JCheckBox(treatOptionText(questionOption.getLetter(), questionOption.getValue()));
-		check.setBorder(createEmptyBorder());
-		check.setMnemonic(getShort(questionOption.getLetter()));
-		check.setFont(DEFAULT_FONT);
-
-		if (question.getAnswers().contains(questionOption.getLetter())) {
-		    check.setSelected(true);
-		}
-
-		check.addItemListener(checkItemListener);
-
-		box.add(new JScrollPane(check));
-		box.setBorder(createEmptyBorder());
-	    }
-
-	    optionsQuestionPanel.add(box);
-	    return optionsQuestionPanel;
+		final var textComponent = new JLabel(textTemp);
+		textComponent.setUI(MultiLineLabelUI.labelUI);
+		textComponent.setBorder(new EmptyBorder(0, 0, 0, 0));
+		textComponent.setOpaque(false);
+		textComponent.setFont(DEFAULT_FONT);
+		return textComponent;
 	}
-    }
-    
-    private static int getShort(final String letter) {
-	
-	return switch (letter) {
-        	case "A" -> KeyEvent.VK_A;
-        	case "B" -> KeyEvent.VK_B;
-        	case "C" -> KeyEvent.VK_C;
-        	case "D" -> KeyEvent.VK_D;
-        	case "E" -> KeyEvent.VK_E;
-        	case "F" -> KeyEvent.VK_F;
-        	default -> throw new IllegalArgumentException("Unexpected value: " + letter);
-	};
-    }
-
-    public static String extractedOptions(final List<String> list) {
-
-	final String joined;
-	if (list.isEmpty()) {
-	    joined = "N/A";
-	} else if (list.size() > 1) {
-	    int last = list.size() - 1;
-	    joined = String.join(" and ", String.join(", ", list.subList(0, last)), list.get(last));
-	} else {
-	    joined = list.get(0);
-	}
-
-	return joined;
-    }
-
-    private static JComponent createTextToShow(final String text) {
-
-	var textTemp = replace(text, "```", "");
-	textTemp = replace(textTemp, "´´´", "");
-
-	final var textComponent = new JLabel(textTemp);
-	textComponent.setUI(MultiLineLabelUI.labelUI);
-	textComponent.setBorder(new EmptyBorder(0, 0, 0, 0));
-	textComponent.setOpaque(false);
-	textComponent.setFont(DEFAULT_FONT);
-	return textComponent;
-    }
 }

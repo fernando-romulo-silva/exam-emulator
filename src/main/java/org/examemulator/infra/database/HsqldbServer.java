@@ -12,53 +12,53 @@ import org.slf4j.LoggerFactory;
 
 public final class HsqldbServer {
 
-    public static final String DATABASE_NAME = "examEmulator";
+	public static final String DATABASE_NAME = "examEmulator";
 
-    public static final int HSQLDB_PORT = 9137;
+	public static final int HSQLDB_PORT = 9137;
 
-    public static final String HSQLDB_URL = "jdbc:hsqldb:hsql://localhost:" + HSQLDB_PORT + "/" + DATABASE_NAME;
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(HsqldbServer.class);
+	public static final String HSQLDB_URL = "jdbc:hsqldb:hsql://localhost:" + HSQLDB_PORT + "/" + DATABASE_NAME;
 
-    private static final Server SERVER = new Server();
-    
-    private HsqldbServer() {
-	throw new UnsupportedOperationException("You can't instantiate this class!");
-    }
+	private static final Logger LOGGER = LoggerFactory.getLogger(HsqldbServer.class);
 
-    public static void stop() {
-	
-	if (SERVER.isNotRunning()) {
-	   return;
+	private static final Server SERVER = new Server();
+
+	private HsqldbServer() {
+		throw new UnsupportedOperationException("You can't instantiate this class!");
 	}
 
-	SERVER.shutdownCatalogs(CLOSEMODE_IMMEDIATELY);
-	SERVER.stop();
-	SERVER.shutdown();
+	public static void stop() {
 
-	LOGGER.info("HSqlDB Server stopped");
-    }
+		if (SERVER.isNotRunning()) {
+			return;
+		}
 
-    public static void start() {
+		SERVER.shutdownCatalogs(CLOSEMODE_IMMEDIATELY);
+		SERVER.stop();
+		SERVER.shutdown();
 
-	try (final var serverSocket = new ServerSocket(HSQLDB_PORT)) {
-	    serverSocket.setReuseAddress(true);
-	} catch (final IOException ex) {
-	    throw new IllegalArgumentException("Server port isn't open!", ex);
+		LOGGER.info("HSqlDB Server stopped");
 	}
 
-	SERVER.setSilent(true);
-	SERVER.setTrace(false);
+	public static void start() {
 
-	final var dataBasesFolder = "/home/fernando/Development/workspaces/eclipse-workspace/certifications-technologies/examulator-database/database";
+		try (final var serverSocket = new ServerSocket(HSQLDB_PORT)) {
+			serverSocket.setReuseAddress(true);
+		} catch (final IOException ex) {
+			throw new IllegalArgumentException("Server port isn't open!", ex);
+		}
 
-	SERVER.setPort(HSQLDB_PORT);
-	SERVER.setDatabaseName(0, DATABASE_NAME);
-	SERVER.setDatabasePath(0, "file:" + dataBasesFolder + separator + DATABASE_NAME);
+		SERVER.setSilent(true);
+		SERVER.setTrace(false);
 
-	SERVER.start();
+		final var dataBasesFolder = "/home/fernando/Development/workspaces/vscode-workspace/personal/certifications-technologies/examulator-database/database";
 
-	LOGGER.info("HSqlDB Server Started");
-    }
+		SERVER.setPort(HSQLDB_PORT);
+		SERVER.setDatabaseName(0, DATABASE_NAME);
+		SERVER.setDatabasePath(0, "file:" + dataBasesFolder + separator + DATABASE_NAME);
+
+		SERVER.start();
+
+		LOGGER.info("HSqlDB Server Started");
+	}
 
 }

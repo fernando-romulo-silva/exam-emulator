@@ -27,180 +27,180 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 class ExamView extends JFrame {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    @ApplicationScoped
-    static class ExamGui {
+	@ApplicationScoped
+	static class ExamGui {
 
-	ExamView getView() {
-	    return new ExamView();
+		ExamView getView() {
+			return new ExamView();
+		}
 	}
-    }
 
-    JPanel questionInternPanel, examPanel, pQuestions, contentPane;
+	JPanel questionInternPanel, examPanel, pQuestions, contentPane;
 
-    JButton btnPauseProceed, btnStart, btnFinish, btnPrevious, btnNext, btnCheckAnswer, btnStatistics;
+	JButton btnPauseProceed, btnStart, btnFinish, btnPrevious, btnNext, btnCheckAnswer, btnStatistics;
 
-    JLabel lblClock, lblDuration;
+	JLabel lblClock, lblDuration;
 
-    JSpinner textDiscrete, textMinScore, spinnerTimeDuration;
+	JSpinner textDiscrete, textMinScore, spinnerTimeDuration;
 
-    JCheckBox chckbxShuffleQuestions, chckbxShuffleOptions;
+	JCheckBox chckbxShuffleQuestions, chckbxShuffleOptions;
 
-    JComboBox<String> cbMode;
-    private JLabel lblShuffleQuestions;
-    private JLabel lblShuffleOptions;
+	JComboBox<String> cbMode;
+	private JLabel lblShuffleQuestions;
+	private JLabel lblShuffleOptions;
 
-    ExamView() {
-	setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-	setBounds(100, 100, 871, 723);
+	ExamView() {
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		setBounds(100, 100, 871, 723);
 
-	// -------------------------------------------------------------------------------------------
-	// Main Panel
-	// -------------------------------------------------------------------------------------------
-	setTitle(APP_NAME.concat(" - Exam"));
+		// -------------------------------------------------------------------------------------------
+		// Main Panel
+		// -------------------------------------------------------------------------------------------
+		setTitle(APP_NAME.concat(" - Exam"));
 
-	contentPane = new JPanel();
-	contentPane.setBorder(createTitledBorder("No Exam"));
-	contentPane.setLayout(new BoxLayout(contentPane, Y_AXIS));
-	setContentPane(contentPane);
+		contentPane = new JPanel();
+		contentPane.setBorder(createTitledBorder("No Exam"));
+		contentPane.setLayout(new BoxLayout(contentPane, Y_AXIS));
+		setContentPane(contentPane);
 
-	// -------------------------------------------------------------------------------------------
-	// Exam Panel
-	// -------------------------------------------------------------------------------------------
+		// -------------------------------------------------------------------------------------------
+		// Exam Panel
+		// -------------------------------------------------------------------------------------------
 
-	examPanel = new JPanel();
-	examPanel.setBorder(null);
-	examPanel.setLayout(new BoxLayout(examPanel, Y_AXIS));
-	contentPane.add(examPanel);
+		examPanel = new JPanel();
+		examPanel.setBorder(null);
+		examPanel.setLayout(new BoxLayout(examPanel, Y_AXIS));
+		contentPane.add(examPanel);
 
-	final var examControlPanel1 = new JPanel();
-	examPanel.add(examControlPanel1);
-	examControlPanel1.setPreferredSize(new Dimension(80, 40));
-	examControlPanel1.setBorder(null);
-	examControlPanel1.setLayout(new WrapLayout(LEFT, 5, 5));
+		final var examControlPanel1 = new JPanel();
+		examPanel.add(examControlPanel1);
+		examControlPanel1.setPreferredSize(new Dimension(80, 40));
+		examControlPanel1.setBorder(null);
+		examControlPanel1.setLayout(new WrapLayout(LEFT, 5, 5));
 
-	btnStart = new JButton("Start");
-	btnStart.setEnabled(false);
-	btnStart.setMnemonic(KeyEvent.VK_S);
-	examControlPanel1.add(btnStart);
+		btnStart = new JButton("Start");
+		btnStart.setEnabled(false);
+		btnStart.setMnemonic(KeyEvent.VK_S);
+		examControlPanel1.add(btnStart);
 
-	btnPauseProceed = new JButton("Pause");
-	btnPauseProceed.setEnabled(false);
-	btnPauseProceed.setMnemonic(KeyEvent.VK_P);
-	examControlPanel1.add(btnPauseProceed);
+		btnPauseProceed = new JButton("Pause");
+		btnPauseProceed.setEnabled(false);
+		btnPauseProceed.setMnemonic(KeyEvent.VK_P);
+		examControlPanel1.add(btnPauseProceed);
 
-	btnFinish = new JButton("Finish");
-	btnFinish.setEnabled(false);
-	btnFinish.setMnemonic(KeyEvent.VK_F);
-	examControlPanel1.add(btnFinish);
+		btnFinish = new JButton("Finish");
+		btnFinish.setEnabled(false);
+		btnFinish.setMnemonic(KeyEvent.VK_F);
+		examControlPanel1.add(btnFinish);
 
-	btnStatistics = new JButton("Statistics");
-	btnStatistics.setEnabled(false);
-	btnStatistics.setMnemonic(KeyEvent.VK_T);
-	examControlPanel1.add(btnStatistics);
+		btnStatistics = new JButton("Statistics");
+		btnStatistics.setEnabled(false);
+		btnStatistics.setMnemonic(KeyEvent.VK_T);
+		examControlPanel1.add(btnStatistics);
 
-	final var examControlPanel2 = new JPanel();
-	examControlPanel2.setLayout(new WrapLayout(LEFT, 5, 5));
-	examPanel.add(examControlPanel2);
-	
-	lblShuffleQuestions = new JLabel("Shuffle Questions");
-	examControlPanel2.add(lblShuffleQuestions);
+		final var examControlPanel2 = new JPanel();
+		examControlPanel2.setLayout(new WrapLayout(LEFT, 5, 5));
+		examPanel.add(examControlPanel2);
 
-	chckbxShuffleQuestions = new JCheckBox("");
-	chckbxShuffleQuestions.setHorizontalTextPosition(SwingConstants.LEFT);
-	chckbxShuffleQuestions.setEnabled(false);
-	chckbxShuffleQuestions.setSelected(true);
-	examControlPanel2.add(chckbxShuffleQuestions);
-	
-	lblShuffleOptions = new JLabel("Shuffle Options");
-	examControlPanel2.add(lblShuffleOptions);
+		lblShuffleQuestions = new JLabel("Shuffle Questions");
+		examControlPanel2.add(lblShuffleQuestions);
 
-	chckbxShuffleOptions = new JCheckBox("");
-	chckbxShuffleOptions.setEnabled(false);
-	chckbxShuffleOptions.setSelected(true);
-	chckbxShuffleOptions.setHorizontalTextPosition(SwingConstants.LEFT);
-	examControlPanel2.add(chckbxShuffleOptions);
+		chckbxShuffleQuestions = new JCheckBox("");
+		chckbxShuffleQuestions.setHorizontalTextPosition(SwingConstants.LEFT);
+		chckbxShuffleQuestions.setEnabled(false);
+		chckbxShuffleQuestions.setSelected(true);
+		examControlPanel2.add(chckbxShuffleQuestions);
 
-	final var lblDiscretePercent = new JLabel("Discrete (%)");
-	examControlPanel2.add(lblDiscretePercent);
+		lblShuffleOptions = new JLabel("Shuffle Options");
+		examControlPanel2.add(lblShuffleOptions);
 
-	textDiscrete = new JSpinner(new SpinnerNumberModel(100, 0, 100, 10));
-	examControlPanel2.add(textDiscrete);
-	textDiscrete.setEnabled(false);
+		chckbxShuffleOptions = new JCheckBox("");
+		chckbxShuffleOptions.setEnabled(false);
+		chckbxShuffleOptions.setSelected(true);
+		chckbxShuffleOptions.setHorizontalTextPosition(SwingConstants.LEFT);
+		examControlPanel2.add(chckbxShuffleOptions);
 
-	final var examControlPanel3 = new JPanel();
-	examControlPanel3.setLayout(new WrapLayout(LEFT, 5, 5));
-	examPanel.add(examControlPanel3);
+		final var lblDiscretePercent = new JLabel("Discrete (%)");
+		examControlPanel2.add(lblDiscretePercent);
 
-	final var lblMinScore = new JLabel("Min Score (%)");
-	examControlPanel3.add(lblMinScore);
+		textDiscrete = new JSpinner(new SpinnerNumberModel(000, 0, 100, 10));
+		examControlPanel2.add(textDiscrete);
+		textDiscrete.setEnabled(false);
 
-	textMinScore = new JSpinner(new SpinnerNumberModel(90, 50, 100, 10));
-	textMinScore.setEnabled(false);
-	examControlPanel3.add(textMinScore);
+		final var examControlPanel3 = new JPanel();
+		examControlPanel3.setLayout(new WrapLayout(LEFT, 5, 5));
+		examPanel.add(examControlPanel3);
 
-	final var lblMode = new JLabel("Mode");
-	examControlPanel3.add(lblMode);
+		final var lblMinScore = new JLabel("Min Score (%)");
+		examControlPanel3.add(lblMinScore);
 
-	cbMode = new JComboBox<>();
-	examControlPanel3.add(cbMode);
-	cbMode.setEnabled(false);
-	cbMode.addItem("Practice");
-	cbMode.addItem("Exam");
+		textMinScore = new JSpinner(new SpinnerNumberModel(90, 50, 100, 10));
+		textMinScore.setEnabled(false);
+		examControlPanel3.add(textMinScore);
 
-	cbMode.setSize(200, cbMode.getPreferredSize().height);
+		final var lblMode = new JLabel("Mode");
+		examControlPanel3.add(lblMode);
 
-	lblDuration = new JLabel("Duration (Min)");
-	examControlPanel3.add(lblDuration);
+		cbMode = new JComboBox<>();
+		examControlPanel3.add(cbMode);
+		cbMode.setEnabled(false);
+		cbMode.addItem("Practice");
+		cbMode.addItem("Exam");
 
-	spinnerTimeDuration = new JSpinner(new SpinnerNumberModel(60, 10, 120, 10));
-	examControlPanel3.add(spinnerTimeDuration);
-	spinnerTimeDuration.setEnabled(false);
+		cbMode.setSize(200, cbMode.getPreferredSize().height);
 
-	lblClock = new JLabel("");
-	examControlPanel3.add(lblClock);
+		lblDuration = new JLabel("Duration (Min)");
+		examControlPanel3.add(lblDuration);
 
-	// -------------------------------------------------------------------------------------------
-	// Control Panel
-	// -------------------------------------------------------------------------------------------
+		spinnerTimeDuration = new JSpinner(new SpinnerNumberModel(60, 10, 120, 10));
+		examControlPanel3.add(spinnerTimeDuration);
+		spinnerTimeDuration.setEnabled(false);
 
-	final var quesitonControlPanel = new JPanel();
-	examPanel.add(quesitonControlPanel);
-	quesitonControlPanel.setPreferredSize(new Dimension(80, 40));
-	quesitonControlPanel.setLayout(new WrapLayout(LEFT, 5, 5));
-	quesitonControlPanel.setBorder(null);
+		lblClock = new JLabel("");
+		examControlPanel3.add(lblClock);
 
-	btnPrevious = new JButton("Previous");
-	btnPrevious.setEnabled(false);
-	btnPrevious.setMnemonic(KeyEvent.VK_MINUS);
-	quesitonControlPanel.add(btnPrevious);
+		// -------------------------------------------------------------------------------------------
+		// Control Panel
+		// -------------------------------------------------------------------------------------------
 
-	btnNext = new JButton("Next");
-	btnNext.setEnabled(false);
-	btnNext.setMnemonic(KeyEvent.VK_EQUALS);
-	quesitonControlPanel.add(btnNext);
+		final var quesitonControlPanel = new JPanel();
+		examPanel.add(quesitonControlPanel);
+		quesitonControlPanel.setPreferredSize(new Dimension(80, 40));
+		quesitonControlPanel.setLayout(new WrapLayout(LEFT, 5, 5));
+		quesitonControlPanel.setBorder(null);
 
-	btnCheckAnswer = new JButton("Answer");
-	btnCheckAnswer.setEnabled(false);
-	btnCheckAnswer.setVisible(false);
-	btnCheckAnswer.setMnemonic(KeyEvent.VK_W);
-	quesitonControlPanel.add(btnCheckAnswer);
+		btnPrevious = new JButton("Previous");
+		btnPrevious.setEnabled(false);
+		btnPrevious.setMnemonic(KeyEvent.VK_MINUS);
+		quesitonControlPanel.add(btnPrevious);
 
-	pQuestions = new JPanel(new WrapLayout(LEFT, 5, 5));
-	examPanel.add(pQuestions);
+		btnNext = new JButton("Next");
+		btnNext.setEnabled(false);
+		btnNext.setMnemonic(KeyEvent.VK_EQUALS);
+		quesitonControlPanel.add(btnNext);
 
-	// -------------------------------------------------------------------------------------------
-	// Question Panel
-	// -------------------------------------------------------------------------------------------
+		btnCheckAnswer = new JButton("Answer");
+		btnCheckAnswer.setEnabled(false);
+		btnCheckAnswer.setVisible(false);
+		btnCheckAnswer.setMnemonic(KeyEvent.VK_W);
+		quesitonControlPanel.add(btnCheckAnswer);
 
-	final var questionPanel = new JPanel();
-	questionPanel.setLayout(new BorderLayout());
+		pQuestions = new JPanel(new WrapLayout(LEFT, 5, 5));
+		examPanel.add(pQuestions);
 
-	questionInternPanel = new JPanel();
-	questionInternPanel.setLayout(new BoxLayout(questionInternPanel, Y_AXIS));
-	questionPanel.add(questionInternPanel, CENTER);
+		// -------------------------------------------------------------------------------------------
+		// Question Panel
+		// -------------------------------------------------------------------------------------------
 
-	contentPane.add(questionPanel);
-    }
+		final var questionPanel = new JPanel();
+		questionPanel.setLayout(new BorderLayout());
+
+		questionInternPanel = new JPanel();
+		questionInternPanel.setLayout(new BoxLayout(questionInternPanel, Y_AXIS));
+		questionPanel.add(questionInternPanel, CENTER);
+
+		contentPane.add(questionPanel);
+	}
 }

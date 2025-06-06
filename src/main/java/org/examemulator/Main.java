@@ -27,7 +27,8 @@ public class Main {
 		service.updateAll();
 
 		final var mainController = container.select(MainController.class).get();
-		// mainController.loadCertificationFromFolder("/home/fernando/Development/workspaces/eclipse-workspace/exam-emulator/src/test/resources/certifications/food-certification");
+		// mainController.loadCertificationFromFolder("/home/fernando/Development/workspaces/vscode-workspace/personal/exam-emulator/src/test/resources/certifications/food-certification");
+		// "/home/fernando/Development/workspaces/vscode-workspace/personal/certifications-technologies/edu-1202-spring-professional"
 		mainController.loadCertificationFromFolder(
 				"/home/fernando/Development/workspaces/vscode-workspace/personal/certifications-technologies/edu-1202-spring-professional");
 		mainController.show();
