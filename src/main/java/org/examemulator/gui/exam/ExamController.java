@@ -34,6 +34,7 @@ import static org.examemulator.infra.util.gui.GuiUtil.MILLISECOND;
 import static org.examemulator.infra.util.gui.GuiUtil.createDiscreteOptions;
 import static org.examemulator.infra.util.gui.GuiUtil.createIndiscreteOptions;
 import static org.examemulator.infra.util.gui.GuiUtil.createScrollTextToShow;
+import static org.examemulator.infra.util.gui.GuiUtil.createScrollHtmlTextToShow;
 import static org.examemulator.infra.util.gui.GuiUtil.createTimerAction;
 import static org.examemulator.infra.util.gui.GuiUtil.extractedOptions;
 import static org.examemulator.infra.util.gui.GuiUtil.convertTextToHtml;
@@ -561,7 +562,7 @@ public class ExamController {
 		panelQuestionPanel.add(btnFake);
 
 		view.questionInternPanel.setBorder(titleBorder);
-		panelQuestionPanel.add(createScrollTextToShow(questionText));
+		panelQuestionPanel.add(createScrollHtmlTextToShow(questionText));
 		panelQuestionPanel.revalidate();
 		panelQuestionPanel.repaint();
 
