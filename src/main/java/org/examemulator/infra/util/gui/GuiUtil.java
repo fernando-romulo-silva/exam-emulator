@@ -389,6 +389,7 @@ public class GuiUtil {
 			case "D" -> KeyEvent.VK_D;
 			case "E" -> KeyEvent.VK_E;
 			case "F" -> KeyEvent.VK_F;
+			case "G" -> KeyEvent.VK_G;
 			default -> throw new IllegalArgumentException("Unexpected value: " + letter);
 		};
 	}

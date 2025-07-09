@@ -162,14 +162,14 @@ public class ExamRepositoryImp extends GenericRepository<Exam, Long> implements 
 	@Override
 	public int deleteExamQuestionsOptions(final Long idExam) {
 		final var dmlString = """
-				                               DELETE
-				                                 FROM EXAM_QUESTION_OPTION AS eqo
-				                                WHERE EXISTS (
-				                               		  SELECT 1
-				                               		    FROM EXAM_QUESTION AS eq
-				                               		   WHERE EQ.ID = eqo.EXAM_QUESTION_ID
-				                               		     AND eq.EXAM_ID = ?
-				                                             )
+					DELETE
+					  FROM EXAM_QUESTION_OPTION AS eqo
+					WHERE EXISTS (
+							SELECT 1
+							FROM EXAM_QUESTION AS eq
+							WHERE EQ.ID = eqo.EXAM_QUESTION_ID
+								AND eq.EXAM_ID = ?
+					)
 				""";
 
 		final var dml = entityManager.createNativeQuery(dmlString);
@@ -181,9 +181,9 @@ public class ExamRepositoryImp extends GenericRepository<Exam, Long> implements 
 	@Override
 	public int deleteExamQuestions(final Long idExam) {
 		final var dmlString = """
-				                               DELETE
-				                                 FROM EXAM_QUESTION AS eq
-				                                WHERE eq.EXAM_ID = ?
+					DELETE
+					  FROM EXAM_QUESTION AS eq
+					 WHERE eq.EXAM_ID = ?
 				""";
 
 		final var dml = entityManager.createNativeQuery(dmlString);
@@ -195,9 +195,9 @@ public class ExamRepositoryImp extends GenericRepository<Exam, Long> implements 
 	@Override
 	public int deleteExam(final Long idExam) {
 		final var dmlString = """
-				                               DELETE
-				                                 FROM EXAM AS e
-				                                WHERE E.ID = ?
+					DELETE
+						FROM EXAM AS e
+					WHERE E.ID = ?
 				""";
 
 		final var dml = entityManager.createNativeQuery(dmlString);

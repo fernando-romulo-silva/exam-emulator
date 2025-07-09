@@ -18,6 +18,7 @@
 		<maven.dependency.plugin.version>3.4.0</maven.dependency.plugin.version>
 		<maven.jar.plugin.version>3.3.0</maven.jar.plugin.version>
 
+		<project.scm.id>github</project.scm.id>
 		<maven.jar.plugin.main.class>org.examemulator.Main</maven.jar.plugin.main.class>
 	</properties>
 
